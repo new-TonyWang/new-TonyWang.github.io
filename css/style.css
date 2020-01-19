@@ -5788,7 +5788,7 @@ button {
   }
   .wrap,
   .outer {
-    width: 70rem;
+    width: 90rem;
     padding-right: 0;
     padding-left: 0;
   }
@@ -6430,7 +6430,7 @@ button {
 .tocbot {
   position: fixed;
   top: 14rem;
-  left: calc((100vw - 70rem) / 2 + 70rem);
+  left: calc((100vw - 70rem) / 2 + 80rem);
   font-size: 80%;
   opacity: 0.8;
 }
