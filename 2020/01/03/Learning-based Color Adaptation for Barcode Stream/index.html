@@ -42,7 +42,7 @@
   <div id="app">
     <main class="content">
       <section class="outer">
-  <article id="post-2020-01-03-Learning-based Color Adaptation for Barcode Stream" class="article article-type-post" itemscope
+  <article id="post-Learning-based Color Adaptation for Barcode Stream" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -59,7 +59,7 @@
 
     
     <div class="article-meta">
-      <a href="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/" class="article-date">
+      <a href="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/" class="article-date">
   <time datetime="2020-01-03T09:33:36.000Z" itemprop="datePublished">2020-01-03</time>
 </a>
       
@@ -124,7 +124,7 @@
 <li>rule-based 不能应对多变的场景(例如针对室内设计的不能应用于室外)</li>
 <li>rule-based 不能很好得解决颜色混和问题</li>
 </ol>
-<h1 id="创新点"><a href="#创新点" class="headerlink" title="创新点"></a>创新点</h1><p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E9%93%BE%E8%B7%AF%E6%A6%82%E8%A6%81.png" alt="Fig.1. The idea of a machine learning based approach for color barcode streaming"></p>
+<h1 id="创新点"><a href="#创新点" class="headerlink" title="创新点"></a>创新点</h1><p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E9%93%BE%E8%B7%AF%E6%A6%82%E8%A6%81.png" alt="Fig.1. The idea of a machine learning based approach for color barcode streaming"></p>
 <hr>
 <p>​            MegaLight采用机器学习技术训练模型自动自适应识别块颜色。为了达到这个目的，在数据条形码之前插入和发送一些训练帧，如图1所示。训练帧以已知的模式发送，作为模型训练的训练集。该学习任务是从捕获的训练帧中提取的颜色信息作为特征，将帧中的已知信息作为标签，训练一个用于颜色识别的分类模型。在MegaLight中，我们采用随机森林模型进行分类。为了减少监督学习的启动延迟，我们进一步提出了一种基于专家混合模型的半监督方法。MoE模型是由几个预先训练好的随机森林模型构造而成的，在各种环境下，仅依靠很少的训练帧就可以实现较高的颜色识别精度。</p>
 <hr>
@@ -141,13 +141,13 @@
 <li>我们在黑白和彩色条形码系统上都实现了MegaLight，并在各种场景下测试了它们的性能。大量的实验证明了该框架的有效性。</li>
 </ul>
 <h1 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h1><p>​    ​        尽管当前系统广泛采用基于规则的方法，但其主要缺点是固定规则缺乏自适应能力，无法处理各种环境中的许多场景。我们将在下面演示几个场景。<br>​<br>​        <strong><em>环境光的变化</em></strong>: 环境光的变化将导致接收相机捕获图像的颜色发生显著变化。 例如，图2显示了在不同水平的环境光下捕获的帧。 与原始帧相比(图2a)，在常光下(图2b)和明亮环境下(图2c)，捕捉到的块颜色差异很大。 基于规则的帧解调显示出有限的能力，以适应变化的环境光。 例如，LightSync[12]可以确定一个颜色匹配，如果块颜色和参考颜色之间的差异在10%以内，这可能适用于正常的光线，但是在明亮的光线下效果很差，因为在明亮的环境中，黑色块和白色块之间的区别是模糊的。 创建通用规则来适应不同的环境光是具有挑战性的。</p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E7%8E%AF%E5%A2%83%E5%85%89%E5%8F%98%E5%8C%96.png" alt="环境光变化"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E7%8E%AF%E5%A2%83%E5%85%89%E5%8F%98%E5%8C%96.png" alt="环境光变化"></p>
 <p>​            <strong><em>混合颜色</em></strong>:在彩色条码系统中另一个常见的效果是混合颜色。由于相邻块或连续帧的颜色不同，相机可以同时捕捉两种颜色，从而在捕捉帧中形成混合的颜色。例如，图3a是红色和黄色的混合物，图3b是绿色和蓝色的混合物。如果我们从混合帧中采样颜色，那么将很难确定块的原始颜色，从而导致很难从条形码块中恢复信息。</p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E9%A2%9C%E8%89%B2%E6%B7%B7%E5%90%88.png" alt="image-20200103214503885"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E9%A2%9C%E8%89%B2%E6%B7%B7%E5%90%88.png" alt="image-20200103214503885"></p>
 <p>​            条码通信中的另一种混色现象是一些捕获的帧被两个连续的帧混合，在捕获的图像中呈现出时间模糊。帧混合是帧显示速率和捕获速率不匹配的典型情况。假设屏幕一次显示整个图像，如果场景在捕获过程中切换帧，那么捕获的图像将是两个连续帧的混合。图5给出了一个帧混合的例子，从图中可以看出，被捕获块的颜色是两帧颜色的混合，因此很难识别每个块的颜色。有时，帧混合可能是由于滚动快门效应的CMOS相机用于大多数现代智能手机。滚动快门是一种图像捕捉机制，通过水平(或垂直)逐行扫描整个场景来捕捉每一帧图像。因为有了滚动快门，一帧的不同行被捕捉到不同的时间点。如果在摄像机捕获过程中，场景切换帧，则前一帧的一部分将出现在上一帧的上部，下一帧的一部分将出现在下一帧的下部，从而形成捕获图像中连续条码帧的混合。如图3所示，捕获帧的上下部分呈现两种不同颜色的渐变，最终的颜色值取决于时间。现有的基于规则的方法不能解决颜色混合问题:它们将混合颜色视为错误，并完全抛弃混合帧。</p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E5%B8%A7%E6%B7%B7%E5%90%88.png" alt="image-20200103220234977"></p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E9%A2%9C%E8%89%B2%E6%B7%B7%E5%90%88.png" alt="image-20200103214503885"></p>
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.png" alt="image-20200103220812301"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E5%B8%A7%E6%B7%B7%E5%90%88.png" alt="image-20200103220234977"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E9%A2%9C%E8%89%B2%E6%B7%B7%E5%90%88.png" alt="image-20200103214503885"></p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.png" alt="image-20200103220812301"></p>
 <p>​            在<strong>发送端</strong>，添加了一个称为<strong>训练帧生成器</strong>的模块来生成和插入训练帧。训练帧是用特定的数据位模式和帧id编码的，接收者无需解码帧就可以知道这些数据位模式和帧id。为了将帧id嵌入到条码流中，解决帧混合问题，我们提出了一种特殊的布局设计，用于提取机器学习的特征。MegaLight的布局采用多个边框条，嵌入帧元信息，显示参考色，跟踪滚动快门效果的情况。</p>
 <p>​            在<strong>接收端</strong>，采用基于机器学习的帧解调模块进行彩色条码识别，该模块由三个m子模块组成。标签提取模块用于从训练帧中提取数据信息，形成机器学习的基础事实。特征提取模块用于为每个代码块提取大量颜色度量，这些颜色度量用作颜色识别的输入。利用机器学习模型训练分类器，对每个代码块的颜色和信息位进行准确判断。</p>
 <p>​        在发送方和接收方，可靠性技术被应用到增加冗余帧的错误纠正和恢复。</p>
@@ -169,7 +169,7 @@
 
 </li>
 </ol>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E5%B8%A7%E5%B8%83%E5%B1%80.png" alt="image-20200104113604861"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E5%B8%A7%E5%B8%83%E5%B1%80.png" alt="image-20200104113604861"></p>
 <p>​            顶部栏:在框架的顶部，顶部栏用于嵌入框架ID信息。帧ID由一个二进制数表示，该二进制数用灰色代码[3]编码。帧ID将被接收者用来帮助解码条形码的数据内容。</p>
 <p>​        底部栏:底部栏只包含一个位信息，称为训练帧指示(TFI)位于栏的左侧。TFI用于表示一个帧是否是一个训练帧:TFI的白色对应一个训练帧，TFI的黑色对应一个信息帧。</p>
 <p>​        参考色条(RCBs):如图7所示，框架的左右垂直条称为参考色条(RCBs)。两个条形图用于显示条形码的参考颜色。动态条形码系统依赖于一组预定义的颜色来表示块中的信息位。例如，颜色条形码可以使用绿色、红色、黄色、蓝色来表示00、01、10、11。如图7所示，在参考色条上交替重复显示预定义的颜色。</p>
@@ -182,7 +182,7 @@
 <div style=" color :#F00">灰度代码的一个重要特性是两个连续值的二进制表达式只差一个二进制位。</div>
 有了这样的属性，两个连续帧的顶栏只差一个块。也就是说，即使混色发生了，只有一个混合色块出现在顶栏上，其余色块都是清晰的。如图8所示，如果一个混合块的颜色已知，则可以确定帧ID。
 
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5Ctopbar.png" alt="image-20200104150034647"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5Ctopbar.png" alt="image-20200104150034647"></p>
 <p>​    那么，如何判断图8混合部分的颜色是黑还是白？取黑色和白色的参考色Refblack和Refwhite，混合部分的颜色C</p>
 <ol>
 <li><p>若<br>$$<br>C\leq\frac {Refblack+Refwhite}{2}<br>$$<br>表示该混合块是<strong>黑色</strong></p>
@@ -195,19 +195,19 @@
 <h3 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a>特征提取</h3><p>​        我们提取大量量化的特征矩阵作为输入，建立条码颜色识别的机器学习模型。提取的特征包括分块的<em>颜色、参考颜色、卷帘门指示器、相邻分块的颜色</em>，下面将介绍这些特征。</p>
 <h3 id="1-块的颜色"><a href="#1-块的颜色" class="headerlink" title="1. 块的颜色"></a>1. 块的颜色</h3><p>​    记从该色块采样的颜色是 $$\hat{C}<em>{block}$$ 当是黑白码的时候。色块是灰度值[0,155]。当是RGB彩色二维码的时候，RGB每一个通道是[0,255]，记为 $$\hat{C}</em>{block}=&lt;R,G,B&gt;$$。当拍摄的时候，由于光线、相邻色块和卷帘快门的影响，颜色会发生改变。机器学习的任务就是根据已经定义好得颜色，正确得识别每个块的颜色。</p>
 <h3 id="2-参考颜色"><a href="#2-参考颜色" class="headerlink" title="2. 参考颜色"></a>2. 参考颜色</h3><p>​    对于不同的颜色，取两侧的相同颜色并取该颜色的平均值为参考，假设有K种颜色，有公式<br>$$<br>\hat{C}_{ref} = &lt;Ref_1,Ref_2,Ref_3,…,Ref_k&gt; 其中 Ref_i表示参考颜色中的第i个颜色<br>$$</p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E5%B8%A7%E5%B8%83%E5%B1%80.png" alt="image-20200104113604861"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/%E5%B8%A7%E5%B8%83%E5%B1%80.png" alt="image-20200104113604861"></p>
 <h3 id="3-卷帘快门指示"><a href="#3-卷帘快门指示" class="headerlink" title="3.卷帘快门指示"></a>3.卷帘快门指示</h3><p>​        色块的颜色会受到卷帘快门的影响，意味着相邻两张图片的颜色会混合在一起。因此，需要判断出来是否出现了混合和混合的严重程度。</p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E5%8D%B7%E5%B8%98%E5%BF%AB%E9%97%A8%E6%8C%87%E7%A4%BA.png" alt="image-20200104161616280"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E5%8D%B7%E5%B8%98%E5%BF%AB%E9%97%A8%E6%8C%87%E7%A4%BA.png" alt="image-20200104161616280"></p>
 <p>从左到右设卷帘快门提示条为$\overline{RSTB_1}$&amp;$\overline{RSTB_2}$&amp;$\overline{RSTB_3}$&amp;$\overline{RSTB_4}$。<br>$\overline{RSTB_1}$和$\overline{RSTB_3}$会产生黑–&gt;白的渐变。<br>$\overline{RSTB_2}$和$\overline{RSTB_4}$会产生白–黑的渐变。</p>
 <p>然后作一条水平的红线。在二维码不发生偏转的情况下这条水平的线和卷帘快门提示条会产生4个交点，设为$\hat{C}_{RSI}=&lt;RSI_1,RSI_2,RSI_3,RSI_4&gt;$</p>
 <p>如果二维码发生倾斜，如图9，则会产生非4个交点的请情况。如最上面的红线令$\hat{C}_{RSI}=&lt;RSI_1,RSI_2,0,0&gt;$</p>
 <p>当发生了卷帘门现象，则 $$\hat{C}<em>{RSI}$$ 就会有特殊的现象，并且可以使用$$\hat{C}</em>{RSI}$$判断卷帘门现象有多严重，同时判断数据块是属于前一帧还是后一帧，下一帧是奇数帧还是偶数帧。这些数据可以用于我们提出的颜色判断模型。</p>
 <h3 id="4-相邻色块的影响"><a href="#4-相邻色块的影响" class="headerlink" title="4.相邻色块的影响"></a>4.相邻色块的影响</h3><p>​        一个色块会被相邻的8个色块的颜色影响，尤其是处于颜色边界的像素点。每一个色块都被其他8个色块包围，记$\hat{C}_{neighbor}=&lt;{CNB}_1,{CNB}_2,…,{CNB}_8&gt;$</p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E7%9B%B8%E9%82%BB%E9%A2%9C%E8%89%B2%E5%BD%B1%E5%93%8D.png" alt="image-20200104194311999"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E7%9B%B8%E9%82%BB%E9%A2%9C%E8%89%B2%E5%BD%B1%E5%93%8D.png" alt="image-20200104194311999"></p>
 <h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h3><p>​        将上述4个情况综合考虑，我们将特征提取为$$\hat{F}=&lt;\hat{C}<em>{block},\hat{C}</em>{ref},\hat{C}<em>{RSI},\hat{C}</em>{neighbor}&gt;$$ ，这将作为机器学习模型的输入参数。</p>
 <h2 id="机器学习模型"><a href="#机器学习模型" class="headerlink" title="机器学习模型"></a>机器学习模型</h2><p>​        已知一个特征 $$\hat{F}$$ ,我们想判断其正确的颜色。假设有K个预先定义好的颜色，表示为$$\overline{C}$$ ={$$\overline{c}_1,\overline{c}_2,…,\overline{c}_k$$} .机器学习任务可以看为是一个$$f(\hat{F}) \rightarrow \overline{C}$$ 。也就是一个分类问题。</p>
 <h3 id="随机森林分类模型"><a href="#随机森林分类模型" class="headerlink" title="随机森林分类模型"></a>随机森林分类模型</h3><p>​        本文采用随机森林分类器进行颜色条码识别。随机森林是一种用于分类的集成学习方法，该方法通过构造多个决策树分类器并将其结果组合起来进行分类决策。随机森林模型在训练实例的各个子样本上构造了大量的决策树，并利用平均法提高预测精度。图10是一个随机森林的结构。</p>
-<img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/随机森林.png" alt="image-20200104201825415" style="zoom:50%;">
+<img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/随机森林.png" alt="image-20200104201825415" style="zoom:50%;">
 
 
 
@@ -221,17 +221,17 @@
 <li>由于条形码在屏幕上是循环播放的，可以收集更多的训练帧来构建一个新的随机森林模型，并将其合并到已有的MoE模型中。</li>
 <li>为了节省存储空间，我们只保留最新的m(默认为m=5)个随机森林的模型来训练MoE分类器。通过重用一些预先建立的模型，我们可以在不需要传输大量训练帧的情况下形成MoE分类器，从而大大减少了启动时间。</li>
 </ol>
-<img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/混合专家模型.png" alt="image-20200104202719037" style="zoom:80%;">
+<img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/混合专家模型.png" alt="image-20200104202719037" style="zoom:80%;">
 
 <p>​        MoE模型是基于分治原理建立的。如图11所示，MoE的问题空间由少数专家组成(即预先建立的随机森林模型)，并由一个门控网络监督。我们将预先构建的随机森林模型(也称为专家模型)称为$$y_1,y_2,…,y_m$$。训练实例为$$x_1,x_2,…,x_n$$ (即发送端发送的训练图片)，对应的标签为$$t_1,t_2,…,t_n$$(即接收端接收到帧ID之后生成的和发送端相同的数据)。对于每个$$y_i$$,我们定义为$$g_i$$它的权重(即专家$$y_i$$的权重)。</p>
 <p>​        最终输出的MoE可以被表示为前m个专家的加权平均和，即<br>$$<br>y(x) = \sum^m_{i=1} g_iy_i(x)<br>$$</p>
 <p>​        为了得到最佳的模型，该模型的损失函数E表示为:<br>$$<br>E = \frac{1}{m} \sum^m_{i=1}\sum^n_{j=1}g_i(t_j-y_i(x_j))^2<br>$$<br>​        假设每一个$$x_k$$ 带入i个已经训练号的随机森林模型，并求加权残差平方和。然后使用梯度下降法可以求得E的最优解和最佳权重组合$$g_k^{\rightarrow}$$</p>
 <p>混合专家模型的流程如下：</p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E6%B7%B7%E5%90%88%E4%B8%93%E5%AE%B6%E6%B5%81%E7%A8%8B.png" alt="image-20200104212137634"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E6%B7%B7%E5%90%88%E4%B8%93%E5%AE%B6%E6%B5%81%E7%A8%8B.png" alt="image-20200104212137634"></p>
 <h2 id="系统实现"><a href="#系统实现" class="headerlink" title="系统实现"></a>系统实现</h2><p>​        选用了LightSync和RDCode来套用本论文的MegaLight模型来进行实验。</p>
 <p>发送端使用jdk1.8来生成图片然后使用ffmpeg生成视频。</p>
 <p>接收端使用Android SDK 6.0.1来拍摄和使用本文提到的机器学习模型。</p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CLS%E5%92%8CRDC.png" alt="image-20200104213145309"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CLS%E5%92%8CRDC.png" alt="image-20200104213145309"></p>
 <p>LScode使用黑白的进行测试，RDC使用彩色进行测试</p>
 <p>系统也使用了RaptorQ作为冗余，RS校验码已经在两个二维码中实现。</p>
 <h2 id="系统评估"><a href="#系统评估" class="headerlink" title="系统评估"></a>系统评估</h2><p>发送端配置：</p>
@@ -244,20 +244,20 @@
 <p>​        <strong>帧错误率(Frame error rate)</strong>：未成功解码的帧数占接收帧总数的百分比。它被用来评价帧解调方法的性能。帧错误率越低，正确识别捕获帧的百分比就越大。</p>
 <p>​        <strong>帧冗余(Frame redundancy)</strong>：恢复传输文件所需的超过最小帧数的额外帧的百分比。它用于计算延迟开销以恢复整个数据位。帧冗余越高，系统开销越大。</p>
 <p>​        <strong>吞吐量(Goodput)</strong>：传输的文件大小除以总传输时间。它被用来评估屏幕-摄像机通信的整体性能。质量越高，通信质量越好。</p>
-<h3 id="机器学习模型性能"><a href="#机器学习模型性能" class="headerlink" title="机器学习模型性能"></a>机器学习模型性能</h3><p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E4%B8%8D%E5%90%8C%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD.png" alt="image-20200104215658520"></p>
+<h3 id="机器学习模型性能"><a href="#机器学习模型性能" class="headerlink" title="机器学习模型性能"></a>机器学习模型性能</h3><p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E4%B8%8D%E5%90%8C%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD.png" alt="image-20200104215658520"></p>
 <p>​        我们首先证明了所提出的机器学习模型的有效性。我们修复训练帧的数量为80,并比较MoE的性能与几个基准分类器包括决策树(优化购物车没有深度的限制),随机森林(10棵树实现优化购物车没有深度的限制),逻辑回归(100次迭代),支持向量机(核函数= RBF),和一个完全连接的神经网络(100一个隐层神经元),结果如表1所示。        </p>
 <p>​        不使用机器学习模型的时候，LightSync的误码率为14.2%，RDCode误码率为36.8%，使用megaLight之后误码率降到了21%和20%。文章选择Random Forest作为MoE模型，因为在实验中，Random Forest在帧误码率、性能增益、训练时间等方面表现最好。值得注意的是，其他一些模型如SVM和NN与MoE的性能相近，同时存储开销较低，如果能将训练时间减少到一个合理的水平，这些模型可以替代随机森林。</p>
-<h4 id="不同光照"><a href="#不同光照" class="headerlink" title="不同光照"></a>不同光照</h4><p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C.png" alt="image-20200104220724727"></p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CRDCode%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C.png" alt="image-20200104220849319"></p>
-<h4 id="不同播放帧率"><a href="#不同播放帧率" class="headerlink" title="不同播放帧率"></a>不同播放帧率</h4><p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CLS%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7.png" alt="image-20200104224410287"></p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CRSC%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7.png" alt="image-20200104224447476"></p>
-<h4 id="不同色块的大小"><a href="#不同色块的大小" class="headerlink" title="不同色块的大小"></a>不同色块的大小</h4><p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CLS%E4%B8%8D%E5%90%8C%E5%9D%97%E5%A4%A7%E5%B0%8F.png" alt="image-20200104224631588"></p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CRDC%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7.png" alt="image-20200104224700581"></p>
-<h4 id="不同拍摄距离"><a href="#不同拍摄距离" class="headerlink" title="不同拍摄距离"></a>不同拍摄距离</h4><p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CLS%E4%B8%8D%E5%90%8C%E8%B7%9D%E7%A6%BB.png" alt="image-20200104224832651"></p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CRDC%E4%B8%8D%E5%90%8C%E8%B7%9D%E7%A6%BB.png" alt="image-20200104224924652"></p>
-<h4 id="不同训练样本的数量"><a href="#不同训练样本的数量" class="headerlink" title="不同训练样本的数量"></a>不同训练样本的数量</h4><p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E8%AE%AD%E7%BB%83%E6%A0%B7%E6%9C%AC%E4%B8%8D%E5%90%8C.png" alt="image-20200104225607684"></p>
-<p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CRD%E4%B8%8D%E5%90%8C%E8%AE%AD%E7%BB%83%E6%95%B0%E9%87%8F.png" alt="image-20200104225657764"></p>
-<h4 id="基于现实场景"><a href="#基于现实场景" class="headerlink" title="基于现实场景"></a>基于现实场景</h4><p><img src="/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E4%B8%8D%E5%90%8C%E7%8E%B0%E5%AE%9E%E5%9C%BA%E6%99%AF.png" alt="image-20200104225908419"></p>
+<h4 id="不同光照"><a href="#不同光照" class="headerlink" title="不同光照"></a>不同光照</h4><p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C.png" alt="image-20200104220724727"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CRDCode%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C.png" alt="image-20200104220849319"></p>
+<h4 id="不同播放帧率"><a href="#不同播放帧率" class="headerlink" title="不同播放帧率"></a>不同播放帧率</h4><p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CLS%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7.png" alt="image-20200104224410287"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CRSC%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7.png" alt="image-20200104224447476"></p>
+<h4 id="不同色块的大小"><a href="#不同色块的大小" class="headerlink" title="不同色块的大小"></a>不同色块的大小</h4><p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CLS%E4%B8%8D%E5%90%8C%E5%9D%97%E5%A4%A7%E5%B0%8F.png" alt="image-20200104224631588"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CRDC%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7.png" alt="image-20200104224700581"></p>
+<h4 id="不同拍摄距离"><a href="#不同拍摄距离" class="headerlink" title="不同拍摄距离"></a>不同拍摄距离</h4><p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CLS%E4%B8%8D%E5%90%8C%E8%B7%9D%E7%A6%BB.png" alt="image-20200104224832651"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CRDC%E4%B8%8D%E5%90%8C%E8%B7%9D%E7%A6%BB.png" alt="image-20200104224924652"></p>
+<h4 id="不同训练样本的数量"><a href="#不同训练样本的数量" class="headerlink" title="不同训练样本的数量"></a>不同训练样本的数量</h4><p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E8%AE%AD%E7%BB%83%E6%A0%B7%E6%9C%AC%E4%B8%8D%E5%90%8C.png" alt="image-20200104225607684"></p>
+<p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5CRD%E4%B8%8D%E5%90%8C%E8%AE%AD%E7%BB%83%E6%95%B0%E9%87%8F.png" alt="image-20200104225657764"></p>
+<h4 id="基于现实场景"><a href="#基于现实场景" class="headerlink" title="基于现实场景"></a>基于现实场景</h4><p><img src="/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/.%5C%E4%B8%8D%E5%90%8C%E7%8E%B0%E5%AE%9E%E5%9C%BA%E6%99%AF.png" alt="image-20200104225908419"></p>
 
       
       <!-- 打赏 -->
@@ -268,7 +268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/01/03/2020-01-03-Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/" data-id="ck5q5tatv0000q4v9adjc8kvj"
+      <a data-url="http://yoursite.com/2020/01/03/Learning-based%20Color%20Adaptation%20for%20Barcode%20Stream/" data-id="ck61u79xf0001r0v9hwf4b6gc"
         class="article-share-link">分享</a>
       
     </footer>
@@ -279,7 +279,7 @@
   
   <nav class="article-nav">
     
-      <a href="/2020/01/06/2020-01-06-Active%20Learning/" class="article-nav-link">
+      <a href="/2020/01/06/Active%20Learning/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
