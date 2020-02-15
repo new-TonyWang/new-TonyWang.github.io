@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-02-15T08:16:11.547Z</updated>
+  <updated>2020-02-15T08:26:34.672Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -21,17 +21,23 @@
     <link href="http://yoursite.com/2020/02/15/JEPG-compression/"/>
     <id>http://yoursite.com/2020/02/15/JEPG-compression/</id>
     <published>2020-02-15T08:07:35.000Z</published>
-    <updated>2020-02-15T08:16:11.547Z</updated>
+    <updated>2020-02-15T08:26:34.672Z</updated>
     
     <summary type="html">
     
-      
-      
-        
-        
-          &lt;p&gt;该文章转载自&lt;a href=&quot;http://www.thecodeway.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;www.thecodeway.com&lt;/a&gt;&lt;br&gt;&lt;a
-        
-      
+      &lt;p&gt;该文章转载自&lt;a href=&quot;http://www.thecodeway.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;www.thecodeway.com&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/&lt;/a&gt;&lt;/p&gt;
+&lt;h1 class=&quot;entry-title&quot; style=&quot;border:0px; margin:0px; padding:0px; vertical-align:baseline; clear:both; font-family:&amp;quot;Helvetica Neue&amp;quot;,Arial,Helvetica,&amp;quot;Nimbus Sans L&amp;quot;,sans-serif; line-height:1.3em; font-size:21px&quot;&gt;&lt;a name=&quot;t2&quot;&gt;&lt;/a&gt;&lt;a name=&quot;t2&quot;&gt;&lt;/a&gt;
+JPEG图像压缩算法&lt;/h1&gt;
+&lt;div class=&quot;entry-meta&quot; style=&quot;border:0px; margin:0px; padding:0px; vertical-align:baseline; font-family:&amp;quot;Helvetica Neue&amp;quot;,Arial,Helvetica,&amp;quot;Nimbus Sans L&amp;quot;,sans-serif; color:rgb(136,136,136)&quot;&gt;
+&lt;br&gt;
+&lt;/div&gt;
+&lt;div class=&quot;entry-content&quot; style=&quot;border:0px; margin:0px; padding:12px 0px 0px; vertical-align:baseline; clear:both; font-family:&amp;quot;Lucida Grande&amp;quot;,Verdana,Arial,sans-serif&quot;&gt;
+&lt;p style=&quot;background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline&quot;&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;图片压缩有多重要，可能很多人可能并没有一个直观上的认识，举个例子，一张800X800大小的普通图片，如果未经压缩，大概在1.7MB左右，这个体积如果存放文本文件的话足够保存一部92万字的鸿篇巨著《红楼梦》，现如今互联网上绝大部分图片都使用了JPEG压缩技术，也就是大家使用的jpg文件，通常JPEG文件相对于原始图像,能够得到1/8的压缩比，如此高的压缩率是如何做到的呢？&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;JPEG能够获得如此高的压缩比是因为使用了有损压缩技术，所谓有损压缩，就是把原始数据中不重要的部分去掉，以便可以用更小的体积保存，这个原理其实很常见，比如485194.200000000001这个数，如果我们用485194.2来保存，就是一种“有损”的保存方法，因为小数点后面的那个“0.000000000001”属于不重要的部分，所以可以被忽略掉。JPEG整个压缩过程基本上也是遵循这个步骤：&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;1. 把数据分为“重要部分”和“不重要部分”&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;2. 滤掉不重要的部分&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;3. 保存&lt;/p&gt;&lt;/div&gt;
     
     </summary>
     
@@ -236,9 +242,9 @@
       <category term="论文" scheme="http://yoursite.com/categories/%E8%AE%BA%E6%96%87/"/>
     
     
-      <category term="QRCode" scheme="http://yoursite.com/tags/QRCode/"/>
-    
       <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
+    
+      <category term="QRCode" scheme="http://yoursite.com/tags/QRCode/"/>
     
   </entry>
   

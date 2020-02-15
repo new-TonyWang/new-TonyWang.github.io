@@ -16,6 +16,9 @@ JPEG图像压缩算法</h1>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. 把数据分为“重要部分”和“不重要部分”<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. 滤掉不重要的部分<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. 保存</p>
+
+<a id="more"></a>
+
 <h3 style="background:transparent; border:0px; margin:0px 0px 10px; padding:0px; vertical-align:baseline; clear:both; font-weight:normal; line-height:1.5em"><a name="t3"></a><a name="t3"></a>
 <span style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline">步骤一：图像分割</span></h3>
 <hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px">
@@ -2135,8 +2138,8 @@ EOB</td>
         <category>论文</category>
       </categories>
       <tags>
-        <tag>QRCode</tag>
         <tag>MachineLearning</tag>
+        <tag>QRCode</tag>
       </tags>
   </entry>
 </search>
