@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-02-13T08:21:10.935Z</updated>
+  <updated>2020-02-15T08:16:11.547Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,39 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>JEPG压缩(转载)</title>
+    <link href="http://yoursite.com/2020/02/15/JEPG-compression/"/>
+    <id>http://yoursite.com/2020/02/15/JEPG-compression/</id>
+    <published>2020-02-15T08:07:35.000Z</published>
+    <updated>2020-02-15T08:16:11.547Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;该文章转载自&lt;a href=&quot;http://www.thecodeway.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;www.thecodeway.com&lt;/a&gt;&lt;br&gt;&lt;a
+        
+      
+    
+    </summary>
+    
+    
+      <category term="计算机知识" scheme="http://yoursite.com/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9F%A5%E8%AF%86/"/>
+    
+    
+      <category term="JEPG" scheme="http://yoursite.com/tags/JEPG/"/>
+    
+      <category term="YCbCr" scheme="http://yoursite.com/tags/YCbCr/"/>
+    
+      <category term="DCT变换" scheme="http://yoursite.com/tags/DCT%E5%8F%98%E6%8D%A2/"/>
+    
+      <category term="哈夫曼编码" scheme="http://yoursite.com/tags/%E5%93%88%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81/"/>
+    
+  </entry>
   
   <entry>
     <title>Java 有限状态机（例子）</title>
@@ -203,9 +236,9 @@
       <category term="论文" scheme="http://yoursite.com/categories/%E8%AE%BA%E6%96%87/"/>
     
     
-      <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
-    
       <category term="QRCode" scheme="http://yoursite.com/tags/QRCode/"/>
+    
+      <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
     
   </entry>
   
