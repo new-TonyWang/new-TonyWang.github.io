@@ -4,9 +4,7 @@
     <title>JEPG压缩(转载)</title>
     <url>/2020/02/15/JEPG-compression/</url>
     <content><![CDATA[<p>该文章转载自<a href="http://www.thecodeway.com" target="_blank" rel="noopener">www.thecodeway.com</a><br><a href="http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/" target="_blank" rel="noopener">http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/</a></p>
-<h1 class="entry-title" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; clear:both; font-family:&quot;Helvetica Neue&quot;,Arial,Helvetica,&quot;Nimbus Sans L&quot;,sans-serif; line-height:1.3em; font-size:21px"><a name="t2"></a><a name="t2"></a>
-JPEG图像压缩算法</h1>
-<div class="entry-meta" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; font-family:&quot;Helvetica Neue&quot;,Arial,Helvetica,&quot;Nimbus Sans L&quot;,sans-serif; color:rgb(136,136,136)">
+<h3 id="JPEG图像压缩算法"><a href="#JPEG图像压缩算法" class="headerlink" title="JPEG图像压缩算法"></a>JPEG图像压缩算法</h3><div class="entry-meta" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; font-family:&quot;Helvetica Neue&quot;,Arial,Helvetica,&quot;Nimbus Sans L&quot;,sans-serif; color:rgb(136,136,136)">
 <br>
 </div>
 <div class="entry-content" style="border:0px; margin:0px; padding:12px 0px 0px; vertical-align:baseline; clear:both; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
@@ -16,12 +14,10 @@ JPEG图像压缩算法</h1>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. 把数据分为“重要部分”和“不重要部分”<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. 滤掉不重要的部分<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. 保存</p>
-
 <a id="more"></a>
 
-<h3 style="background:transparent; border:0px; margin:0px 0px 10px; padding:0px; vertical-align:baseline; clear:both; font-weight:normal; line-height:1.5em"><a name="t3"></a><a name="t3"></a>
-<span style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline">步骤一：图像分割</span></h3>
-<hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px">
+
+<h3 id="步骤一：图像分割"><a href="#步骤一：图像分割" class="headerlink" title="步骤一：图像分割"></a>步骤一：图像分割</h3><hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JPEG算法的第一步，图像被分割成大小为8X8的小块，这些小块在整个压缩过程中都是单独被处理的。后面我们会以一张非常经典的图为例，这张图片名字叫做Lenna，据说是世界上第一张JPG图片，这张图片自从诞生之日开始，就和图像处理结下渊源，陪伴了无数理工宅男度过了的一个个不眠之夜，可谓功勋卓著，感兴趣的朋友可以在<a target="_blank" href="http://en.wikipedia.org/wiki/Lenna" rel="nofollow" style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102)">这里</a>了解到这张图片的故事。
 <p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 </p>
@@ -35,11 +31,8 @@ JPEG图像压缩算法</h1>
 </tr>
 </tbody>
 </table></div>
-<h3 style="background:transparent; border:0px; margin:0px 0px 10px; padding:0px; vertical-align:baseline; clear:both; font-weight:normal; line-height:1.5em"><a name="t4"></a><a name="t4"></a>
-<span style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline">步骤二：颜色空间转换RGB-&gt;YC<span style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline; height:0px; line-height:1; position:relative; top:0.5ex; font-size:10px">b</span>C<span style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline; height:0px; line-height:1; position:relative; top:0.5ex; font-size:10px">r</span></span></h3>
-<hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;所谓“<a target="_blank" href="http://en.wikipedia.org/wiki/Color_space" rel="nofollow" style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102)">颜色空间</a>”，是指表达颜色的数学模型，比如我们常见的“RGB”模型，就是把颜色分解成红绿蓝三种分量，这样一张图片就可以分解成三张灰度图，数学表达上，每一个8X8的图案，可以表达成三个8X8的矩阵，其中的数值的范围一般在[0,255]之间。<br>
-<span id="more-69" style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline"></span>
+
+<h3 id="步骤二：颜色空间转换-RGB-YC-bC-r"><a href="#步骤二：颜色空间转换-RGB-YC-bC-r" class="headerlink" title="步骤二：颜色空间转换$RGB-YC_bC_r$"></a>步骤二：颜色空间转换$RGB-YC_bC_r$</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;所谓“<a target="_blank" href="http://en.wikipedia.org/wiki/Color_space" rel="nofollow" style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102)">颜色空间</a>”，是指表达颜色的数学模型，比如我们常见的“RGB”模型，就是把颜色分解成红绿蓝三种分量，这样一张图片就可以分解成三张灰度图，数学表达上，每一个8X8的图案，可以表达成三个8X8的矩阵，其中的数值的范围一般在[0,255]之间。<br><br><span id="more-69" style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline"></span></p>
 <p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 </p>
 <div class="table-box"><table align="center" width="100%" style="background:transparent; border:2px; margin:0px -1px 8px 0px; padding:0px; vertical-align:baseline; border-collapse:collapse; border-spacing:0px; width:723.636px">
@@ -181,9 +174,8 @@ Cr</p>
 </p>
 <p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 </p>
-<h3 style="border:0px; margin:0px 0px 10px; padding:0px; vertical-align:baseline; clear:both; font-weight:normal; line-height:1.5em; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><a name="t5"></a><a name="t5"></a>
-<span style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline">步骤三：离散余弦变换</span></h3>
-<hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
+
+<h3 id="步骤三：离散余弦变换"><a href="#步骤三：离散余弦变换" class="headerlink" title="步骤三：离散余弦变换"></a>步骤三：离散余弦变换</h3><hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
 <a target="_blank" href="http://en.wikipedia.org/wiki/Joseph_Fourier" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><img src="http://thecodeway.com/blog/wp-content/uploads/2014/08/jpeg_20.jpg" alt width="163" height="200" class="alignright size-full wp-image-359" style="background:transparent; border:none; margin:4px 0px 0px 24px; padding:0px; vertical-align:baseline; display:inline; float:right; max-width:100%; height:auto"></a><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
 <span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;这次我们来介绍JPEG算法中的核心内容，离散余弦变换（</span><a target="_blank" href="http://en.wikipedia.org/wiki/Discrete_cosine_transform" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">Discrete
  cosine transform</a><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">），简称DCT。</span><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
@@ -425,12 +417,8 @@ Cr</p>
 <br>
 <p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 </p>
-<h3 style="border:0px; margin:0px 0px 10px; padding:0px; vertical-align:baseline; clear:both; font-weight:normal; line-height:1.5em; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><a name="t6"></a><a name="t6"></a>
-<span style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline">步骤四：数据量化</span></h3>
-<hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
-<span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;经过上一节介绍的离散余弦变换，图像数据虽然已经面目全非，但仍然是处于“可逆”的状态，也就是说我们还没有进入“有损”的那一步。这次我们来玩真的，看一下数据中的细节是如何被滤去的。先来考察一下要对付的问题是什么，经过颜色空间转换和离散余弦变换，每一个8X8的图像块都变成了三个8X8的浮点数矩阵，分别表示Y,Cr,Cb数据，比如以其中某个亮度数据矩阵举例，它的数据如下</span><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
-<img src="http://thecodeway.com/blog/wp-content/uploads/2014/09/jpeg_030.gif" alt width="486" height="130" class="aligncenter size-full wp-image-484" style="border:0px; margin:0px auto; padding:0px; vertical-align:baseline; clear:both; display:block; max-width:100%; height:auto; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
-<span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们的问题是，在可以损失一部分精度的情况下，如何用更少的空间存储这些浮点数？答案是使用量子化（</span><a target="_blank" href="http://en.wikipedia.org/wiki/Quantization_(image_processing)" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">Quantization</a><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">），简称量化。“量子”这个概念来自于物理学，意思是说连续的能量可以看做是一个个单元体的组合，看起来高端大气，其实很简单，比如游戏中在处理角色面朝方向时，一般并不是使用0到2π这样的浮点数，而是把方向分成16个区间，用0到16这样的整数来表示，这样只用4个bit就足够了。JPEG提供的量子化算法如下：</span>
+
+<h3 id="步骤四：数据量化"><a href="#步骤四：数据量化" class="headerlink" title="步骤四：数据量化"></a>步骤四：数据量化</h3><p><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;经过上一节介绍的离散余弦变换，图像数据虽然已经面目全非，但仍然是处于“可逆”的状态，也就是说我们还没有进入“有损”的那一步。这次我们来玩真的，看一下数据中的细节是如何被滤去的。先来考察一下要对付的问题是什么，经过颜色空间转换和离散余弦变换，每一个8X8的图像块都变成了三个8X8的浮点数矩阵，分别表示Y,Cr,Cb数据，比如以其中某个亮度数据矩阵举例，它的数据如下</span><br><img src="http://thecodeway.com/blog/wp-content/uploads/2014/09/jpeg_030.gif" alt width="486" height="130" class="aligncenter size-full wp-image-484" style="border:0px; margin:0px auto; padding:0px; vertical-align:baseline; clear:both; display:block; max-width:100%; height:auto; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><br><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们的问题是，在可以损失一部分精度的情况下，如何用更少的空间存储这些浮点数？答案是使用量子化（</span><a target="_blank" href="http://en.wikipedia.org/wiki/Quantization_(image_processing)" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">Quantization</a><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">），简称量化。“量子”这个概念来自于物理学，意思是说连续的能量可以看做是一个个单元体的组合，看起来高端大气，其实很简单，比如游戏中在处理角色面朝方向时，一般并不是使用0到2π这样的浮点数，而是把方向分成16个区间，用0到16这样的整数来表示，这样只用4个bit就足够了。JPEG提供的量子化算法如下：</span></p>
 <p></p>
 <p style="border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
 </p>
@@ -496,12 +484,10 @@ Cr</p>
 </p>
 <p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 </p>
-<h3 style="border:0px; margin:0px 0px 10px; padding:0px; vertical-align:baseline; clear:both; font-weight:normal; line-height:1.5em; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><a name="t7"></a><a name="t7"></a>
-<span style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline">步骤五：哈弗曼编码</span></h3>
-<hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
-<span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JPEG压缩的最后一步是对数据进行哈弗曼编码(</span><a target="_blank" href="http://en.wikipedia.org/wiki/Huffman_coding" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">Huffman
- coding</a><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">)，哈弗曼几乎是所有压缩算法的基础，它的基本原理是根据数据中元素的使用频率，调整元素的编码长度，以得到更高的压缩比。</span><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
-<span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;举个例子，比如下面这段数据</span>
+
+
+
+<h3 id="步骤五：哈夫曼编码"><a href="#步骤五：哈夫曼编码" class="headerlink" title="步骤五：哈夫曼编码"></a>步骤五：哈夫曼编码</h3><p><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JPEG压缩的最后一步是对数据进行哈弗曼编码(</span><a target="_blank" href="http://en.wikipedia.org/wiki/Huffman_coding" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">Huffman<br> coding</a><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">)，哈弗曼几乎是所有压缩算法的基础，它的基本原理是根据数据中元素的使用频率，调整元素的编码长度，以得到更高的压缩比。</span><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><br><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;举个例子，比如下面这段数据</span></p>
 <p></p>
 <p style="border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
 </p>
@@ -1450,11 +1436,10 @@ EOB</td>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最终我们使用了10个字节的空间保存了原本长度为64的数组，至此JPEG的主要压缩算法结束，这些数据就是保存在jpg文件中的最终数据。</p>
 <strong><br>
 </strong>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
-<strong><span style="font-size:24px">一个JPEG图片实例分析</span></strong></p>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
-<br>
-</p>
+
+<h3 id="一个JEPG图片实例分析"><a href="#一个JEPG图片实例分析" class="headerlink" title="一个JEPG图片实例分析"></a>一个JEPG图片实例分析</h3><br>
+<p></p>
+
 <p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 </p>
 <h5 id="fig21" style="margin:5px 0px 0px; padding:0px; border:0px; outline:0px; vertical-align:baseline; font-family:Arial,sans-serif; font-size:1.166em!important">
@@ -1609,6 +1594,7 @@ EOB</td>
 <p style="margin-top:0px; margin-bottom:0px; padding-top:6px; padding-bottom:6px; border:0px; outline:0px; vertical-align:baseline; color:rgb(34,34,34); line-height:1.5em; font-size:1.166em!important">
 <span style="font-weight:normal">在这个段的后面就是所有压缩后的数据。直到结束的问题，即 FFD9，EOI（End Of Image）。</span></p>
 </h5>
+
 <br>
 <p></p>
 <p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
@@ -1638,6 +1624,7 @@ EOB</td>
 <br>
 </p>
 </div>
+
 
 
 
@@ -2138,8 +2125,8 @@ EOB</td>
         <category>论文</category>
       </categories>
       <tags>
-        <tag>MachineLearning</tag>
         <tag>QRCode</tag>
+        <tag>MachineLearning</tag>
       </tags>
   </entry>
 </search>

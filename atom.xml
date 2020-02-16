@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-02-15T08:26:34.672Z</updated>
+  <updated>2020-02-16T04:49:15.159Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -21,14 +21,12 @@
     <link href="http://yoursite.com/2020/02/15/JEPG-compression/"/>
     <id>http://yoursite.com/2020/02/15/JEPG-compression/</id>
     <published>2020-02-15T08:07:35.000Z</published>
-    <updated>2020-02-15T08:26:34.672Z</updated>
+    <updated>2020-02-16T04:49:15.159Z</updated>
     
     <summary type="html">
     
       &lt;p&gt;该文章转载自&lt;a href=&quot;http://www.thecodeway.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;www.thecodeway.com&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/&lt;/a&gt;&lt;/p&gt;
-&lt;h1 class=&quot;entry-title&quot; style=&quot;border:0px; margin:0px; padding:0px; vertical-align:baseline; clear:both; font-family:&amp;quot;Helvetica Neue&amp;quot;,Arial,Helvetica,&amp;quot;Nimbus Sans L&amp;quot;,sans-serif; line-height:1.3em; font-size:21px&quot;&gt;&lt;a name=&quot;t2&quot;&gt;&lt;/a&gt;&lt;a name=&quot;t2&quot;&gt;&lt;/a&gt;
-JPEG图像压缩算法&lt;/h1&gt;
-&lt;div class=&quot;entry-meta&quot; style=&quot;border:0px; margin:0px; padding:0px; vertical-align:baseline; font-family:&amp;quot;Helvetica Neue&amp;quot;,Arial,Helvetica,&amp;quot;Nimbus Sans L&amp;quot;,sans-serif; color:rgb(136,136,136)&quot;&gt;
+&lt;h3 id=&quot;JPEG图像压缩算法&quot;&gt;&lt;a href=&quot;#JPEG图像压缩算法&quot; class=&quot;headerlink&quot; title=&quot;JPEG图像压缩算法&quot;&gt;&lt;/a&gt;JPEG图像压缩算法&lt;/h3&gt;&lt;div class=&quot;entry-meta&quot; style=&quot;border:0px; margin:0px; padding:0px; vertical-align:baseline; font-family:&amp;quot;Helvetica Neue&amp;quot;,Arial,Helvetica,&amp;quot;Nimbus Sans L&amp;quot;,sans-serif; color:rgb(136,136,136)&quot;&gt;
 &lt;br&gt;
 &lt;/div&gt;
 &lt;div class=&quot;entry-content&quot; style=&quot;border:0px; margin:0px; padding:12px 0px 0px; vertical-align:baseline; clear:both; font-family:&amp;quot;Lucida Grande&amp;quot;,Verdana,Arial,sans-serif&quot;&gt;
@@ -242,9 +240,9 @@ JPEG图像压缩算法&lt;/h1&gt;
       <category term="论文" scheme="http://yoursite.com/categories/%E8%AE%BA%E6%96%87/"/>
     
     
-      <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
-    
       <category term="QRCode" scheme="http://yoursite.com/tags/QRCode/"/>
+    
+      <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
     
   </entry>
   
