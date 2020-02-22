@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-02-16T04:49:15.159Z</updated>
+  <updated>2020-02-22T04:07:41.907Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>透视变换原理</title>
+    <link href="http://yoursite.com/2020/02/22/Perspective-Transformation/"/>
+    <id>http://yoursite.com/2020/02/22/Perspective-Transformation/</id>
+    <published>2020-02-22T02:08:13.000Z</published>
+    <updated>2020-02-22T04:07:41.907Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;仿射变换:&lt;/strong&gt;能够将平行四边形变换为另一个平行四边形&lt;br&gt;&lt;strong&gt;透视变换&lt;/strong&gt;：能够将平行四边形变换为梯形。&lt;br&gt;仿射变换是透视变换的子集。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/2020/02/22/Perspective-Transformation/%E9%80%8F%E8%A7%86%E5%8F%98%E6%8D%A2%E5%92%8C%E4%BB%BF%E5%B0%84%E5%8F%98%E6%8D%A2.jpg&quot; alt=&quot;img&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="计算机知识" scheme="http://yoursite.com/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9F%A5%E8%AF%86/"/>
+    
+    
+      <category term="图像处理" scheme="http://yoursite.com/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/"/>
+    
+  </entry>
   
   <entry>
     <title>JEPG压缩(转载)</title>

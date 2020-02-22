@@ -15,7 +15,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    COBRA 论文笔记 |  
+    透视变换原理 |  
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -41,7 +41,7 @@
   <div id="app">
     <main class="content">
       <section class="outer">
-  <article id="post-COBRA-Color-Barcode-Streaming-for-Smartphone" class="article article-type-post" itemscope
+  <article id="post-Perspective-Transformation" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -49,7 +49,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  COBRA 论文笔记
+  透视变换原理
 </h1>
   
 
@@ -58,12 +58,12 @@
 
     
     <div class="article-meta">
-      <a href="/2020/02/11/COBRA-Color-Barcode-Streaming-for-Smartphone/" class="article-date">
-  <time datetime="2020-02-11T08:08:36.000Z" itemprop="datePublished">2020-02-11</time>
+      <a href="/2020/02/22/Perspective-Transformation/" class="article-date">
+  <time datetime="2020-02-22T02:08:13.000Z" itemprop="datePublished">2020-02-22</time>
 </a>
       
   <div class="article-category">
-    <a class="article-category-link" href="/categories/%E8%AE%BA%E6%96%87/">论文</a>
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9F%A5%E8%AF%86/">计算机知识</a>
   </div>
 
       
@@ -73,7 +73,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">307字</span>
+            <span class="post-count">835字</span>
         </span>
     </span>
 
@@ -82,7 +82,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1分钟</span>
+            <span class="post-count">3分钟</span>
         </span>
     </span>
 </div>
@@ -108,11 +108,46 @@
       
 
       
-      <h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>​        该文章发表于2016-06-MobiSys。该文章为COBRA开发了一种新的二维彩色条形码，它可以优化智能手机的小屏幕和低速相机之间流媒体。COBRA采用了流式条形码中码块的大小和布局来处理移动环境中显著的图像模糊，并采用了新的图像处理技术来实时解码条码流。</p>
-<h1 id="文章的贡献"><a href="#文章的贡献" class="headerlink" title="文章的贡献"></a>文章的贡献</h1><ol>
-<li>COBRA 可以对二维码流进行实时解析</li>
-<li>COBRA发送器可自适应地改变流式条形码中代码块的大小和布局，以减轻移动环境中图像模糊的影响。COBRA接收机采用一种称为模糊度(DOB)的新度量来快速评估捕获图像的质量，并基于色相饱和度(HSV)颜色模型恢复像素的颜色。</li>
-<li>我们在Android智能手机上实现了COBRA，并在一系列系统参数和环境因素(如视角、距离、方位、环境照明和移动水平)的设置下，通过大量的实验验证了它的性能。结果表明，该算法能在保证计算量适中的前提下，实现鲁棒的高吞吐量通信。</li>
+      <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>仿射变换:</strong>能够将平行四边形变换为另一个平行四边形<br><strong>透视变换</strong>：能够将平行四边形变换为梯形。<br>仿射变换是透视变换的子集。</p>
+<p><img src="/2020/02/22/Perspective-Transformation/%E9%80%8F%E8%A7%86%E5%8F%98%E6%8D%A2%E5%92%8C%E4%BB%BF%E5%B0%84%E5%8F%98%E6%8D%A2.jpg" alt="img"></p>
+<a id="more"></a>
+
+<h2 id="公式"><a href="#公式" class="headerlink" title="公式"></a>公式</h2><p>透视变换的表达式为<br>$$<br>\left[<br> \begin{matrix}<br>   X \<br>   Y  \<br>   Z<br>  \end{matrix}<br>  \right]<br>   =<br>   \left[<br> \begin{matrix}<br>   a_{11} &amp; a_{12} &amp;a_{13}\<br>   a_{21} &amp; a_{22} &amp;a_{23}\<br>   a_{31} &amp; a_{32} &amp;a_{33}<br>  \end{matrix}<br>  \right]<br>  *<br>  \left[<br> \begin{matrix}<br>   x \<br>   y  \<br>   z<br>  \end{matrix}<br>  \right]<br>$$<br>其中<br>$$<br>T_1 =<br>\left[<br> \begin{matrix}<br> a_{11}&amp; a_{12} \<br> a_{21}&amp; a_{22}<br>  \end{matrix}<br>\right]<br>$$<br>实现线性变换，例如比例缩放、剪切。<br>$$<br>T_2 = \left[<br>\begin{matrix}<br>a_{13}\<br>a_{23}<br>\end{matrix}\right]<br>$$<br>实现平移变换<br>$$<br>T_3 = \left[\begin{matrix}<br>a_{31} &amp; a_{32}   \end{matrix}\right]<br>$$<br>实现透视变换<br>$$<br>T_4 = a_{33}<br>$$<br>实现全全比例变换</p>
+<p>仿射变换由于只涉及到了二维平面的变换，并没有进行透视，公式如下<br>$$<br>\left[ \begin{matrix}   X \   Y  \   Z   \end{matrix}  \right]   =    \left[ \begin{matrix}   a_{11} &amp; a_{12} &amp;a_{13}\   a_{21} &amp; a_{22} &amp;a_{23}\   1 &amp; 1 &amp;a_{33}  \end{matrix}  \right]  *  \left[ \begin{matrix}   x \   y  \   z   \end{matrix}  \right]<br>$$</p>
+<h2 id="参数求解"><a href="#参数求解" class="headerlink" title="参数求解"></a>参数求解</h2><p>   以透视变换中四边形到四边形的变换为例，我们需要求解透视变换矩阵中的9个参数。整个变换一共分为两步：</p>
+<ol>
+<li>原始四边形到1*1正方形，变换矩阵$M_1$</li>
+<li>1*1正方形到目标四边形，变换矩阵$M_2$</li>
+<li>四边形到四边形变换矩阵$M = M_2*M_1$</li>
+</ol>
+<p>这个过程相当于将原始四边形中的每一个点都一一对应在目标四边形上，主要是对目标四边形进行采样。</p>
+<p><img src="/2020/02/22/Perspective-Transformation/%E5%9B%9B%E8%BE%B9%E5%BD%A2%E5%88%B0%E5%9B%9B%E8%BE%B9%E5%BD%A2.png" alt="image-20200222111847310"></p>
+<p>我们只需要求解$M_2$和$M_1$中的9个参数就。其中，一般情况下$a_{33}=1$。</p>
+<p>以求解矩阵$M_2$为例。求解的时候，我们需要4组对应点，即：<br>$$<br>(0,0)\rightarrow (x_0,y_0);\<br>(1,0)\rightarrow(x_1,y_1);\<br>(1,1)\rightarrow(x_2,y_2);\<br>(0,1)\rightarrow(x_3,y_3);\<br>$$</p>
+<p>组成8元一次方程才能够求得唯一解。因此需要取得目标四边形的四个点才能进行求解。这四个点一般通过手动标记或者特殊图案标记来获得(例如二维码)</p>
+<p>当对应的4个点已经获取到了，那么就可以开始解方程。求解思路借鉴书籍<em>《digital image warping》章节3.4.2.1，P54</em>直接上图。</p>
+<div style="color:#F00">需要注意！书籍中的脚标需要进行交换，交换之后才是文章中透视变换矩阵所对应的参数。例如a31需要变成a13</div>
+### 求解之前
+
+<p>八元一次方程如下：</p>
+<p><img src="/2020/02/22/Perspective-Transformation/image-20200222114218096.png" alt="image-20200222114218096"></p>
+<p>临时变量：</p>
+<p><img src="/2020/02/22/Perspective-Transformation/image-20200222114258364.png" alt="image-20200222114258364"></p>
+<h3 id="求解仿射变换"><a href="#求解仿射变换" class="headerlink" title="求解仿射变换"></a>求解仿射变换</h3><p><img src="/2020/02/22/Perspective-Transformation/image-20200222114353478.png" alt="image-20200222114353478"></p>
+<h3 id="求解透视变换"><a href="#求解透视变换" class="headerlink" title="求解透视变换"></a>求解透视变换</h3><p><img src="/2020/02/22/Perspective-Transformation/image-20200222114414898.png" alt="image-20200222114414898"><br><img src="/2020/02/22/Perspective-Transformation/image-20200222114451372.png" alt="image-20200222114451372"></p>
+<p>此时，矩阵$M_2$的求解已经完成</p>
+<h3 id="四边形到方阵求解"><a href="#四边形到方阵求解" class="headerlink" title="四边形到方阵求解"></a>四边形到方阵求解</h3><p>可以发现方阵到四边形到方阵的求解就是将上文求解$M_2$的逆过程：<br>$$<br>(x_0,y_0)\rightarrow (0,0);\(x_1,y_1)\rightarrow(1,0);\(x_2,y_2)\rightarrow(1,1);\(x_3,y_3)\rightarrow(0,1);\<br>$$<br>仅需要用相同方式求解$M_{1}^{‘}$。之后对该矩阵求逆矩阵就是期望得到的矩阵$M_{1}=$$M_{1}^{‘-1}$</p>
+<h3 id="最终的透视变换矩阵-M-M-2-M-1"><a href="#最终的透视变换矩阵-M-M-2-M-1" class="headerlink" title="最终的透视变换矩阵$M =M_2* M_{1}$"></a>最终的透视变换矩阵$M =M_2* M_{1}$</h3><h2 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h2><p>使用Matlab将整个过程模拟一遍。</p>
+<p>假设需要对拍摄图像中采样24*24个点，流程如下：</p>
+<ol>
+<li><p>选取拍摄图像中的四个点角点</p>
+<p><img src="/2020/02/22/Perspective-Transformation/%E9%80%89%E7%82%B9.jpg" alt></p>
+</li>
+<li><p>计算透视变换矩阵</p>
+</li>
+<li><p>采样</p>
+<p><img src="/2020/02/22/Perspective-Transformation/%E9%80%8F%E8%A7%86%E5%8F%98%E6%8D%A2%E5%90%8E%E9%87%87%E6%A0%B7.jpg" alt></p>
+</li>
 </ol>
 
       
@@ -124,10 +159,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/11/COBRA-Color-Barcode-Streaming-for-Smartphone/" data-id="ck6x326rd00098sv90x6b977a"
+      <a data-url="http://yoursite.com/2020/02/22/Perspective-Transformation/" data-id="ck6x326qz00028sv9brz9cpmt"
         class="article-share-link">分享</a>
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/QRCode/" rel="tag">QRCode</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag">图像处理</a></li></ul>
 
     </footer>
 
@@ -137,19 +172,10 @@
   
   <nav class="article-nav">
     
-      <a href="/2020/02/12/FSM/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            Java 有限状态机（例子）
-          
-        </div>
-      </a>
     
-    
-      <a href="/2020/02/07/%E7%AE%97%E6%B3%95-%E5%90%88%E5%B9%B6k%E4%B8%AA%E6%8E%92%E5%BA%8F%E9%93%BE%E8%A1%A8%E5%B9%B6%E8%BE%93%E5%87%BA/" class="article-nav-link">
+      <a href="/2020/02/15/JEPG-compression/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">算法-合并k个排序链表并输出</div>
+        <div class="article-nav-title">JEPG压缩(转载)</div>
       </a>
     
   </nav>
