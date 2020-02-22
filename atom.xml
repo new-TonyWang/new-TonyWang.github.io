@@ -262,9 +262,9 @@
       <category term="论文" scheme="http://yoursite.com/categories/%E8%AE%BA%E6%96%87/"/>
     
     
-      <category term="QRCode" scheme="http://yoursite.com/tags/QRCode/"/>
-    
       <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
+    
+      <category term="QRCode" scheme="http://yoursite.com/tags/QRCode/"/>
     
   </entry>
   
