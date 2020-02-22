@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-02-22T04:07:41.907Z</updated>
+  <updated>2020-02-22T08:08:13.415Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -21,12 +21,12 @@
     <link href="http://yoursite.com/2020/02/22/Perspective-Transformation/"/>
     <id>http://yoursite.com/2020/02/22/Perspective-Transformation/</id>
     <published>2020-02-22T02:08:13.000Z</published>
-    <updated>2020-02-22T04:07:41.907Z</updated>
+    <updated>2020-02-22T08:08:13.415Z</updated>
     
     <summary type="html">
     
       &lt;h2 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;仿射变换:&lt;/strong&gt;能够将平行四边形变换为另一个平行四边形&lt;br&gt;&lt;strong&gt;透视变换&lt;/strong&gt;：能够将平行四边形变换为梯形。&lt;br&gt;仿射变换是透视变换的子集。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/2020/02/22/Perspective-Transformation/%E9%80%8F%E8%A7%86%E5%8F%98%E6%8D%A2%E5%92%8C%E4%BB%BF%E5%B0%84%E5%8F%98%E6%8D%A2.jpg&quot; alt=&quot;img&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/2020/02/22/Perspective-Transformation/透视变换和仿射变换.jpg&quot; alt=&quot;img&quot;&gt;&lt;/p&gt;
     
     </summary>
     
