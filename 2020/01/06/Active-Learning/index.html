@@ -116,9 +116,9 @@
 
       
       <p>​    有类标的数据比较稀少而没有类标的数据是相当丰富的，但是对数据进行人工标注又非常昂贵，这时候，学习算法可以主动地提出一些标注请求，将一些经过筛选的数据提交给专家进行标注。    </p>
-<p>$$<br>R(h) \le R_{emp}(h)+\sqrt{\frac{ln(H)+k}{2m}}<br>$$</p>
-<p>​    </p>
-<p>​    $$\rightarrow$$以往的学习方式不同，主动学习指的是：</p>
+<script type="math/tex; mode=display">
+R(h) \le R_{emp}(h)+\sqrt{\frac{ln(H)+k}{2m}}</script><p>​    </p>
+<p>​    <script type="math/tex">\rightarrow</script>以往的学习方式不同，主动学习指的是：</p>
 <ol>
 <li><p>由算法选择学习内容，相当于主动请求学习内容，</p>
 </li>
@@ -126,14 +126,11 @@
 </li>
 <li><p>尽可能得少让Oracle标记数据，减少数据冗余</p>
 <a id="more"></a>
-
 </li>
 </ol>
 <h2 id="最根本的问题是如何选择未标记的数据"><a href="#最根本的问题是如何选择未标记的数据" class="headerlink" title="最根本的问题是如何选择未标记的数据"></a>最根本的问题是如何选择未标记的数据</h2><h2 id="如何解决数据中的噪声或者注释者"><a href="#如何解决数据中的噪声或者注释者" class="headerlink" title="如何解决数据中的噪声或者注释者"></a>如何解决数据中的噪声或者注释者</h2><h2 id="效率高得执行算法进行数据选择"><a href="#效率高得执行算法进行数据选择" class="headerlink" title="效率高得执行算法进行数据选择"></a>效率高得执行算法进行数据选择</h2><h2 id="现有的选择方式"><a href="#现有的选择方式" class="headerlink" title="现有的选择方式"></a>现有的选择方式</h2><ol>
 <li>查询最有信息量的实例</li>
-<li>查询最有代表性的实例<img src="/2020/01/06/Active-Learning/主动学习1.jpg" alt="主动学习" style="zoom:20%;">
-
-</li>
+<li>查询最有代表性的实例<br><img src="/2020/01/06/Active-Learning/主动学习1.jpg" alt="主动学习" style="zoom:20%;"></li>
 </ol>
 <h3 id="选择注释者"><a href="#选择注释者" class="headerlink" title="选择注释者"></a>选择注释者</h3><p>方式1：直接选择<br><img src="/2020/01/06/Active-Learning/选择注释者.jpg" alt="选择注释者" style="zoom:20%;"><br>方式2：从其他领域迁移学习<br><img src="/2020/01/06/Active-Learning/from_other_domain.jpg" alt="从其他领域借鉴" style="zoom:20%;"></p>
 <h3 id="快速的训练和实例选择算法"><a href="#快速的训练和实例选择算法" class="headerlink" title="快速的训练和实例选择算法"></a>快速的训练和实例选择算法</h3><p>由于数据量太大，则使用算法生成最有效的数据而不是从已知数据集中取数据<br><img src="/2020/01/06/Active-Learning/生成训练数据.jpg" alt="生成训练数据" style="zoom:20%;"></p>
@@ -147,7 +144,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/01/06/Active-Learning/" data-id="ck6xbhvfr00008gv929ric2po"
+      <a data-url="http://yoursite.com/2020/01/06/Active-Learning/" data-id="ck74ict9f0006rkv90q937v9t"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MachineLearning/" rel="tag">MachineLearning</a></li></ul>

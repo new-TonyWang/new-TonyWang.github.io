@@ -1,6 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>什么是卷积</title>
+    <url>/2020/02/27/What-is-convolution/</url>
+    <content><![CDATA[<h2 id="卷积的定义"><a href="#卷积的定义" class="headerlink" title="卷积的定义"></a>卷积的定义</h2><p>​    我们称$(f*g)(n)$为$f,g$的卷积<br>连续函数卷积定义为：</p>
+<script type="math/tex; mode=display">
+(f*g)(n) = \int_{-\infty}^{\infty} f(\tau)g(n-\tau)d\tau</script><p>离散函数定义为：</p>
+<script type="math/tex; mode=display">
+(f*g)(n) = \sum_{\tau = -\infty}^{\infty} f(\tau)g(n-\tau)</script><a id="more"></a> 
+<p>两个式子的共同特征:</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-d3df01f12b869d431c65f97ad307508f_1440w.jpg" alt="img"></p>
+<p>我们令$x = \tau,y = n-\tau $，那么$x+y = n$就是下面的直线：</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-8be52f6bada3f7a21cebfc210d2e7ea0_hd.webp" alt="img"></p>
+<h2 id="几个例子"><a href="#几个例子" class="headerlink" title="几个例子"></a>几个例子</h2><h3 id="1-离散卷积：同时掷两枚骰子，两个骰子加起来为4的概率是多少？"><a href="#1-离散卷积：同时掷两枚骰子，两个骰子加起来为4的概率是多少？" class="headerlink" title="1.离散卷积：同时掷两枚骰子，两个骰子加起来为4的概率是多少？"></a>1.离散卷积：同时掷两枚骰子，两个骰子加起来为4的概率是多少？</h3><p>把两个骰子的个点出现的概率表示出来：</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-4763fd548536b21640d01d3f8a59c546_1440w.jpg" alt="img"></p>
+<p>两枚骰子点数加起来为4的情况有：</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-a67a711702ce48cd7632e783ae0a1f42_1440w.jpg" alt="img"></p>
+<p><img src="/2020/02/27/What-is-convolution/v2-d6ff10bf39c46397ab2bebb971d4b58c_1440w.jpg" alt="img"></p>
+<p><img src="/2020/02/27/What-is-convolution/v2-0cdabcc04398ea723aa6e47e05072e5c_1440w.jpg" alt="img"></p>
+<p>因此，两枚骰子点数加起来为4的概率为：</p>
+<script type="math/tex; mode=display">
+f(1)g(3)+f(2)g(2)+f(3)g(1)</script><p>把它写成标准形式：</p>
+<script type="math/tex; mode=display">
+(f*g)(4) = \sum_{m=1}^{3}f(4-m)g(m)</script><h3 id="2-连续卷积：做馒头"><a href="#2-连续卷积：做馒头" class="headerlink" title="2.连续卷积：做馒头"></a>2.连续卷积：做馒头</h3><p>楼下早点铺子生意太好了，供不应求，就买了一台机器，不断的生产馒头。</p>
+<p>假设馒头的生产速度是$ f(t)$，那么一天后生产出来的馒头总量为：</p>
+<script type="math/tex; mode=display">
+\int_{0}^{24}f(t)dt</script><p>馒头产生出来之后，就会慢慢腐败，腐败率函数为$g(t)$。比如10个馒头，24小时腐败</p>
+<script type="math/tex; mode=display">
+10*g(t)</script><p>第一个小时生产出来的馒头，经历24小时的腐败过程，第二个小时生产出来的馒头经历23小时腐败过程。</p>
+<p>如此一天之后馒头腐败了:</p>
+<script type="math/tex; mode=display">
+\int_{0}^{24}f(t)g(24-t)dt</script><p>这就是连续函数卷积</p>
+<h3 id="3-图像处理"><a href="#3-图像处理" class="headerlink" title="3.图像处理"></a>3.图像处理</h3><h4 id="3-1原理"><a href="#3-1原理" class="headerlink" title="3.1原理"></a>3.1原理</h4><p>这幅图像有很多的噪点:<br><img src="/2020/02/27/What-is-convolution/v2-8d161328acd72d035e461c0b89b753e5_1440w.jpg" alt="img"></p>
+<p>平滑办法之一就是，把高频信号，补充到周围的信号中。用数学的话来说，就是把数值平均一下。</p>
+<p>平滑后得到：</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-83b24e8ed70f17df6bc3b921ebe6276c_1440w.jpg" alt="img"></p>
+<h4 id="4-1计算"><a href="#4-1计算" class="headerlink" title="4.1计算"></a>4.1计算</h4><p>使用卷积来实现平滑算法</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-8dd14775ab8c91a09507f52e44f347f3_1440w.jpg" alt="img"></p>
+<p>使用python 生成正态分矩阵:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> *;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">rand_Matrix</span><span class="params">()</span>:</span></span><br><span class="line">	randArr=random.randn(<span class="number">3</span>,<span class="number">3</span>);</span><br><span class="line">	randMat=mat(randArr);</span><br><span class="line">	<span class="keyword">return</span> randMat;</span><br><span class="line">g = rand_Matrix()</span><br></pre></td></tr></table></figure>
+<script type="math/tex; mode=display">
+g = \left[
+\begin{matrix}
+0.89669359 &  -0.81377852 &  0.83626426\\
+         1.69437977 &  -1.72722893 &  -0.89842572\\
+         0.1720925 &   1.07305877 &   0.60385222\\
+\end{matrix}
+\right]</script><p>使用离散卷积公式就可以对图像进行平滑操作。</p>
+<p>比如我要平滑$a_{1,1}$，就在图像矩阵中取周围的点组成矩阵$f$和$g$进行卷积运算。</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-5ee9a99988137a42d1067deab36c4e51_1440w.jpg" alt="img"></p>
+<p>要注意矩阵$g和f$的下标不同</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-779d4e972dc557be55e6131edbb8db9f_1440w.jpg" alt="img"></p>
+<p>矩阵$g$从右下角开始运算</p>
+<p><img src="https://pic3.zhimg.com/50/v2-c658110eafe027eded16864fb6a28f46_hd.webp" alt="img"></p>
+<p>写成卷积公式就是：</p>
+<script type="math/tex; mode=display">
+(f*g)(1,1) = \sum_{k = 0}^{2}\sum_{k = 0}^{2}f(h,k)g(1-h,1-k)</script><p>图像的卷积如下图所示：</p>
+<p>一般情况下会对图像四周进行补0之后再进行卷积运算，该图像的核函数g为，而非图中所示。因为g是从右下角开始运算。</p>
+<script type="math/tex; mode=display">
+g = \left[
+    \begin{matrix}
+    1 &  2 &  1\\         
+    0 &  0 &  0\\         
+    -1&   -2 &   -1\\
+    \end{matrix}
+    \right]</script><p><img src="/2020/02/27/What-is-convolution/v2-15fea61b768f7561648dbea164fcb75f_hd.webp" alt="img"></p>
+]]></content>
+      <categories>
+        <category>数学</category>
+      </categories>
+      <tags>
+        <tag>连续函数卷积</tag>
+        <tag>离散函数卷积</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>透视变换原理</title>
     <url>/2020/02/22/Perspective-Transformation/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>仿射变换:</strong>能够将平行四边形变换为另一个平行四边形<br><strong>透视变换</strong>：能够将平行四边形变换为梯形。<br>仿射变换是透视变换的子集。</p>
@@ -102,7 +176,7 @@ T_4 = a_{33}</script><p>实现全全比例变换</p>
   <entry>
     <title>JEPG压缩(转载)</title>
     <url>/2020/02/15/JEPG-compression/</url>
-    <content><![CDATA[<p>该文章转载自<a href="http://www.thecodeway.com" target="_blank" rel="noopener">www.thecodeway.com</a><br><a href="http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/" target="_blank" rel="noopener">http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/</a></p>
+    <content><![CDATA[<p>该文章转载自www.thecodeway.com<br><a href="http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/" target="_blank" rel="noopener">http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/</a></p>
 <h3 id="JPEG图像压缩算法"><a href="#JPEG图像压缩算法" class="headerlink" title="JPEG图像压缩算法"></a>JPEG图像压缩算法</h3><div class="entry-meta" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; font-family:&quot;Helvetica Neue&quot;,Arial,Helvetica,&quot;Nimbus Sans L&quot;,sans-serif; color:rgb(136,136,136)">
 <br>
 </div>
@@ -116,7 +190,9 @@ T_4 = a_{33}</script><p>实现全全比例变换</p>
 <a id="more"></a>
 
 
-<h3 id="步骤一：图像分割"><a href="#步骤一：图像分割" class="headerlink" title="步骤一：图像分割"></a>步骤一：图像分割</h3><hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px">
+### 步骤一：图像分割
+
+<hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JPEG算法的第一步，图像被分割成大小为8X8的小块，这些小块在整个压缩过程中都是单独被处理的。后面我们会以一张非常经典的图为例，这张图片名字叫做Lenna，据说是世界上第一张JPG图片，这张图片自从诞生之日开始，就和图像处理结下渊源，陪伴了无数理工宅男度过了的一个个不眠之夜，可谓功勋卓著，感兴趣的朋友可以在<a target="_blank" href="http://en.wikipedia.org/wiki/Lenna" rel="nofollow" style="background:transparent; border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102)">这里</a>了解到这张图片的故事。
 <p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 </p>
@@ -274,12 +350,7 @@ Cr</p>
 <p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 </p>
 
-<h3 id="步骤三：离散余弦变换"><a href="#步骤三：离散余弦变换" class="headerlink" title="步骤三：离散余弦变换"></a>步骤三：离散余弦变换</h3><hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
-<a target="_blank" href="http://en.wikipedia.org/wiki/Joseph_Fourier" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><img src="http://thecodeway.com/blog/wp-content/uploads/2014/08/jpeg_20.jpg" alt width="163" height="200" class="alignright size-full wp-image-359" style="background:transparent; border:none; margin:4px 0px 0px 24px; padding:0px; vertical-align:baseline; display:inline; float:right; max-width:100%; height:auto"></a><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
-<span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;这次我们来介绍JPEG算法中的核心内容，离散余弦变换（</span><a target="_blank" href="http://en.wikipedia.org/wiki/Discrete_cosine_transform" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">Discrete
- cosine transform</a><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">），简称DCT。</span><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
-<span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;离散余弦变换属于</span><a target="_blank" href="http://en.wikipedia.org/wiki/Fourier_transform" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">傅里叶变换</a><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">的另外一种形式，没错，就是大名鼎鼎的傅里叶变换。傅里叶是法国著名的数学家和物理学家，1807年，39岁的傅里叶在他的一篇论文里提出了一个想法，他认为</span><span style="border:0px; margin:0px; padding:0px; vertical-align:baseline; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">任何周期性的函数，都可以分解为为一系列的三角函数的组合</span><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">，这个想法一开始并没有得到当时科学界的承认，比如当时著名的数学家拉格朗日提出质疑，三角函数无论如何组合，都无法表达带有“尖角”的函数，一直到1822年拉格朗日死后，傅里叶的想法才正式在他的著作《热的解析理论》一书中正式发表。</span><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
-<span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;金子总会闪光，傅里叶变换如今广泛应用于数学、物理、信号处理等等领域，变换除了它在数学上的意义外，还有其哲学上的伟大意义，那就是，世上任何复杂的事物，都可以分解为简单的事物的组合，而这个过程只需要借助数学工具就可以了。但是当年拉格朗日的质疑是正确的，三角函数的确无法表达出尖角形状的函数，不过只要三角函数足够多，可以无限逼近最终结果。比如下面这张动图，就动态描述了一个矩形方波，是如何做傅里叶分析的。</span>
+<h3 id="步骤三：离散余弦变换"><a href="#步骤三：离散余弦变换" class="headerlink" title="步骤三：离散余弦变换"></a>步骤三：离散余弦变换</h3><p><hr style="background-color:rgb(231,231,231); border:0px; clear:both; height:1px; margin-bottom:8px; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><br><a target="_blank" href="http://en.wikipedia.org/wiki/Joseph_Fourier" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><img src="http://thecodeway.com/blog/wp-content/uploads/2014/08/jpeg_20.jpg" alt width="163" height="200" class="alignright size-full wp-image-359" style="background:transparent; border:none; margin:4px 0px 0px 24px; padding:0px; vertical-align:baseline; display:inline; float:right; max-width:100%; height:auto"></a><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><br><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;这次我们来介绍JPEG算法中的核心内容，离散余弦变换（</span><a target="_blank" href="http://en.wikipedia.org/wiki/Discrete_cosine_transform" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">Discrete<br> cosine transform</a><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">），简称DCT。</span><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><br><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;离散余弦变换属于</span><a target="_blank" href="http://en.wikipedia.org/wiki/Fourier_transform" rel="nofollow" style="border:0px; margin:0px; padding:0px; vertical-align:baseline; color:rgb(102,0,102); font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">傅里叶变换</a><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">的另外一种形式，没错，就是大名鼎鼎的傅里叶变换。傅里叶是法国著名的数学家和物理学家，1807年，39岁的傅里叶在他的一篇论文里提出了一个想法，他认为</span><span style="border:0px; margin:0px; padding:0px; vertical-align:baseline; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">任何周期性的函数，都可以分解为为一系列的三角函数的组合</span><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">，这个想法一开始并没有得到当时科学界的承认，比如当时著名的数学家拉格朗日提出质疑，三角函数无论如何组合，都无法表达带有“尖角”的函数，一直到1822年拉格朗日死后，傅里叶的想法才正式在他的著作《热的解析理论》一书中正式发表。</span><br style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif"><br><span style="font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;金子总会闪光，傅里叶变换如今广泛应用于数学、物理、信号处理等等领域，变换除了它在数学上的意义外，还有其哲学上的伟大意义，那就是，世上任何复杂的事物，都可以分解为简单的事物的组合，而这个过程只需要借助数学工具就可以了。但是当年拉格朗日的质疑是正确的，三角函数的确无法表达出尖角形状的函数，不过只要三角函数足够多，可以无限逼近最终结果。比如下面这张动图，就动态描述了一个矩形方波，是如何做傅里叶分析的。</span></p>
 <p></p>
 <p style="border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline; font-family:&quot;Lucida Grande&quot;,Verdana,Arial,sans-serif">
 </p>
@@ -1536,11 +1607,13 @@ EOB</td>
 <strong><br>
 </strong>
 
-<h3 id="一个JEPG图片实例分析"><a href="#一个JEPG图片实例分析" class="headerlink" title="一个JEPG图片实例分析"></a>一个JEPG图片实例分析</h3><br>
+### 一个JEPG图片实例分析
+
+<br>
 <p></p>
 
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
-</p>
+<p></p><p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
+</p><p></p>
 <h5 id="fig21" style="margin:5px 0px 0px; padding:0px; border:0px; outline:0px; vertical-align:baseline; font-family:Arial,sans-serif; font-size:1.166em!important">
 <p style="margin-top:0px; margin-bottom:0px; padding-top:6px; padding-bottom:6px; border:0px; outline:0px; vertical-align:baseline; color:rgb(34,34,34); line-height:1.5em; font-size:1.166em!important">
 <span style="font-weight:normal">我们可以打开 JPEG 文件查看里面的内容，即可看到上面的各个标记段：</span></p>
@@ -1694,41 +1767,36 @@ EOB</td>
 <span style="font-weight:normal">在这个段的后面就是所有压缩后的数据。直到结束的问题，即 FFD9，EOI（End Of Image）。</span></p>
 </h5>
 
+<p><br></p>
+<p></p><p></p><p></p>
+<p></p><p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 <br>
-<p></p>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
-<br>
-</p>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
-<span style="font-size:18px">转载自：</span></p>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
+</p><p></p>
+<p></p><p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
+<span style="font-size:18px">转载自：</span></p><p></p>
+<p></p><p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 <span style="font-size:18px">http://thecodeway.com/blog/<br>
-</span></p>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
+</span></p><p></p>
+<p></p><p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 <span style="font-size:18px">http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/</span><br>
-</p>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
+</p><p></p>
+<p></p><p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 <br>
-</p>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
+</p><p></p>
+<p></p><p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 <br>
-</p>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
+</p><p></p>
+<p></p><p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 <br>
-</p>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
+</p><p></p>
+<p></p><p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 <br>
-</p>
-<p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
+</p><p></p>
+<p></p><p style="background:transparent; border:0px; margin-top:0px; margin-bottom:8px; padding-top:0px; padding-bottom:0px; vertical-align:baseline">
 <br>
-</p>
-</div>
-
-
-
-
+</p><br>&lt;/div&gt;<p></p>
 <p>​                                  </p>
-]]></content>
+</div>]]></content>
       <categories>
         <category>计算机知识</category>
       </categories>
@@ -1745,7 +1813,6 @@ EOB</td>
     <content><![CDATA[<h2 id="什么是有限状态机"><a href="#什么是有限状态机" class="headerlink" title="什么是有限状态机"></a>什么是有限状态机</h2><p>​    有限状态机是一种用来进行对象行为建模的工具，其作用主要是描述对象在它的生命周期内所经历的状态序列，以及如何响应来自外界的各种事件。</p>
 <p>​    在编程时实现相关业务逻辑时经常需要处理各种事件和状态切换，写各种switch/case 和if/else ，在处理一些业务逻辑比较复杂的需求时，可以先看看是否适合用一个有限状态机来描述，如果可以把业务模型抽象成一个有限状态机，那么代码就会逻辑特别清晰，结构特别规整。</p>
 <a id="more"></a>
-
 <h2 id="状态机的要素"><a href="#状态机的要素" class="headerlink" title="状态机的要素"></a>状态机的要素</h2><p>​    状态机可归纳为4个要素，即现态、条件、动作、次态。“现态”和“条件”是因，“动作”和“次态”是果。详解如下：</p>
 <ol>
 <li><p>现态：是指当前所处的状态。</p>
@@ -1759,6 +1826,7 @@ EOB</td>
 </ol>
 <p><strong>避免把某个“程序动作”当作是一种“状态”来处理</strong>。“动作”是不稳定的，即使没有条件的触发，“动作”一旦执行完毕就结束了；而“状态”是相对稳定的，如果没有外部条件的触发，一个状态会一直持续下去。</p>
 <h2 id="电梯例子"><a href="#电梯例子" class="headerlink" title="电梯例子"></a>电梯例子</h2><p>​    我们可以用状态表了表示整个电梯的运动过程。假设电梯有4种状态：$\color { #FF3030 } { 开门、关门、运行、停止 } $。</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1769,7 +1837,8 @@ EOB</td>
 <th>停止态</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>开门态</strong></td>
 <td>无</td>
 <td>执行动作：close</td>
@@ -1797,29 +1866,20 @@ EOB</td>
 <td>执行动作：run</td>
 <td>无</td>
 </tr>
-</tbody></table>
-<p>定义电梯类，并设置电梯所对应的4种状态以及相对应的操作</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 定义电梯类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Lift</span> </span>&#123;</span><br><span class="line">    <span class="comment">//定义出电梯的所有状态</span></span><br><span class="line">    <span class="keyword">private</span> LiftState openningState;</span><br><span class="line">    <span class="keyword">private</span> LiftState closingState;</span><br><span class="line">    <span class="keyword">private</span> LiftState runningState;</span><br><span class="line">    <span class="keyword">private</span> LiftState stoppingState;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义当前电梯状态</span></span><br><span class="line">    <span class="keyword">private</span> LiftState mCurState;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 构造方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Lift</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        openningState = <span class="keyword">new</span> OpeningState(<span class="keyword">this</span>);</span><br><span class="line">        closingState = <span class="keyword">new</span> ClosingState(<span class="keyword">this</span>);</span><br><span class="line">        runningState = <span class="keyword">new</span> RunningState(<span class="keyword">this</span>);</span><br><span class="line">        stoppingState = <span class="keyword">new</span> StoppingState(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">this</span>.mCurState = stoppingState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行开门动作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mCurState.open();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行关门动作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mCurState.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行运行动作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mCurState.run();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行停止动作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mCurState.stop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ##################设置当前电梯状态#####################</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置当前电梯状态</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> state</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setState</span><span class="params">(LiftState state)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mCurState = state;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ###################获取电梯的全部状态####################</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LiftState <span class="title">getOpenningState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> openningState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LiftState <span class="title">getCloseingState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> closingState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LiftState <span class="title">getRunningState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> runningState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LiftState <span class="title">getStoppingState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> stoppingState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>电梯状态接口，其子类覆写接口方法。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 定义电梯行为：打开、关闭、运行、停止</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">LiftState</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 拥有一个电梯对象，用于更新电梯当前状态</span></span><br><span class="line">    <span class="keyword">protected</span> Lift mLift;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 通过构造函数引入电梯的实例化对象</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> lift</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LiftState</span><span class="params">(Lift lift)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mLift = lift;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 行为：打开电梯门</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 行为：关闭电梯门</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 行为：电梯运行</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 行为：电梯停止运行</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>覆写电梯的四个状态，分别为 ClosingState, OpningState, RunningState,StopingState</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> LiftPackage;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClosingState</span> <span class="keyword">extends</span> <span class="title">LiftState</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ClosingState</span><span class="params">(Lift lift)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(lift);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 执行开门动作</span></span><br><span class="line">        <span class="comment">// 1、变化为开门状态</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.setState(mLift.getOpenningState());</span><br><span class="line">        <span class="comment">// 2、开门</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.open();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"执行关门动作"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 运行动作</span></span><br><span class="line">        <span class="comment">// 1、运行状态</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.setState(mLift.getRunningState());</span><br><span class="line">        <span class="comment">// 2、运行动作</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.run();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 停止动作</span></span><br><span class="line">        <span class="comment">// 1、转化为停止状态</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.setState(mLift.getStoppingState());</span><br><span class="line">        <span class="comment">// 2、停止</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.stop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+</tbody>
+</table>
+</div>
+<p>定义电梯类，并设置电梯所对应的4种状态以及相对应的操作<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 定义电梯类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Lift</span> </span>&#123;</span><br><span class="line">    <span class="comment">//定义出电梯的所有状态</span></span><br><span class="line">    <span class="keyword">private</span> LiftState openningState;</span><br><span class="line">    <span class="keyword">private</span> LiftState closingState;</span><br><span class="line">    <span class="keyword">private</span> LiftState runningState;</span><br><span class="line">    <span class="keyword">private</span> LiftState stoppingState;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义当前电梯状态</span></span><br><span class="line">    <span class="keyword">private</span> LiftState mCurState;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 构造方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Lift</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        openningState = <span class="keyword">new</span> OpeningState(<span class="keyword">this</span>);</span><br><span class="line">        closingState = <span class="keyword">new</span> ClosingState(<span class="keyword">this</span>);</span><br><span class="line">        runningState = <span class="keyword">new</span> RunningState(<span class="keyword">this</span>);</span><br><span class="line">        stoppingState = <span class="keyword">new</span> StoppingState(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">this</span>.mCurState = stoppingState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行开门动作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mCurState.open();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行关门动作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mCurState.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行运行动作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mCurState.run();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行停止动作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mCurState.stop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ##################设置当前电梯状态#####################</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 设置当前电梯状态</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> state</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setState</span><span class="params">(LiftState state)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mCurState = state;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ###################获取电梯的全部状态####################</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LiftState <span class="title">getOpenningState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> openningState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LiftState <span class="title">getCloseingState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> closingState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LiftState <span class="title">getRunningState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> runningState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LiftState <span class="title">getStoppingState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> stoppingState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>电梯状态接口，其子类覆写接口方法。<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 定义电梯行为：打开、关闭、运行、停止</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">LiftState</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 拥有一个电梯对象，用于更新电梯当前状态</span></span><br><span class="line">    <span class="keyword">protected</span> Lift mLift;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 通过构造函数引入电梯的实例化对象</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> lift</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LiftState</span><span class="params">(Lift lift)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mLift = lift;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 行为：打开电梯门</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 行为：关闭电梯门</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 行为：电梯运行</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 行为：电梯停止运行</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>覆写电梯的四个状态，分别为 ClosingState, OpningState, RunningState,StopingState<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> LiftPackage;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClosingState</span> <span class="keyword">extends</span> <span class="title">LiftState</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ClosingState</span><span class="params">(Lift lift)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(lift);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 执行开门动作</span></span><br><span class="line">        <span class="comment">// 1、变化为开门状态</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.setState(mLift.getOpenningState());</span><br><span class="line">        <span class="comment">// 2、开门</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.open();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"执行关门动作"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 运行动作</span></span><br><span class="line">        <span class="comment">// 1、运行状态</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.setState(mLift.getRunningState());</span><br><span class="line">        <span class="comment">// 2、运行动作</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.run();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 停止动作</span></span><br><span class="line">        <span class="comment">// 1、转化为停止状态</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.setState(mLift.getStoppingState());</span><br><span class="line">        <span class="comment">// 2、停止</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.stop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> LiftPackage;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> LiftPackage.LiftState;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OpeningState</span> <span class="keyword">extends</span> <span class="title">LiftState</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OpeningState</span><span class="params">(Lift lift)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(lift);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 执行开门动作</span></span><br><span class="line">        System.out.println(<span class="string">"执行开门动作"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 执行关门动作</span></span><br><span class="line">        <span class="comment">// 1、转化为关门状态</span></span><br><span class="line">        mLift.setState(mLift.getCloseingState());</span><br><span class="line">        <span class="comment">// 2、关门</span></span><br><span class="line">        mLift.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"正在开门，无法运作"</span>);</span><br><span class="line">        <span class="comment">// do noting</span></span><br><span class="line">        <span class="comment">// 开门状态，不能执行运行动作</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"正在开门，无法停止"</span>);</span><br><span class="line">        <span class="comment">// do noting</span></span><br><span class="line">        <span class="comment">// 开门状态下，不执行停止动作</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> LiftPackage;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RunningState</span> <span class="keyword">extends</span> <span class="title">LiftState</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RunningState</span><span class="params">(Lift lift)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(lift);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"正在运行，无法开门"</span>);</span><br><span class="line">        <span class="comment">// do noting</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"正在运行，无停止"</span>);</span><br><span class="line">        <span class="comment">// do noting</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 运行动作</span></span><br><span class="line">        System.out.println(<span class="string">"电梯上下运行中..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 停止动作</span></span><br><span class="line">        <span class="comment">// 1、转化为停止状态</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.setState(mLift.getStoppingState());</span><br><span class="line">        <span class="comment">// 2、停止动作</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.stop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> LiftPackage;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StoppingState</span> <span class="keyword">extends</span> <span class="title">LiftState</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">StoppingState</span><span class="params">(Lift lift)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(lift);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 开门动作</span></span><br><span class="line">        <span class="comment">// 1、开门状态</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.setState(mLift.getOpenningState());</span><br><span class="line">        <span class="comment">// 2、执行开门动作</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.open();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"已经停止，无法关门"</span>);</span><br><span class="line">        <span class="comment">// do noting</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 运行动作</span></span><br><span class="line">        <span class="comment">// 1、运行状态</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.setState(mLift.getRunningState());</span><br><span class="line">        <span class="comment">// 2、运行动作</span></span><br><span class="line">        <span class="keyword">this</span>.mLift.run();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 电梯停止动作</span></span><br><span class="line">        System.out.println(<span class="string">"电梯停止运行..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>主方法:</p>
 <p>所有状态正确切换：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LiftMain &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Lift lift &#x3D; new Lift();</span><br><span class="line">       &#x2F;&#x2F; lift.setState(new ClosingState(lift));</span><br><span class="line">        lift.open();</span><br><span class="line">        lift.close();</span><br><span class="line">        lift.run();</span><br><span class="line">        lift.stop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2020/02/12/FSM/%E6%AD%A3%E7%A1%AE%E6%89%A7%E8%A1%8C.png" alt="image-20200213151233431"></p>
+<p><img src="/2020/02/12/FSM/正确执行.png" alt="image-20200213151233431"></p>
 <p>状态切换异常：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LiftMain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Lift lift = <span class="keyword">new</span> Lift();</span><br><span class="line">       <span class="comment">// lift.setState(new ClosingState(lift));</span></span><br><span class="line">        lift.close();</span><br><span class="line">        lift.open();</span><br><span class="line">        lift.run();</span><br><span class="line">        lift.stop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2020/02/12/FSM/%E5%88%87%E6%8D%A2%E5%BC%82%E5%B8%B8.png" alt="image-20200213151654928"></p>
+<p><img src="/2020/02/12/FSM/切换异常.png" alt="image-20200213151654928"></p>
 ]]></content>
       <categories>
         <category>编程</category>
@@ -1852,9 +1912,7 @@ EOB</td>
     <content><![CDATA[<h2 id="题目：-合并-k-个排序链表，返回合并后的排序链表"><a href="#题目：-合并-k-个排序链表，返回合并后的排序链表" class="headerlink" title="题目： 合并 k 个排序链表，返回合并后的排序链表"></a>题目： 合并 k 个排序链表，返回合并后的排序链表</h2><p>示例:<br> 输入:<br> [<br>   1-&gt;4-&gt;5,<br>   1-&gt;3-&gt;4,<br>   2-&gt;6<br> ]<br> 输出: 1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4-&gt;5-&gt;6</p>
 <p> 来源：力扣（LeetCode）<br> 链接：<a href="https://leetcode-cn.com/problems/merge-k-sorted-lists" target="_blank" rel="noopener">https://leetcode-cn.com/problems/merge-k-sorted-lists</a></p>
  <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//Definition for singly-linked list.</span></span><br><span class="line"> <span class="class"><span class="keyword">class</span> <span class="title">ListNode</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> val;</span><br><span class="line">    ListNode next;</span><br><span class="line">    ListNode(<span class="keyword">int</span> x) &#123; val = x; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <a id="more"></a>
-
 <h2 id="解题思路："><a href="#解题思路：" class="headerlink" title="解题思路："></a>解题思路：</h2><p>分治法:第一个和第二个合并，合并后的和第三个合并。以此类推，使用二分递归。二分递归的好处是每合并一次，都会保留成一个新的链表，不需要繁琐的条件判断。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">       <span class="function"><span class="keyword">public</span> ListNode <span class="title">mergeKLists</span><span class="params">(ListNode[] lists)</span> </span>&#123;</span><br><span class="line">           <span class="keyword">if</span> (lists == <span class="keyword">null</span> || lists.length == <span class="number">0</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">           <span class="keyword">return</span> merge(lists, <span class="number">0</span>, lists.length - <span class="number">1</span>);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="function"><span class="keyword">private</span> ListNode <span class="title">merge</span><span class="params">(ListNode[] lists, <span class="keyword">int</span> left, <span class="keyword">int</span> right)</span> </span>&#123;<span class="comment">//二分法</span></span><br><span class="line">           <span class="keyword">if</span> (left == right) <span class="keyword">return</span> lists[left];</span><br><span class="line">           <span class="keyword">int</span> mid = left + (right - left) / <span class="number">2</span>;</span><br><span class="line">           ListNode l1 = merge(lists, left, mid);</span><br><span class="line">           ListNode l2 = merge(lists, mid + <span class="number">1</span>, right);</span><br><span class="line">           <span class="keyword">return</span> mergeTwoLists(l1, l2);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="function"><span class="keyword">private</span> ListNode <span class="title">mergeTwoLists</span><span class="params">(ListNode l1, ListNode l2)</span> </span>&#123;</span><br><span class="line">           <span class="keyword">if</span> (l1 == <span class="keyword">null</span>) <span class="keyword">return</span> l2;</span><br><span class="line">           <span class="keyword">if</span> (l2 == <span class="keyword">null</span>) <span class="keyword">return</span> l1;</span><br><span class="line">           <span class="keyword">if</span> (l1.val &lt; l2.val) &#123;</span><br><span class="line">               l1.next = mergeTwoLists(l1.next, l2);</span><br><span class="line">               <span class="keyword">return</span> l1;</span><br><span class="line">           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">               l2.next = mergeTwoLists(l1,l2.next);</span><br><span class="line">               <span class="keyword">return</span> l2;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
@@ -1871,13 +1929,12 @@ EOB</td>
     <title>马氏链及其平稳分布</title>
     <url>/2020/02/02/Markov-chains-and-stationary-distribution/</url>
     <content><![CDATA[<p>平稳分布（马尔可夫链的）具有某种不变（或者说平稳）性质的概率分布</p>
-<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB1.png" alt></p>
+<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/马尔科夫1.png" alt></p>
 <a id="more"></a>
-
-<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB2.png" alt></p>
-<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB3.png" alt></p>
-<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB4.png" alt></p>
-<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB5.png" alt></p>
+<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/马尔科夫2.png" alt></p>
+<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/马尔科夫3.png" alt></p>
+<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/马尔科夫4.png" alt></p>
+<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/马尔科夫5.png" alt></p>
 ]]></content>
       <categories>
         <category>数学</category>
@@ -1895,116 +1952,148 @@ EOB</td>
 <p>​    我们在Android平台上实现了系统原型，并进行了大量的实验。结果表明，与现有的rolling-shutter解决方案相比，我们的系统提高了一个数量级(16倍)的吞吐量，比彩色条形码系统提高了两倍(1.8倍)。</p>
 <p>该文章发表在 2019 ACM <em>Mobihoc ’19, July 2–5, 2019, Catania, Italy</em></p>
 <a id="more"></a>
-
 <h1 id="1-挑战"><a href="#1-挑战" class="headerlink" title="1.挑战"></a>1.挑战</h1><p>​    <strong>Rolling Shutter Effect:</strong> 使用CMOS传感器[6]的滚动快门机制，摄像机逐行扫描场景。在相机曝光时间内，如果当前扫描行切换到下一帧，则捕获的图像是两帧的混合，很难解码。传统的方法是将相机拍摄帧率提为播放帧率的两倍，这样连续两张图像中的一张就可以有一张完整的。因此，一半的容量丢失了。</p>
 <p><strong>Visible light based feedback:</strong>在实践中，SCC系统由于设备不完善、视角偏斜、环境光等原因，产生了较大的误差。为了实现可靠性，SCC系统需要反馈传输信息。虽然有几篇文献提到了针对VLC(而不是SCC)使用wifi或蓝牙进行反馈实现，但这些方法都强调了SCC系统的优点，如方便、部署密集、安全性高。反馈消息可能包含有关通信状态的信息，攻击者可能会对这些信息感兴趣，以便决定下一步的操作。此外，用户密码可能会在蓝牙传输中被破解。这些问题促使我们设计一种基于可见光的反馈机制来保留SCC系统的上述优点。</p>
 <h1 id="2-背景介绍"><a href="#2-背景介绍" class="headerlink" title="2.背景介绍"></a>2.背景介绍</h1><h2 id="CMOS和滚动快门机制"><a href="#CMOS和滚动快门机制" class="headerlink" title="CMOS和滚动快门机制"></a>CMOS和滚动快门机制</h2><p>   ​    CMOS图像传感器收集光子并转换成电子信号。CMOS(互补金属氧化物半导体[6])传感器在智能手机中占据主导地位。与CCD相比，CMOS采用滚动快门模式而不是全局快门模式来读出每个像素。在滚动快门模式下，相机开始曝光的时间不同，会出现多排，如图2(a)所示。这种机制导致曝光窗口扫描从上到下的传感器阵列。例如，在图2(a)中，从“Row 2”开始到“Row 0”结束，“Row 1”和“Row 2”同时出现在曝光窗口中。摄像头扫描曝光窗口如图2(b)所示，从上到下滑动。</p>
-<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Roalling-shutter.png" alt="image-20200201172013428" style="zoom:40%;">
-
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Roalling-shutter.png" alt="image-20200201172013428" style="zoom:40%;"></p>
 <h2 id="拍摄画面中的图像混合"><a href="#拍摄画面中的图像混合" class="headerlink" title="拍摄画面中的图像混合"></a>拍摄画面中的图像混合</h2><p>​    类似地，像LCD这样的数字显示器逐行刷新。这将导致一个刷新窗口，如图2(b)所示。通常，刷新率在60Hz到200Hz之间。一方面，相机的曝光窗口一行一行曝光。另一方面，刷新窗口将场景一行一行得更新。因此，在这两个扫描窗口的交叉区域，传感器从两个帧中积累光子，从而形成一个两帧画面得混合。并且由于刷新窗口和曝光窗口移动方向不同，不同角度拍摄的两帧图像的混淆也不同。</p>
-<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/帧混合.png" alt="image-20200201172936502" style="zoom:40%;">
-
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/帧混合.png" alt="image-20200201172936502" style="zoom:40%;"></p>
 <h1 id="3-系统概述"><a href="#3-系统概述" class="headerlink" title="3.系统概述"></a>3.系统概述</h1><p>​    整个传输一共有两个阶段。初始适配和数据传输。</p>
 <p>​    初始适配阶段，发送端和接收端使用静态的图片发送配置信息并适配rate和块的大小。数据传输阶段，发送端将待传输数据经过RS纠错和颜色调制之后将二维码再显示屏播放；接收端拍摄二维码并使用颜色解调和RS纠错，如果帧出现了错误，就发送反馈信息。</p>
 <p>​    为了支持这两个阶段，ERSCC的设计包括三个部分:TDSR编码、反馈机制和自适应策略。</p>
 <p>​    TDSR编码采用基于空间无关数据流的预彩色调制来处理混合帧。</p>
 <p>​    反馈机制使基于可见光的反向通道允许接收方将信息发送回发送方。</p>
 <p>​    适应策略使设备的配置能够适应复杂的光线环境。</p>
-<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/系统概述.png" alt="image-20200201173324110" style="zoom:40%;">
-
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/系统概述.png" alt="image-20200201173324110" style="zoom:40%;"></p>
 <h1 id="4-ERSCC-设计"><a href="#4-ERSCC-设计" class="headerlink" title="4.ERSCC 设计"></a>4.ERSCC 设计</h1><h2 id="空间分布的数据流"><a href="#空间分布的数据流" class="headerlink" title="空间分布的数据流"></a>空间分布的数据流</h2><p>​    TDSR编码将数据按空间块的顺序分布。每个块包含一个颜色符号。具体来说，假设在一帧中有B个空间块。如果总数据有M位，我们将数据D平均分成B个子数据流，每个子数据流有M/B位。每个子流被分配到一个空间块，并在时间上跨帧编码，如图5所示。因此，每一个分配给空间块的子流，都使用不同的数量的颜色服好来编码相同数量的数据位。可能会出现reshuffle情况，再序列的末尾会有一些没有被编码的数据。为了解决这个问题，我们的解决方案是为每个空间块分配相同数量的颜色符号(经过调制后)。</p>
-<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/空间分布的数据流.png" alt="image-20200201183120654" style="zoom:40%;">
-
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/空间分布的数据流.png" alt="image-20200201183120654" style="zoom:40%;"></p>
 <h2 id="基于pre-color的调制"><a href="#基于pre-color的调制" class="headerlink" title="基于pre-color的调制"></a>基于pre-color的调制</h2><p>​    我们提出了一种基于颜色预处理的调制方案，该方案将每个子流编码到同一块区域中，我们称为时域自恢复编码方案(TDSR)。我们首先讨论从混合物中实现自我修复的设计原则。然后，我们用编码表1的插图来讨论颜色选择。</p>
 <h3 id="设计原则"><a href="#设计原则" class="headerlink" title="设计原则"></a>设计原则</h3><div style="color:#F00">ERSCC基本思想是确保混合颜色在一个颜色子空间中，这样它的组成颜色就可以被解析。</div>
 ​    基于此思想，我们设计了一种时域颜色调制，如图6所示。第一行是在一个空间块中检测到的颜色序列，它跨越沿时间方向捕获的帧。第一个颜色是固定的初始参考颜色。连续的混合颜色表示为“Blend 1”，“Blend 2”，…， ' Blend 4 '，它们是连续捕获的第1张、第2张...的相同区域的颜色。当显示刷新率和相机捕获率大致相同时，捕获的颜色可能是混合的或未混合的(如“分辨颜色序列”所示)。例如，“Blend 1”是“Color 1”和“Color 2”的混合，而“Blend 3”只有“Color 4”。有了上述思想，每个捕获颜色中的组件颜色都得到了解析。这样，利用参考颜色的知识，就可以检索出原始的颜色序列。具体来说，我们知道“Blend 1”由“Color 1”和“Color 2”组成，而“Color 1”是前一个颜色，然后“Color 2”是下一个颜色。接下来，我们知道“Blend 2”由“Color 2”和“Color 3”组成，而“Color 2”是之前的颜色，然后“Color 3”是下一个颜色。为了实现这个想法，接下来我们将介绍我们的调制颜色选择策略。
 
 <img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/原始颜色提取.png" alt="image-20200201183719901" style="zoom:40%;">
 
-<h2 id="调制颜色选择"><a href="#调制颜色选择" class="headerlink" title="调制颜色选择"></a>调制颜色选择</h2><p>​    为了提高调制速率，我们可以利用先前解码的颜色(称为pre-color)。也就是说，一旦我们知道了之前解码的颜色，下一种颜色(称为post-color)就有一些特定的选择，可以满足设计原则。</p>
-<p>​    让我们看看如何调制位序列’ 001001100111 ‘。首先，我们有参考色100作为第一个 pre-color。在表1中，要调制比特“00”，后彩色为000。000再次成为第二个 pre-color。下一步，调制位’ 100 ‘，后彩色是100。因此，最终调制的颜色序列为000,100,011,000,011,100。因此，如果任意两个连续的颜色混合，我们可以提取后颜色与前颜色的知识。例如，如果第二种颜色100和第三种颜色011混合，那么混合后的颜色是111。在pre-color 为100的post-color选项中，只有011可以生成混合颜色111，从而识别post-color 011。</p>
+## 调制颜色选择
+
+​    为了提高调制速率，我们可以利用先前解码的颜色(称为pre-color)。也就是说，一旦我们知道了之前解码的颜色，下一种颜色(称为post-color)就有一些特定的选择，可以满足设计原则。
+
+​    让我们看看如何调制位序列' 001001100111 '。首先，我们有参考色100作为第一个 pre-color。在表1中，要调制比特“00”，后彩色为000。000再次成为第二个 pre-color。下一步，调制位' 100 '，后彩色是100。因此，最终调制的颜色序列为000,100,011,000,011,100。因此，如果任意两个连续的颜色混合，我们可以提取后颜色与前颜色的知识。例如，如果第二种颜色100和第三种颜色011混合，那么混合后的颜色是111。在pre-color 为100的post-color选项中，只有011可以生成混合颜色111，从而识别post-color 011。
 <div style="color:#F00">存疑，若序列为001011，初始颜色为100，按照下表前两个颜色为000,101，当101作为pre-color的时候post-color应该为什么？</div>
 <img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/调制编码表.png" alt="image-20200202105533932" style="zoom:40%;">
 
-<h2 id="How-is-the-pre-color-based-modulation-compared-with-the-naive-one-with-only-three-symbols"><a href="#How-is-the-pre-color-based-modulation-compared-with-the-naive-one-with-only-three-symbols" class="headerlink" title="How is the pre-color based modulation compared with the naive one with only three symbols?"></a>How is the pre-color based modulation compared with the naive one with only three symbols?</h2><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/没理解的部分.png" alt="image-20200204170336732" style="zoom:50%;">
+## How is the pre-color based modulation compared with the naive one with only three symbols?
+<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/没理解的部分.png" alt="image-20200204170336732" style="zoom:50%;">
 
-<h3 id="帧率间隔和错误传播"><a href="#帧率间隔和错误传播" class="headerlink" title="帧率间隔和错误传播"></a>帧率间隔和错误传播</h3><p>​    在随机数据中，生成的画面通常具有稳定的光强度。在焦区光强度稳定的情况下，相机的帧率随时间变化不大。为了研究相机的帧率随时间变化，我们测量了多个智能手机(如三星Galaxy S4, Moto X Pure，中兴Z831)上的摄像头的帧率，得到了图7(b)中的分布。在30帧的情况下，每300帧至少有一个帧偏移。</p>
-<p>​    另一个问题是错误传播。在预彩色调制的情况下，如果颜色识别错误，那么错误将传播到以下符号。为了解决这一问题，我们提出了插入轨音来处理速率偏移和终止错误的传播。</p>
+### 帧率间隔和错误传播
+
+​    在随机数据中，生成的画面通常具有稳定的光强度。在焦区光强度稳定的情况下，相机的帧率随时间变化不大。为了研究相机的帧率随时间变化，我们测量了多个智能手机(如三星Galaxy S4, Moto X Pure，中兴Z831)上的摄像头的帧率，得到了图7(b)中的分布。在30帧的情况下，每300帧至少有一个帧偏移。
+
+​    另一个问题是错误传播。在预彩色调制的情况下，如果颜色识别错误，那么错误将传播到以下符号。为了解决这一问题，我们提出了插入轨音来处理速率偏移和终止错误的传播。
+
 <img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/使用Wiki数据的采样率和帧率变动.png" alt="image-20200202153441527" style="zoom:40%;">
 
-<p>​    在ERSCC中，我们将播放帧降至稍低于拍摄帧率。也就是说，如果相机捕获速率为30fps，我们选择29.9fps作为视频显示速率，而将相机的速率设置为30fps。这样，就只有重复的帧，而没有丢失的帧。然后，我们在符号序列中以一定的间隔N重复插入音轨符号，在音轨的每一段间隔的开始和结尾都由音轨符号标识。由于音轨符号是固定的，因此可以控制识别错误的扩散。如果发生移位，最后解码的符号将与音轨符号不匹配，从而检测并纠正移位。译码过程如算法1所示。</p>
+​    在ERSCC中，我们将播放帧降至稍低于拍摄帧率。也就是说，如果相机捕获速率为30fps，我们选择29.9fps作为视频显示速率，而将相机的速率设置为30fps。这样，就只有重复的帧，而没有丢失的帧。然后，我们在符号序列中以一定的间隔N重复插入音轨符号，在音轨的每一段间隔的开始和结尾都由音轨符号标识。由于音轨符号是固定的，因此可以控制识别错误的扩散。如果发生移位，最后解码的符号将与音轨符号不匹配，从而检测并纠正移位。译码过程如算法1所示。
+
 <div style="color:#F00">存大疑，block是按照哪一个block计算？为什么下方算法为什么要trac tone为100，如果符号中没有100怎么办？自认为应该判断最后一个颜色是否与音轨相同，100只是举了一个例子</div>
 <img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/算法1.png" alt="image-20200202160559144" style="zoom:40%;">
 
-<h3 id="健壮的结束符"><a href="#健壮的结束符" class="headerlink" title="健壮的结束符"></a>健壮的结束符</h3><p>​    一个传输可以有多个数据段紧邻。由于编码方案的适应性(第3.3.3节)，一次传输的帧数可能会随时间变化。在传统的通信中，报文长度包含在报头字段中。但是，由于数据是空间分布的，所以这种策略不适用于ERSCC。为了标记一次传输的终止，我们使用了一个特殊的符号序列000,000,111，即黑、黑、白。由于数据调制中没有使用白色(表1)，它无疑标志着传输的结束。使用两个黑色符号，即使在帧移位的情况下，对白色符号的检测仍然是健壮的。</p>
-<h2 id="反馈信息机制"><a href="#反馈信息机制" class="headerlink" title="反馈信息机制"></a>反馈信息机制</h2><p>​    在ERSCC中，我们利用发送方的前置摄像头和接收方的闪光灯设计了一个基于可见光的反馈通道。在下面，我们提出了我们的反馈编码与手电筒的设计。</p>
-<h3 id="硬件配置"><a href="#硬件配置" class="headerlink" title="硬件配置"></a>硬件配置</h3><p>Android ADK 23-39的 API支持0-100Hz开关速度的后置闪光灯。</p>
-<h3 id="反馈设计"><a href="#反馈设计" class="headerlink" title="反馈设计"></a>反馈设计</h3><p>​    由于闪光灯受到系统限制，但是可以通过控制LED手电筒的开关(OOK)来模仿闪光灯。例如编码1bit数据时使用一次LED的闪烁。但是，一次闪烁可能会跨越画面的两帧。为了解决这个问题，我们使用两个连续的帧为一个符号调制的手电筒。</p>
+### 健壮的结束符
+
+​    一个传输可以有多个数据段紧邻。由于编码方案的适应性(第3.3.3节)，一次传输的帧数可能会随时间变化。在传统的通信中，报文长度包含在报头字段中。但是，由于数据是空间分布的，所以这种策略不适用于ERSCC。为了标记一次传输的终止，我们使用了一个特殊的符号序列000,000,111，即黑、黑、白。由于数据调制中没有使用白色(表1)，它无疑标志着传输的结束。使用两个黑色符号，即使在帧移位的情况下，对白色符号的检测仍然是健壮的。
+
+## 反馈信息机制
+
+​    在ERSCC中，我们利用发送方的前置摄像头和接收方的闪光灯设计了一个基于可见光的反馈通道。在下面，我们提出了我们的反馈编码与手电筒的设计。
+
+
+
+### 硬件配置
+
+Android ADK 23-39的 API支持0-100Hz开关速度的后置闪光灯。
+
+### 反馈设计
+
+​    由于闪光灯受到系统限制，但是可以通过控制LED手电筒的开关(OOK)来模仿闪光灯。例如编码1bit数据时使用一次LED的闪烁。但是，一次闪烁可能会跨越画面的两帧。为了解决这个问题，我们使用两个连续的帧为一个符号调制的手电筒。
+
+
+
 <img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/反馈通讯例子.png" alt="image-20200203104004720" style="zoom:40%;">
 
-<p>图8，展示了闪光灯传输101的两种可能出现的情况。case1时，闪关灯没有和拍摄同步，所以拍摄到了连续两张都有闪光灯的画面；case2时，只拍摄到了一张有闪光的画面。</p>
-<p>​    解析闪光灯的数据前，我们首先校准拍摄到闪光的画面。若连续两张均捕捉到了闪光，那么连续两张中的第一张校准为无闪光(non-flash)。case1当中，{flash, flash, non-flash, non-flash, flash, flash}被校准为{non-flash, flash, non-flash, non-flash, non-flash, flash}。</p>
-<h3 id="适配策略"><a href="#适配策略" class="headerlink" title="适配策略"></a>适配策略</h3><h4 id="帧率适配"><a href="#帧率适配" class="headerlink" title="帧率适配"></a>帧率适配</h4><p>​    再初始适配阶段，发送端向接收端展示存有播放帧率，LED闪光灯速率等信息的图片。</p>
-<h4 id="块大小适配"><a href="#块大小适配" class="headerlink" title="块大小适配"></a>块大小适配</h4><p>​    发送端块大小越大，接收端对图像模糊、距离、颜色混淆的的处理就更好。块越大，接收端采样的点就会距离块边缘（出现颜色混合最严重的地方）越远。在ERSCC中，块大小取决于接收端拍摄画面的模糊程度。</p>
-<p>​    接收端通过判断<strong>初始适配图片</strong>的模糊程度来判断发送端块儿的大小。假设，相机的空间分辨率（<em>空间分辨率，是指图像上能够详细区分的最小单元的尺寸或大小</em>）支持块大小$S_f$。当初始适配块大小为$S_i$时，接收方获得一个收缩率$R_s = \frac {S_f}{S_i}$ ，该收缩率可以调整发送方展示的块的大小，谋求接收端拍摄到的块的大小均接近$ S_f$。此外，通过在整个帧中随机选择像素，测量一个模糊等级来评估像素颜色与其原始值的偏差。由于我们在静态条码中使用纯色(即红、绿、蓝、黑)，因此每个像素的模糊度Bp按照如下公式计算:<br>$$<br>B_p = \sum_{V \in \lbrace{R,G,B} \rbrace } {\frac{min(|255-V|,V)}{3}}<br>$$<br>​    当得到平均模糊程度$\overline{B}$,我们可以，我们可以测量其他因素的影响，比如相对运动。于是，可以得到最终的收缩率$R_{sf} = F(\overline{B})R_s$,其中$F(\overline B)$是一个减函数。模糊等级越高，块的大小越大。参数$R_{sf}$在初始适配阶段由接收端通过回馈信道发送。</p>
-<h4 id="编码方案适配"><a href="#编码方案适配" class="headerlink" title="编码方案适配"></a>编码方案适配</h4><p>​    当接收端接收到的数据包无法解析的时候，接收端向发送端发送请求重传消息，同时发送端也可以计算误码率。当误码率提高时整个系统会添加更多的纠错信息。</p>
-<h1 id="5-系统实现"><a href="#5-系统实现" class="headerlink" title="5.系统实现"></a>5.系统实现</h1><p><strong>发送端：</strong>一共两个线程。一个线程用于播放二维码视频；另一个线程负责收集发送端的反馈信息。由于需要适应不同的传输配置，例如块大小，帧率等等，所以在传输之前需要根据不同配置来编码多个视频流。由于时间延迟不稳定，所以无法在播放视频的同时动态生成视频。</p>
-<p><strong>接收端：</strong>使用照相机捕捉视频图片，在需要的时候使用另一个线程传输反馈消息。在图像处理方面，使用<em>RenderScript</em>转码YUV-RGB。</p>
-<h2 id="系统评估"><a href="#系统评估" class="headerlink" title="系统评估"></a>系统评估</h2><h3 id="实验设置"><a href="#实验设置" class="headerlink" title="实验设置"></a>实验设置</h3><p>​    将ERSCC和RDCode,COBRA,LightSyn,ShiftCode在分辨率相同且纠错级别最低的情况下进行对比。</p>
-<table>
-<thead>
-<tr>
-<th align="center">实验场景</th>
-<th align="center">发送端</th>
-<th align="center">接收端</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">光照强度100LUX的室内环境，发送端和接收端间隔12cm，旋转角度0°，每一帧画面有100x50块(包含定位符)。</td>
-<td align="center">Moto Puree X 5.7-in 显示屏；屏幕亮度100%</td>
-<td align="center">Galaxy S4 拍摄帧率30fps；分辨率 960x720</td>
-</tr>
-</tbody></table>
+图8，展示了闪光灯传输101的两种可能出现的情况。case1时，闪关灯没有和拍摄同步，所以拍摄到了连续两张都有闪光灯的画面；case2时，只拍摄到了一张有闪光的画面。
+
+​    解析闪光灯的数据前，我们首先校准拍摄到闪光的画面。若连续两张均捕捉到了闪光，那么连续两张中的第一张校准为无闪光(non-flash)。case1当中，{flash, flash, non-flash, non-flash, flash, flash}被校准为{non-flash, flash, non-flash, non-flash, non-flash, flash}。
+
+### 适配策略
+
+#### 帧率适配
+
+​    再初始适配阶段，发送端向接收端展示存有播放帧率，LED闪光灯速率等信息的图片。
+
+#### 块大小适配
+
+​    发送端块大小越大，接收端对图像模糊、距离、颜色混淆的的处理就更好。块越大，接收端采样的点就会距离块边缘（出现颜色混合最严重的地方）越远。在ERSCC中，块大小取决于接收端拍摄画面的模糊程度。
+
+​    接收端通过判断**初始适配图片**的模糊程度来判断发送端块儿的大小。假设，相机的空间分辨率（*空间分辨率，是指图像上能够详细区分的最小单元的尺寸或大小*）支持块大小$S_f$。当初始适配块大小为$S_i$时，接收方获得一个收缩率$R_s = \frac {S_f}{S_i}$ ，该收缩率可以调整发送方展示的块的大小，谋求接收端拍摄到的块的大小均接近$ S_f$。此外，通过在整个帧中随机选择像素，测量一个模糊等级来评估像素颜色与其原始值的偏差。由于我们在静态条码中使用纯色(即红、绿、蓝、黑)，因此每个像素的模糊度Bp按照如下公式计算:
+$$
+B_p = \sum_{V \in \lbrace{R,G,B} \rbrace } {\frac{min(|255-V|,V)}{3}}
+$$
+​    当得到平均模糊程度$\overline{B}$,我们可以，我们可以测量其他因素的影响，比如相对运动。于是，可以得到最终的收缩率$R_{sf} = F(\overline{B})R_s$,其中$F(\overline B)$是一个减函数。模糊等级越高，块的大小越大。参数$R_{sf}$在初始适配阶段由接收端通过回馈信道发送。
+
+#### 编码方案适配
+
+​    当接收端接收到的数据包无法解析的时候，接收端向发送端发送请求重传消息，同时发送端也可以计算误码率。当误码率提高时整个系统会添加更多的纠错信息。
+
+# 5.系统实现
+
+**发送端：**一共两个线程。一个线程用于播放二维码视频；另一个线程负责收集发送端的反馈信息。由于需要适应不同的传输配置，例如块大小，帧率等等，所以在传输之前需要根据不同配置来编码多个视频流。由于时间延迟不稳定，所以无法在播放视频的同时动态生成视频。
+
+**接收端：**使用照相机捕捉视频图片，在需要的时候使用另一个线程传输反馈消息。在图像处理方面，使用*RenderScript*转码YUV-RGB。
+
+## 系统评估
+
+### 实验设置
+
+​    将ERSCC和RDCode,COBRA,LightSyn,ShiftCode在分辨率相同且纠错级别最低的情况下进行对比。
+
+|                           实验场景                           |                  发送端                  |                 接收端                  |
+| :----------------------------------------------------------: | :--------------------------------------: | :-------------------------------------: |
+| 光照强度100LUX的室内环境，发送端和接收端间隔12cm，旋转角度0°，每一帧画面有100x50块(包含定位符)。 | Moto Puree X 5.7-in 显示屏；屏幕亮度100% | Galaxy S4 拍摄帧率30fps；分辨率 960x720 |
+
 <img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/实验环境.png" alt="image-20200204104437032" style="zoom:40%;">
 
-<h2 id="TDSR性能评估"><a href="#TDSR性能评估" class="headerlink" title="TDSR性能评估"></a>TDSR性能评估</h2><p>​    <strong>图像混合：</strong> 假设发生混合的只能是连续的两帧。为了验证猜想，我们测试了不同显示/拍摄帧率 15fps, 20fpx,25fps和30fps，亮度的变换从100LUX到500LUX。为了判断 符号是否混合，我们比较原始图片序列和拍摄到的图片序列。最终发现单张和两张混合的占到了拍摄总画面的96%，证明猜想正确。</p>
+## TDSR性能评估
+
+​    **图像混合：** 假设发生混合的只能是连续的两帧。为了验证猜想，我们测试了不同显示/拍摄帧率 15fps, 20fpx,25fps和30fps，亮度的变换从100LUX到500LUX。为了判断 符号是否混合，我们比较原始图片序列和拍摄到的图片序列。最终发现单张和两张混合的占到了拍摄总画面的96%，证明猜想正确。
+
 <img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Symbol_mix_pattern.png" alt="image-20200204112200438" style="zoom:40%;">
 
-<p>​    <strong>音轨符号间隔：</strong>我们研究了音轨播放的策略和错误传播的相关性。我们发现，音轨播放的间隔越短，错误传播终止的越早，但是音频编码开销会增大。实验当中，我们测试了在播放帧率为25fps和30fps的时候音轨播放间隔为5到20个符号的情况。</p>
+​    **音轨符号间隔：**我们研究了音轨播放的策略和错误传播的相关性。我们发现，音轨播放的间隔越短，错误传播终止的越早，但是音频编码开销会增大。实验当中，我们测试了在播放帧率为25fps和30fps的时候音轨播放间隔为5到20个符号的情况。
+
 <img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/图11和图12.png" alt="image-20200204113517577" style="zoom:40%;">
 
-<p>​    图11指出音轨间隔越小，成功解析的比率就越大；但是图12指出当间距太小的时候，系统吞吐量出现大幅度下降，这是因为过多的音轨会带来很高的编码开销。基于以上实验，</p>
+​    图11指出音轨间隔越小，成功解析的比率就越大；但是图12指出当间距太小的时候，系统吞吐量出现大幅度下降，这是因为过多的音轨会带来很高的编码开销。基于以上实验，
+
 <div style="color:#F00">音轨间隔设置为10</div>
 
 <h3 id="和现有研究成果对比"><a href="#和现有研究成果对比" class="headerlink" title="和现有研究成果对比"></a>和现有研究成果对比</h3><p><strong>LightSync</strong>的效果和显示器和相机方向有关。为了测量实际中的倾斜程度，我们在三种情况下对录像进行了测试:a)使用支架;b)稳定手持;c)自由手持。通过稳定手持，用户可以尝试在录制过程中匹配方向。自由手持，我们只是确保屏幕是在相机能拍摄到的范围内。如图14所示，在1920x1080的显示器上，最好的倾斜度是1.9，即扫描线倾斜63像素。因此，63像素是LightSync的最小块大小。LightSync中的每个符号编码两位。此外，为了与方向匹配，LightSync的空间效率约为1/2，如图3(a)所示。</p>
-<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Fig14.png" alt="image-20200204123228201" style="zoom:50%;">
-
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Fig14.png" alt="image-20200204123228201" style="zoom:50%;"></p>
 <p><strong>ShiftCode</strong>采用了5个非均匀采样点的空间移位编码设计，需要16个子块的分辨率。因此，为了便于比较，ERSCC中的块的空间分辨率与ShiftCode中的采样点相同。此外，扩展的color ShiftCode可以支持每个符号4种颜色。最小rs编码开销是10%。在最佳条件下，帧错误率为0。</p>
 <p>与COBRA相比，<strong>RDCode</strong>具有更低的误码率和更复杂的纠错编码。每个符号有四种颜色，即2位。rs编码开销是2.08%。类似地，报告的最小错误率为0。</p>
-<h4 id="距离测试"><a href="#距离测试" class="headerlink" title="距离测试"></a>距离测试</h4><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/距离.png" alt="image-20200204122735012" style="zoom:50%;">
-
+<h4 id="距离测试"><a href="#距离测试" class="headerlink" title="距离测试"></a>距离测试</h4><p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/距离.png" alt="image-20200204122735012" style="zoom:50%;"></p>
 <p>​    ERSCC最强</p>
 <h4 id="角度和亮度测试"><a href="#角度和亮度测试" class="headerlink" title="角度和亮度测试"></a>角度和亮度测试</h4><p>​    在图15(a)中，我们从不同角度测试了系统的吞吐量。结果表明，ERSCC对角度不敏感。相反，角度会导致扫描线更加倾斜，从而大大降低了LightSync的吞吐量。在图15(b)中，我们测试了不同屏幕亮度下的吞吐量。从结果上看，在大部分的亮度范围内性能是稳定的。当亮度低于25%时，吞吐量开始显著下降。</p>
-<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/光照和角度.png" alt="image-20200204145825965" style="zoom:50%;">
-
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/光照和角度.png" alt="image-20200204145825965" style="zoom:50%;"></p>
 <h3 id="反馈设计的评估"><a href="#反馈设计的评估" class="headerlink" title="反馈设计的评估"></a>反馈设计的评估</h3><p>接下来，我们将检验反馈通道设计的有效性，以及它在各种条件下所能达到的最佳性能。在实验中，我们利用环境光的亮度和相对移动率来测量译码率。加速度“1.0 g”对应的是一个行走缓慢的人。从图16中可以看出，译码率平均为98%。当环境光为1000lux，加速度为1.0g时，解码率仍然达到96%。反馈编码设计也能抵抗帧的移位。这意味着，在重复捕获或丢失一帧的情况下，由于使用了LED开关键编码，紧接着的编码位仍然可以正确提取。</p>
-<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/光照和加速度.png" alt="image-20200204150058510" style="zoom:40%;">
-
-<h2 id="自适应性评估"><a href="#自适应性评估" class="headerlink" title="自适应性评估"></a>自适应性评估</h2><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/块大小和RS纠错.png" alt="image-20200204162955827" style="zoom:40%;">
-
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/光照和加速度.png" alt="image-20200204150058510" style="zoom:40%;"></p>
+<h2 id="自适应性评估"><a href="#自适应性评估" class="headerlink" title="自适应性评估"></a>自适应性评估</h2><p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/块大小和RS纠错.png" alt="image-20200204162955827" style="zoom:40%;"></p>
 <p>块大小越大，解析成功率越高，RS纠错能力越强，成功率越高。</p>
-<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/块大小随距离变化.png" alt="image-20200204163700101" style="zoom:40%;">
-
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/块大小随距离变化.png" alt="image-20200204163700101" style="zoom:40%;"></p>
 <p>在ERSCC中，图像模糊程度增加，而收缩程度降低。因此，COBRA的译码率在20CM的距离内迅速下降到26%，而ERSCC的译码率仍然保持在90%以上。</p>
-<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Code-scheme-adaptation.png" alt="image-20200204165729126" style="zoom:40%;">
-
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Code-scheme-adaptation.png" alt="image-20200204165729126" style="zoom:40%;"></p>
 <p>​    ERSCC编码方案根据传输性能(由重传请求的频率决定)来调整其校验位。为此，我们让ERSCC进行了9次传输。在图19中，在第4次传输时，我们将环境光强度从100LUX增加到500LUX，与显示的视频相融合。因此，发送方会收到更多的重发请求，这将引导它将校验位增加到160。这样，在下一次传输T5时，解码速率就恢复了。相比之下，COBRA没有适应传输性能的机制，因此在这种情况下效果较差。</p>
 <h1 id="6-结论"><a href="#6-结论" class="headerlink" title="6.结论"></a>6.结论</h1><p>​    在本工作中，我们提出并实现了一种屏幕摄像头通信系统调用ERSCC的设计。ERSCC采用时域自恢复编码(TDSR)实现了更高的数据传输效率(≥1.8x)，解决了滚动快门问题。此外，ERSCC有一个专门的反馈通道，使自适应的可靠性更高。我们注意到目前的反馈通道存在数据率低的局限性，并将在未来探索如何提高反向通道的数据率。</p>
 <h1 id="7-总结"><a href="#7-总结" class="headerlink" title="7.总结"></a>7.总结</h1><p>本篇文章使用了时域编码解决了帧混合问题。</p>
-<img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/帧混合.png" style="zoom:40%;">
-
-
-
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/帧混合.png" style="zoom:40%;"></p>
 <h1 id="8-疑问"><a href="#8-疑问" class="headerlink" title="8.疑问"></a>8.疑问</h1><ol>
 <li>由于视频是提前生成的，那么如何进行数据重传呢？</li>
 <li>如果接收的时候距离发生了变化，该系统能否自适应？</li>
@@ -2035,9 +2124,9 @@ EOB</td>
     <title>Active Learning （主动学习）</title>
     <url>/2020/01/06/Active-Learning/</url>
     <content><![CDATA[<p>​    有类标的数据比较稀少而没有类标的数据是相当丰富的，但是对数据进行人工标注又非常昂贵，这时候，学习算法可以主动地提出一些标注请求，将一些经过筛选的数据提交给专家进行标注。    </p>
-<p>$$<br>R(h) \le R_{emp}(h)+\sqrt{\frac{ln(H)+k}{2m}}<br>$$</p>
-<p>​    </p>
-<p>​    $$\rightarrow$$以往的学习方式不同，主动学习指的是：</p>
+<script type="math/tex; mode=display">
+R(h) \le R_{emp}(h)+\sqrt{\frac{ln(H)+k}{2m}}</script><p>​    </p>
+<p>​    <script type="math/tex">\rightarrow</script>以往的学习方式不同，主动学习指的是：</p>
 <ol>
 <li><p>由算法选择学习内容，相当于主动请求学习内容，</p>
 </li>
@@ -2045,14 +2134,11 @@ EOB</td>
 </li>
 <li><p>尽可能得少让Oracle标记数据，减少数据冗余</p>
 <a id="more"></a>
-
 </li>
 </ol>
 <h2 id="最根本的问题是如何选择未标记的数据"><a href="#最根本的问题是如何选择未标记的数据" class="headerlink" title="最根本的问题是如何选择未标记的数据"></a>最根本的问题是如何选择未标记的数据</h2><h2 id="如何解决数据中的噪声或者注释者"><a href="#如何解决数据中的噪声或者注释者" class="headerlink" title="如何解决数据中的噪声或者注释者"></a>如何解决数据中的噪声或者注释者</h2><h2 id="效率高得执行算法进行数据选择"><a href="#效率高得执行算法进行数据选择" class="headerlink" title="效率高得执行算法进行数据选择"></a>效率高得执行算法进行数据选择</h2><h2 id="现有的选择方式"><a href="#现有的选择方式" class="headerlink" title="现有的选择方式"></a>现有的选择方式</h2><ol>
 <li>查询最有信息量的实例</li>
-<li>查询最有代表性的实例<img src="/2020/01/06/Active-Learning/主动学习1.jpg" alt="主动学习" style="zoom:20%;">
-
-</li>
+<li>查询最有代表性的实例<br><img src="/2020/01/06/Active-Learning/主动学习1.jpg" alt="主动学习" style="zoom:20%;"></li>
 </ol>
 <h3 id="选择注释者"><a href="#选择注释者" class="headerlink" title="选择注释者"></a>选择注释者</h3><p>方式1：直接选择<br><img src="/2020/01/06/Active-Learning/选择注释者.jpg" alt="选择注释者" style="zoom:20%;"><br>方式2：从其他领域迁移学习<br><img src="/2020/01/06/Active-Learning/from_other_domain.jpg" alt="从其他领域借鉴" style="zoom:20%;"></p>
 <h3 id="快速的训练和实例选择算法"><a href="#快速的训练和实例选择算法" class="headerlink" title="快速的训练和实例选择算法"></a>快速的训练和实例选择算法</h3><p>由于数据量太大，则使用算法生成最有效的数据而不是从已知数据集中取数据<br><img src="/2020/01/06/Active-Learning/生成训练数据.jpg" alt="生成训练数据" style="zoom:20%;"></p>
@@ -2071,21 +2157,17 @@ EOB</td>
 <h1 id="Screen-camera-communication-process"><a href="#Screen-camera-communication-process" class="headerlink" title="Screen-camera communication process"></a>Screen-camera communication process</h1><p>​        A general screen-camera communication process is as follows. At the sender side, the input data are divided into fixed-size segments. Subsequently, a frame modulation module is applied to encode each data segment as a barcode frame. After modulation, the barcode frames are displayed on the sender’s screen sequentially and repeatedly, thereby forming a barcode stream for data transmission. </p>
 <p>​        一个通用的屏幕-摄像机通信过程如下。在发送端，输入数据被分成固定大小的段。然后，使用帧调制模块将每个数据段编码为条形码帧。调制后，条形码帧在发送方的屏幕上连续和重复地显示，从而形成用于数据传输的条形码流。</p>
 <a id="more"></a>
-
-
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">st&#x3D;&gt;start:输入数据</span><br><span class="line">op1&#x3D;&gt;operation:将数据拆分成固定的block</span><br><span class="line">op2&#x3D;&gt;operation:将block编码成二维码</span><br><span class="line">op3&#x3D;&gt;operation:循环播放二维码视频</span><br><span class="line">e&#x3D;&gt;end:结束</span><br><span class="line">st-&gt;op1-&gt;op2-&gt;op3-&gt;e</span><br></pre></td></tr></table></figure>
-
 <p>​        At the receiver side, through the screen-camera link, the receiver captures the frame sequence with its camera. A frame demodulation module is applied to recover each captured frame into data segments. Combining the decoded data segments, the original data are restored and the transmission is completed.</p>
 <p>​        在接收端，通过屏幕-摄像头链接，接收器用其摄像头捕获帧序列。采用帧解调模块将捕获的帧恢复为数据段。结合解码后的数据段，恢复原始数据，完成传输。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">st&#x3D;&gt;start:输入数据</span><br><span class="line">op1&#x3D;&gt;operation:将数据拆分成固定的block</span><br><span class="line">op2&#x3D;&gt;operation:将block编码成二维码</span><br><span class="line">op3&#x3D;&gt;operation:循环播放二维码视频</span><br><span class="line">e&#x3D;&gt;end:结束</span><br><span class="line">st-&gt;op1-&gt;op2-&gt;op3-&gt;e</span><br></pre></td></tr></table></figure>
-
 <h1 id="现有方法的缺点"><a href="#现有方法的缺点" class="headerlink" title="现有方法的缺点"></a>现有方法的缺点</h1><p>​        正确、有效地识别条码块的颜色是屏象通信中解调捕获帧的关键。现有的作品都采用了基于规则的颜色识别方法，即根据一组预定义的规则来确定块的颜色。通常，系统在帧上嵌入许多参考颜色块，并通过与参考颜色的比较来确定块的颜色。尽管基于规则的颜色识别方法在现有的条形码系统中得到了广泛的应用，但是仍然存在一些缺陷。首先，建立规则的过程是十分复杂并且是依靠经验的。当条形码系统使用多种颜色时，它必须考虑许多因素来建立适当的规则来区分颜色;通常，它依靠经验研究或人类经验来确定颜色识别的阈值。其次，这些规则是专用的并且是排他的。每个系统都开发自己的规则，这些规则专门针对特定的应用程序，不能在系统之间共享。因此，基于规则的方法缺乏自适应能力。固定的规则不能处理环境中的变化。例如，当环境光线强时，为室内环境设计的规则可能不适用。最后，捕获的图像很容易遇到混合颜色的问题:在捕获过程中，块的颜色是相邻块或连续块的混合颜色。没有一种基于规则的方法能够很好地解决颜色混合问题。<br>通常，系统在帧上嵌入许多参考颜色块，并通过与参考颜色的比较来确定块的颜色。但是：</p>
 <ol>
 <li>rule-based 建立的规则很复杂并且排他</li>
 <li>rule-based 不能应对多变的场景(例如针对室内设计的不能应用于室外)</li>
 <li>rule-based 不能很好得解决颜色混和问题</li>
 </ol>
-<h1 id="创新点"><a href="#创新点" class="headerlink" title="创新点"></a>创新点</h1><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E9%93%BE%E8%B7%AF%E6%A6%82%E8%A6%81.png" alt="Fig.1. The idea of a machine learning based approach for color barcode streaming"></p>
+<h1 id="创新点"><a href="#创新点" class="headerlink" title="创新点"></a>创新点</h1><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/链路概要.png" alt="Fig.1. The idea of a machine learning based approach for color barcode streaming"></p>
 <hr>
 <p>​            MegaLight采用机器学习技术训练模型自动自适应识别块颜色。为了达到这个目的，在数据条形码之前插入和发送一些训练帧，如图1所示。训练帧以已知的模式发送，作为模型训练的训练集。该学习任务是从捕获的训练帧中提取的颜色信息作为特征，将帧中的已知信息作为标签，训练一个用于颜色识别的分类模型。在MegaLight中，我们采用随机森林模型进行分类。为了减少监督学习的启动延迟，我们进一步提出了一种基于专家混合模型的半监督方法。MoE模型是由几个预先训练好的随机森林模型构造而成的，在各种环境下，仅依靠很少的训练帧就可以实现较高的颜色识别精度。</p>
 <hr>
@@ -2102,13 +2184,13 @@ EOB</td>
 <li>我们在黑白和彩色条形码系统上都实现了MegaLight，并在各种场景下测试了它们的性能。大量的实验证明了该框架的有效性。</li>
 </ul>
 <h1 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h1><p>​    ​        尽管当前系统广泛采用基于规则的方法，但其主要缺点是固定规则缺乏自适应能力，无法处理各种环境中的许多场景。我们将在下面演示几个场景。<br>​<br>​        <strong><em>环境光的变化</em></strong>: 环境光的变化将导致接收相机捕获图像的颜色发生显著变化。 例如，图2显示了在不同水平的环境光下捕获的帧。 与原始帧相比(图2a)，在常光下(图2b)和明亮环境下(图2c)，捕捉到的块颜色差异很大。 基于规则的帧解调显示出有限的能力，以适应变化的环境光。 例如，LightSync[12]可以确定一个颜色匹配，如果块颜色和参考颜色之间的差异在10%以内，这可能适用于正常的光线，但是在明亮的光线下效果很差，因为在明亮的环境中，黑色块和白色块之间的区别是模糊的。 创建通用规则来适应不同的环境光是具有挑战性的。</p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E7%8E%AF%E5%A2%83%E5%85%89%E5%8F%98%E5%8C%96.png" alt="环境光变化"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/环境光变化.png" alt="环境光变化"></p>
 <p>​            <strong><em>混合颜色</em></strong>:在彩色条码系统中另一个常见的效果是混合颜色。由于相邻块或连续帧的颜色不同，相机可以同时捕捉两种颜色，从而在捕捉帧中形成混合的颜色。例如，图3a是红色和黄色的混合物，图3b是绿色和蓝色的混合物。如果我们从混合帧中采样颜色，那么将很难确定块的原始颜色，从而导致很难从条形码块中恢复信息。</p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E9%A2%9C%E8%89%B2%E6%B7%B7%E5%90%88.png" alt="image-20200103214503885"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/颜色混合.png" alt="image-20200103214503885"></p>
 <p>​            条码通信中的另一种混色现象是一些捕获的帧被两个连续的帧混合，在捕获的图像中呈现出时间模糊。帧混合是帧显示速率和捕获速率不匹配的典型情况。假设屏幕一次显示整个图像，如果场景在捕获过程中切换帧，那么捕获的图像将是两个连续帧的混合。图5给出了一个帧混合的例子，从图中可以看出，被捕获块的颜色是两帧颜色的混合，因此很难识别每个块的颜色。有时，帧混合可能是由于滚动快门效应的CMOS相机用于大多数现代智能手机。滚动快门是一种图像捕捉机制，通过水平(或垂直)逐行扫描整个场景来捕捉每一帧图像。因为有了滚动快门，一帧的不同行被捕捉到不同的时间点。如果在摄像机捕获过程中，场景切换帧，则前一帧的一部分将出现在上一帧的上部，下一帧的一部分将出现在下一帧的下部，从而形成捕获图像中连续条码帧的混合。如图3所示，捕获帧的上下部分呈现两种不同颜色的渐变，最终的颜色值取决于时间。现有的基于规则的方法不能解决颜色混合问题:它们将混合颜色视为错误，并完全抛弃混合帧。</p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E5%B8%A7%E6%B7%B7%E5%90%88.png" alt="image-20200103220234977"></p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E9%A2%9C%E8%89%B2%E6%B7%B7%E5%90%88.png" alt="image-20200103214503885"></p>
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.png" alt="image-20200103220812301"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/帧混合.png" alt="image-20200103220234977"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/颜色混合.png" alt="image-20200103214503885"></p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/系统架构.png" alt="image-20200103220812301"></p>
 <p>​            在<strong>发送端</strong>，添加了一个称为<strong>训练帧生成器</strong>的模块来生成和插入训练帧。训练帧是用特定的数据位模式和帧id编码的，接收者无需解码帧就可以知道这些数据位模式和帧id。为了将帧id嵌入到条码流中，解决帧混合问题，我们提出了一种特殊的布局设计，用于提取机器学习的特征。MegaLight的布局采用多个边框条，嵌入帧元信息，显示参考色，跟踪滚动快门效果的情况。</p>
 <p>​            在<strong>接收端</strong>，采用基于机器学习的帧解调模块进行彩色条码识别，该模块由三个m子模块组成。标签提取模块用于从训练帧中提取数据信息，形成机器学习的基础事实。特征提取模块用于为每个代码块提取大量颜色度量，这些颜色度量用作颜色识别的输入。利用机器学习模型训练分类器，对每个代码块的颜色和信息位进行准确判断。</p>
 <p>​        在发送方和接收方，可靠性技术被应用到增加冗余帧的错误纠正和恢复。</p>
@@ -2125,12 +2207,9 @@ EOB</td>
 <ol>
 <li>发送端和接收端使用相同的数字用于传输，该系统中使用“MegaLight”；</li>
 <li>对于每一个训练帧，在Top bar使用gray code生成ID</li>
-<li>生成端和接收端使用预先定义好的相同的伪随机数进行通信，发送方使用伪随机数和帧ID作为初始随机种子，生成大量伪随机数据位，并将它们嵌入到训练帧的数据区域中。当训练帧被接收方捕获时，接收端不需要解码就可以重新生成帧所包含的准确数据位，作为ground truth来建立机器学习模型。<div style="color:#F00">(存疑)</div>
-### 布局
-
-</li>
+<li>生成端和接收端使用预先定义好的相同的伪随机数进行通信，发送方使用伪随机数和帧ID作为初始随机种子，生成大量伪随机数据位，并将它们嵌入到训练帧的数据区域中。当训练帧被接收方捕获时，接收端不需要解码就可以重新生成帧所包含的准确数据位，作为ground truth来建立机器学习模型。<br><div style="color:#F00">(存疑)</div><h3 id="布局"><a href="#布局" class="headerlink" title="布局"></a>布局</h3></li>
 </ol>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E5%B8%A7%E5%B8%83%E5%B1%80.png" alt="image-20200104113604861"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/帧布局.png" alt="image-20200104113604861"></p>
 <p>​            顶部栏:在框架的顶部，顶部栏用于嵌入框架ID信息。帧ID由一个二进制数表示，该二进制数用灰色代码[3]编码。帧ID将被接收者用来帮助解码条形码的数据内容。</p>
 <p>​        底部栏:底部栏只包含一个位信息，称为训练帧指示(TFI)位于栏的左侧。TFI用于表示一个帧是否是一个训练帧:TFI的白色对应一个训练帧，TFI的黑色对应一个信息帧。</p>
 <p>​        参考色条(RCBs):如图7所示，框架的左右垂直条称为参考色条(RCBs)。两个条形图用于显示条形码的参考颜色。动态条形码系统依赖于一组预定义的颜色来表示块中的信息位。例如，颜色条形码可以使用绿色、红色、黄色、蓝色来表示00、01、10、11。如图7所示，在参考色条上交替重复显示预定义的颜色。</p>
@@ -2140,38 +2219,38 @@ EOB</td>
 <h3 id="符号提取"><a href="#符号提取" class="headerlink" title="符号提取"></a>符号提取</h3><p>​        如果捕获的帧是训练帧，则使用标签提取模块提取帧中包含的数据位。提取的数据位称为用于机器学习的代码块的标签。根据训练帧生成器的原理，接收机可以使用(公共号+帧ID)作为随机种子来生成帧的数据位。由于双方都知道公共编号，所以标签提取的主要任务是从捕获图像的顶部栏识别帧ID。</p>
 <p>​        </p>
 <p>​        当捕获的图像是两个连续帧的组合时，我们想要确定主导帧:从主导帧捕获的颜色比混合图像中的其他颜色多。使用灰色代码对顶部栏上的帧id进行编码有助于解决此问题。</p>
-<div style=" color :#F00">灰度代码的一个重要特性是两个连续值的二进制表达式只差一个二进制位。</div>
-有了这样的属性，两个连续帧的顶栏只差一个块。也就是说，即使混色发生了，只有一个混合色块出现在顶栏上，其余色块都是清晰的。如图8所示，如果一个混合块的颜色已知，则可以确定帧ID。
-
+<p><div style=" color :#F00">灰度代码的一个重要特性是两个连续值的二进制表达式只差一个二进制位。</div><br>有了这样的属性，两个连续帧的顶栏只差一个块。也就是说，即使混色发生了，只有一个混合色块出现在顶栏上，其余色块都是清晰的。如图8所示，如果一个混合块的颜色已知，则可以确定帧ID。</p>
 <p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/topbar.png" alt="image-20200104150034647"></p>
 <p>​    那么，如何判断图8混合部分的颜色是黑还是白？取黑色和白色的参考色Refblack和Refwhite，混合部分的颜色C</p>
 <ol>
-<li><p>若<br>$$<br>C\leq\frac {Refblack+Refwhite}{2}<br>$$<br>表示该混合块是<strong>黑色</strong></p>
+<li><p>若</p>
+<script type="math/tex; mode=display">
+C\leq\frac {Refblack+Refwhite}{2}</script><p>表示该混合块是<strong>黑色</strong></p>
 </li>
-<li><p>若<br>$$<br>C&gt;\frac{Refblack+Refwhite}{2}<br>$$<br>则该混合块是<strong>白色</strong></p>
+<li><p>若        </p>
+<script type="math/tex; mode=display">
+C>\frac{Refblack+Refwhite}{2}</script><p>则该混合块是<strong>白色</strong></p>
 </li>
 </ol>
 <p>​    </p>
 <p>​        一旦确定了混合块的颜色，就知道了帧ID，我们可以进一步使用(伪随机数+帧ID)作为随机种子来生成训练帧的信息位。将提取的信息作为ground truth，建立机器学习模型。</p>
 <h3 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a>特征提取</h3><p>​        我们提取大量量化的特征矩阵作为输入，建立条码颜色识别的机器学习模型。提取的特征包括分块的<em>颜色、参考颜色、卷帘门指示器、相邻分块的颜色</em>，下面将介绍这些特征。</p>
-<h3 id="1-块的颜色"><a href="#1-块的颜色" class="headerlink" title="1. 块的颜色"></a>1. 块的颜色</h3><p>​    记从该色块采样的颜色是 $\hat{C}<em>{block}$ 当是黑白码的时候。色块是灰度值[0,155]。当是RGB彩色二维码的时候，RGB每一个通道是[0,255]，记为 $\hat{C}</em>{block}=&lt;R,G,B&gt;$。当拍摄的时候，由于光线、相邻色块和卷帘快门的影响，颜色会发生改变。机器学习的任务就是根据已经定义好得颜色，正确得识别每个块的颜色。</p>
-<h3 id="2-参考颜色"><a href="#2-参考颜色" class="headerlink" title="2. 参考颜色"></a>2. 参考颜色</h3><p>​    对于不同的颜色，取两侧的相同颜色并取该颜色的平均值为参考，假设有K种颜色，有公式<br>$$<br>\hat{C}_{ref} = &lt;Ref_1,Ref_2,Ref_3,…,Ref_k&gt; 其中 Ref_i表示参考颜色中的第i个颜色<br>$$</p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E5%B8%A7%E5%B8%83%E5%B1%80.png" alt="image-20200104113604861"></p>
+<h3 id="1-块的颜色"><a href="#1-块的颜色" class="headerlink" title="1. 块的颜色"></a>1. 块的颜色</h3><p>​    记从该色块采样的颜色是 $\hat{C}_{block}$ 当是黑白码的时候。色块是灰度值[0,155]。当是RGB彩色二维码的时候，RGB每一个通道是[0,255]，记为 $\hat{C}_{block}=<R,G,B>$。当拍摄的时候，由于光线、相邻色块和卷帘快门的影响，颜色会发生改变。机器学习的任务就是根据已经定义好得颜色，正确得识别每个块的颜色。</R,G,B></p>
+<h3 id="2-参考颜色"><a href="#2-参考颜色" class="headerlink" title="2. 参考颜色"></a>2. 参考颜色</h3><p>​    对于不同的颜色，取两侧的相同颜色并取该颜色的平均值为参考，假设有K种颜色，有公式</p>
+<script type="math/tex; mode=display">
+\hat{C}_{ref} = <Ref_1,Ref_2,Ref_3,...,Ref_k> 其中 Ref_i表示参考颜色中的第i个颜色</script><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/帧布局.png" alt="image-20200104113604861"></p>
 <h3 id="3-卷帘快门指示"><a href="#3-卷帘快门指示" class="headerlink" title="3.卷帘快门指示"></a>3.卷帘快门指示</h3><p>​        色块的颜色会受到卷帘快门的影响，意味着相邻两张图片的颜色会混合在一起。因此，需要判断出来是否出现了混合和混合的严重程度。</p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E5%8D%B7%E5%B8%98%E5%BF%AB%E9%97%A8%E6%8C%87%E7%A4%BA.png" alt="image-20200104161616280"></p>
-<p>从左到右设卷帘快门提示条为$\overline{RSTB_1}$&amp;$\overline{RSTB_2}$&amp;$\overline{RSTB_3}$&amp;$\overline{RSTB_4}$。<br>$\overline{RSTB_1}$和$\overline{RSTB_3}$会产生黑–&gt;白的渐变。<br>$\overline{RSTB_2}$和$\overline{RSTB_4}$会产生白–黑的渐变。</p>
-<p>然后作一条水平的红线。在二维码不发生偏转的情况下这条水平的线和卷帘快门提示条会产生4个交点，设为$\hat{C}_{RSI}=&lt;RSI_1,RSI_2,RSI_3,RSI_4&gt;$</p>
-<p>如果二维码发生倾斜，如图9，则会产生非4个交点的请情况。如最上面的红线令$\hat{C}_{RSI}=&lt;RSI_1,RSI_2,0,0&gt;$</p>
-<p>当发生了卷帘门现象，则 $\hat{C}<em>{RSI}$ 就会有特殊的现象，并且可以使用$\hat{C}</em>{RSI}$判断卷帘门现象有多严重，同时判断数据块是属于前一帧还是后一帧，下一帧是奇数帧还是偶数帧。这些数据可以用于我们提出的颜色判断模型。</p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/卷帘快门指示.png" alt="image-20200104161616280"></p>
+<p>从左到右设卷帘快门提示条为$\overline{RSTB_1}$&amp;$\overline{RSTB_2}$&amp;$\overline{RSTB_3}$&amp;$\overline{RSTB_4}$。<br>$\overline{RSTB_1}$和$\overline{RSTB_3}$会产生黑—&gt;白的渐变。<br>$\overline{RSTB_2}$和$\overline{RSTB_4}$会产生白—黑的渐变。</p>
+<p>然后作一条水平的红线。在二维码不发生偏转的情况下这条水平的线和卷帘快门提示条会产生4个交点，设为$\hat{C}_{RSI}=<RSI_1,RSI_2,RSI_3,RSI_4>$</RSI_1,RSI_2,RSI_3,RSI_4></p>
+<p>如果二维码发生倾斜，如图9，则会产生非4个交点的请情况。如最上面的红线令$\hat{C}_{RSI}=<RSI_1,RSI_2,0,0>$</RSI_1,RSI_2,0,0></p>
+<p>当发生了卷帘门现象，则 $\hat{C}_{RSI}$ 就会有特殊的现象，并且可以使用$\hat{C}_{RSI}$判断卷帘门现象有多严重，同时判断数据块是属于前一帧还是后一帧，下一帧是奇数帧还是偶数帧。这些数据可以用于我们提出的颜色判断模型。</p>
 <h3 id="4-相邻色块的影响"><a href="#4-相邻色块的影响" class="headerlink" title="4.相邻色块的影响"></a>4.相邻色块的影响</h3><p>​        一个色块会被相邻的8个色块的颜色影响，尤其是处于颜色边界的像素点。每一个色块都被其他8个色块包围，记$\hat{C}_{neighbor}=&lt;{CNB}_1,{CNB}_2,…,{CNB}_8&gt;$</p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E7%9B%B8%E9%82%BB%E9%A2%9C%E8%89%B2%E5%BD%B1%E5%93%8D.png" alt="image-20200104194311999"></p>
-<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h3><p>​        将上述4个情况综合考虑，我们将特征提取为$\hat{F}=&lt;\hat{C}<em>{block},\hat{C}</em>{ref},\hat{C}<em>{RSI},\hat{C}</em>{neighbor}&gt;$ ，这将作为机器学习模型的输入参数。</p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/相邻颜色影响.png" alt="image-20200104194311999"></p>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h3><p>​        将上述4个情况综合考虑，我们将特征提取为$\hat{F}=&lt;\hat{C}_{block},\hat{C}_{ref},\hat{C}_{RSI},\hat{C}_{neighbor}&gt;$ ，这将作为机器学习模型的输入参数。</p>
 <h2 id="机器学习模型"><a href="#机器学习模型" class="headerlink" title="机器学习模型"></a>机器学习模型</h2><p>​        已知一个特征 $\hat{F}$ ,我们想判断其正确的颜色。假设有K个预先定义好的颜色，表示为$\overline{C} =\lbrace \overline{c}_1,\overline{c}_2,…,\overline{c}_k \rbrace $ .机器学习任务可以看为是一个$f(\hat{F}) \rightarrow \overline{C}$ 。也就是一个分类问题。</p>
 <h3 id="随机森林分类模型"><a href="#随机森林分类模型" class="headerlink" title="随机森林分类模型"></a>随机森林分类模型</h3><p>​        本文采用随机森林分类器进行颜色条码识别。随机森林是一种用于分类的集成学习方法，该方法通过构造多个决策树分类器并将其结果组合起来进行分类决策。随机森林模型在训练实例的各个子样本上构造了大量的决策树，并利用平均法提高预测精度。图10是一个随机森林的结构。</p>
-<img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/随机森林.png" alt="image-20200104201825415" style="zoom:50%;">
-
-
-
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/随机森林.png" alt="image-20200104201825415" style="zoom:50%;"></p>
 <h3 id="混合专家-一种半监督学习方法"><a href="#混合专家-一种半监督学习方法" class="headerlink" title="混合专家:一种半监督学习方法"></a>混合专家:一种半监督学习方法</h3><p>​        虽然随机森林是高效和精确的，但它是一种监督学习方法并依赖于一个训练集来建立模型。为了形成训练集，在发送信息帧之前发送端需要发送足够数量的训练帧。如果训练帧的数量太大，可能需要很长时间才能将所有训练帧传送完毕。例如，如果发送方显示帧速率为20 fps，那么发送100个训练帧需要5秒。长时间的启动延迟显然会影响用户的体验。为了解决这一问题，我们提出了一种接近冷启动的半监督学习方法。</p>
 <p>​        基本思想是重用一些以前的模型，而不是每次都训练一个新模型。例如，当第一次使用MegaLight时，将构建一个随机森林模型。下次再使用MegaLight时，我们希望之前的模型可以在不做重大修改的情况下重复使用。</p>
 <p>​        我们采用混合专家(MoE)方法来建立半监督学习模型。从不同的环境情况(例如，森林)中学习了许多预先构建的随机森林模型。并应用MoE集成学习方法将预构建的模型集成到分类器中。</p>
@@ -2182,17 +2261,19 @@ EOB</td>
 <li>由于条形码在屏幕上是循环播放的，可以收集更多的训练帧来构建一个新的随机森林模型，并将其合并到已有的MoE模型中。</li>
 <li>为了节省存储空间，我们只保留最新的m(默认为m=5)个随机森林的模型来训练MoE分类器。通过重用一些预先建立的模型，我们可以在不需要传输大量训练帧的情况下形成MoE分类器，从而大大减少了启动时间。</li>
 </ol>
-<img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/混合专家模型.png" alt="image-20200104202719037" style="zoom:80%;">
-
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/混合专家模型.png" alt="image-20200104202719037" style="zoom:80%;"></p>
 <p>​        MoE模型是基于分治原理建立的。如图11所示，MoE的问题空间由少数专家组成(即预先建立的随机森林模型)，并由一个门控网络监督。我们将预先构建的随机森林模型(也称为专家模型)称为$y_1,y_2,…,y_m$。训练实例为$x_1,x_2,…,x_n$ (即发送端发送的训练图片)，对应的标签为$t_1,t_2,…,t_n$(即接收端接收到帧ID之后生成的和发送端相同的数据)。对于每个$y_i$,我们定义为$g_i$它的权重(即专家$ y_i $的权重)。</p>
-<p>​        最终输出的MoE可以被表示为前m个专家的加权平均和，即<br>$$<br>y(x) = \sum^m_{i=1} g_iy_i(x)<br>$$</p>
-<p>​        为了得到最佳的模型，该模型的损失函数E表示为:<br>$$<br>E = \frac{1}{m} \sum^m_{i=1}\sum^n_{j=1}g_i(t_j-y_i(x_j))^2<br>$$<br>​        假设每一个$x_k$ 带入i个已经训练号的随机森林模型，并求加权残差平方和。然后使用梯度下降法可以求得E的最优解和最佳权重组合$g_k^{\rightarrow}$</p>
+<p>​        最终输出的MoE可以被表示为前m个专家的加权平均和，即</p>
+<script type="math/tex; mode=display">
+y(x) = \sum^m_{i=1} g_iy_i(x)</script><p>​        为了得到最佳的模型，该模型的损失函数E表示为:</p>
+<script type="math/tex; mode=display">
+E = \frac{1}{m} \sum^m_{i=1}\sum^n_{j=1}g_i(t_j-y_i(x_j))^2</script><p>​        假设每一个$x_k$ 带入i个已经训练号的随机森林模型，并求加权残差平方和。然后使用梯度下降法可以求得E的最优解和最佳权重组合$g_k^{\rightarrow}$</p>
 <p>混合专家模型的流程如下：</p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E6%B7%B7%E5%90%88%E4%B8%93%E5%AE%B6%E6%B5%81%E7%A8%8B.png" alt="image-20200104212137634"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/混合专家流程.png" alt="image-20200104212137634"></p>
 <h2 id="系统实现"><a href="#系统实现" class="headerlink" title="系统实现"></a>系统实现</h2><p>​        选用了LightSync和RDCode来套用本论文的MegaLight模型来进行实验。</p>
 <p>发送端使用jdk1.8来生成图片然后使用ffmpeg生成视频。</p>
 <p>接收端使用Android SDK 6.0.1来拍摄和使用本文提到的机器学习模型。</p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/LS%E5%92%8CRDC.png" alt="image-20200104213145309"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/LS和RDC.png" alt="image-20200104213145309"></p>
 <p>LScode使用黑白的进行测试，RDC使用彩色进行测试</p>
 <p>系统也使用了RaptorQ作为冗余，RS校验码已经在两个二维码中实现。</p>
 <h2 id="系统评估"><a href="#系统评估" class="headerlink" title="系统评估"></a>系统评估</h2><p>发送端配置：</p>
@@ -2200,32 +2281,32 @@ EOB</td>
 <p>接收端：三星Galaxy S7 ,摄像机分辨率 12M, 拍摄1080p 30fps 的视频。</p>
 <p>​        在实验中，我们使用80帧训练帧建立随机森林分类模型，并采用5个在不同环境光下学习的随机森林分类器作为混合专家。在每次运行中，我们只使用20个训练帧作为半监督学习混合专家模型的输入。由于系统可以以大于20帧/秒的速率捕获帧，所以训练帧可以在1秒内传输，对于大多数用户来说，这是一个可以容忍的延迟。</p>
 <p>​        每组实验，我们将大约200个信息帧从发送方传输到接收端。每个实验重复5次，取平均值。除非另有说明，实验是在正常的室内环境下进行的。</p>
-<p>​        默认情况下，智能手机位于距离LED显示屏60厘米的固定距离内；拍摄帧速率设置为22fps；条形码中的块数设置为$100 * 100$(用于黑白条形码)，$108*84$(用于RDCode)。错误纠正级别设置为10%。</p>
+<p>​        默认情况下，智能手机位于距离LED显示屏60厘米的固定距离内；拍摄帧速率设置为22fps；条形码中的块数设置为$100 <em> 100$(用于黑白条形码)，$108</em>84$(用于RDCode)。错误纠正级别设置为10%。</p>
 <h3 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h3><p>我们的评估侧重于以下性能指标:</p>
 <p>​        <strong>帧错误率(Frame error rate)</strong>：未成功解码的帧数占接收帧总数的百分比。它被用来评价帧解调方法的性能。帧错误率越低，正确识别捕获帧的百分比就越大。</p>
 <p>​        <strong>帧冗余(Frame redundancy)</strong>：恢复传输文件所需的超过最小帧数的额外帧的百分比。它用于计算延迟开销以恢复整个数据位。帧冗余越高，系统开销越大。</p>
 <p>​        <strong>吞吐量(Goodput)</strong>：传输的文件大小除以总传输时间。它被用来评估屏幕-摄像机通信的整体性能。质量越高，通信质量越好。</p>
-<h3 id="机器学习模型性能"><a href="#机器学习模型性能" class="headerlink" title="机器学习模型性能"></a>机器学习模型性能</h3><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E4%B8%8D%E5%90%8C%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD.png" alt="image-20200104215658520"></p>
+<h3 id="机器学习模型性能"><a href="#机器学习模型性能" class="headerlink" title="机器学习模型性能"></a>机器学习模型性能</h3><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/不同机器学习模型性能.png" alt="image-20200104215658520"></p>
 <p>​        我们首先证明了所提出的机器学习模型的有效性。我们修复训练帧的数量为80,并比较MoE的性能与几个基准分类器包括决策树(优化购物车没有深度的限制),随机森林(10棵树实现优化购物车没有深度的限制),逻辑回归(100次迭代),支持向量机(核函数= RBF),和一个完全连接的神经网络(100一个隐层神经元),结果如表1所示。        </p>
 <p>​        不使用机器学习模型的时候，LightSync的误码率为14.2%，RDCode误码率为36.8%，使用megaLight之后误码率降到了21%和20%。文章选择Random Forest作为MoE模型，因为在实验中，Random Forest在帧误码率、性能增益、训练时间等方面表现最好。值得注意的是，其他一些模型如SVM和NN与MoE的性能相近，同时存储开销较低，如果能将训练时间减少到一个合理的水平，这些模型可以替代随机森林。</p>
-<h4 id="不同光照"><a href="#不同光照" class="headerlink" title="不同光照"></a>不同光照</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C.png" alt="image-20200104220724727"></p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/RDCode%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C.png" alt="image-20200104220849319"></p>
-<h4 id="不同播放帧率"><a href="#不同播放帧率" class="headerlink" title="不同播放帧率"></a>不同播放帧率</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/LS%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7.png" alt="image-20200104224410287"></p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/RSC%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7.png" alt="image-20200104224447476"></p>
-<h4 id="不同色块的大小"><a href="#不同色块的大小" class="headerlink" title="不同色块的大小"></a>不同色块的大小</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/LS%E4%B8%8D%E5%90%8C%E5%9D%97%E5%A4%A7%E5%B0%8F.png" alt="image-20200104224631588"></p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/RDC%E4%B8%8D%E5%90%8C%E5%85%89%E7%85%A7.png" alt="image-20200104224700581"></p>
-<h4 id="不同拍摄距离"><a href="#不同拍摄距离" class="headerlink" title="不同拍摄距离"></a>不同拍摄距离</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/LS%E4%B8%8D%E5%90%8C%E8%B7%9D%E7%A6%BB.png" alt="image-20200104224832651"></p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/RDC%E4%B8%8D%E5%90%8C%E8%B7%9D%E7%A6%BB.png" alt="image-20200104224924652"></p>
-<h4 id="不同训练样本的数量"><a href="#不同训练样本的数量" class="headerlink" title="不同训练样本的数量"></a>不同训练样本的数量</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E8%AE%AD%E7%BB%83%E6%A0%B7%E6%9C%AC%E4%B8%8D%E5%90%8C.png" alt="image-20200104225607684"></p>
-<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/RD%E4%B8%8D%E5%90%8C%E8%AE%AD%E7%BB%83%E6%95%B0%E9%87%8F.png" alt="image-20200104225657764"></p>
-<h4 id="基于现实场景"><a href="#基于现实场景" class="headerlink" title="基于现实场景"></a>基于现实场景</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/%E4%B8%8D%E5%90%8C%E7%8E%B0%E5%AE%9E%E5%9C%BA%E6%99%AF.png" alt="image-20200104225908419"></p>
+<h4 id="不同光照"><a href="#不同光照" class="headerlink" title="不同光照"></a>不同光照</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/不同光照实验结果.png" alt="image-20200104220724727"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/RDCode不同光照实验结果.png" alt="image-20200104220849319"></p>
+<h4 id="不同播放帧率"><a href="#不同播放帧率" class="headerlink" title="不同播放帧率"></a>不同播放帧率</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/LS不同光照.png" alt="image-20200104224410287"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/RSC不同光照.png" alt="image-20200104224447476"></p>
+<h4 id="不同色块的大小"><a href="#不同色块的大小" class="headerlink" title="不同色块的大小"></a>不同色块的大小</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/LS不同块大小.png" alt="image-20200104224631588"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/RDC不同光照.png" alt="image-20200104224700581"></p>
+<h4 id="不同拍摄距离"><a href="#不同拍摄距离" class="headerlink" title="不同拍摄距离"></a>不同拍摄距离</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/LS不同距离.png" alt="image-20200104224832651"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/RDC不同距离.png" alt="image-20200104224924652"></p>
+<h4 id="不同训练样本的数量"><a href="#不同训练样本的数量" class="headerlink" title="不同训练样本的数量"></a>不同训练样本的数量</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/训练样本不同.png" alt="image-20200104225607684"></p>
+<p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/RD不同训练数量.png" alt="image-20200104225657764"></p>
+<h4 id="基于现实场景"><a href="#基于现实场景" class="headerlink" title="基于现实场景"></a>基于现实场景</h4><p><img src="/2020/01/03/Learning-based-Color-Adaptation-for-Barcode-Stream/不同现实场景.png" alt="image-20200104225908419"></p>
 ]]></content>
       <categories>
         <category>论文</category>
       </categories>
       <tags>
-        <tag>MachineLearning</tag>
         <tag>QRCode</tag>
+        <tag>MachineLearning</tag>
       </tags>
   </entry>
 </search>

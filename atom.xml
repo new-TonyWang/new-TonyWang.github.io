@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-02-22T08:08:13.415Z</updated>
+  <updated>2020-02-27T08:50:01.045Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>什么是卷积</title>
+    <link href="http://yoursite.com/2020/02/27/What-is-convolution/"/>
+    <id>http://yoursite.com/2020/02/27/What-is-convolution/</id>
+    <published>2020-02-27T07:16:00.000Z</published>
+    <updated>2020-02-27T08:50:01.045Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;卷积的定义&quot;&gt;&lt;a href=&quot;#卷积的定义&quot; class=&quot;headerlink&quot; title=&quot;卷积的定义&quot;&gt;&lt;/a&gt;卷积的定义&lt;/h2&gt;&lt;p&gt;​    我们称$(f*g)(n)$为$f,g$的卷积&lt;br&gt;连续函数卷积定义为：&lt;/p&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+(f*g)(n) = \int_{-\infty}^{\infty} f(\tau)g(n-\tau)d\tau&lt;/script&gt;&lt;p&gt;离散函数定义为：&lt;/p&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+(f*g)(n) = \sum_{\tau = -\infty}^{\infty} f(\tau)g(n-\tau)&lt;/script&gt;
+    
+    </summary>
+    
+    
+      <category term="数学" scheme="http://yoursite.com/categories/%E6%95%B0%E5%AD%A6/"/>
+    
+    
+      <category term="连续函数卷积" scheme="http://yoursite.com/tags/%E8%BF%9E%E7%BB%AD%E5%87%BD%E6%95%B0%E5%8D%B7%E7%A7%AF/"/>
+    
+      <category term="离散函数卷积" scheme="http://yoursite.com/tags/%E7%A6%BB%E6%95%A3%E5%87%BD%E6%95%B0%E5%8D%B7%E7%A7%AF/"/>
+    
+  </entry>
   
   <entry>
     <title>透视变换原理</title>
@@ -47,7 +74,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;该文章转载自&lt;a href=&quot;http://www.thecodeway.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;www.thecodeway.com&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;该文章转载自www.thecodeway.com&lt;br&gt;&lt;a href=&quot;http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;http://www.ibm.com/developerworks/cn/linux/l-cn-jpeg/&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&quot;JPEG图像压缩算法&quot;&gt;&lt;a href=&quot;#JPEG图像压缩算法&quot; class=&quot;headerlink&quot; title=&quot;JPEG图像压缩算法&quot;&gt;&lt;/a&gt;JPEG图像压缩算法&lt;/h3&gt;&lt;div class=&quot;entry-meta&quot; style=&quot;border:0px; margin:0px; padding:0px; vertical-align:baseline; font-family:&amp;quot;Helvetica Neue&amp;quot;,Arial,Helvetica,&amp;quot;Nimbus Sans L&amp;quot;,sans-serif; color:rgb(136,136,136)&quot;&gt;
 &lt;br&gt;
 &lt;/div&gt;
@@ -165,7 +192,7 @@
     <summary type="html">
     
       &lt;p&gt;平稳分布（马尔可夫链的）具有某种不变（或者说平稳）性质的概率分布&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/2020/02/02/Markov-chains-and-stationary-distribution/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB1.png&quot; alt&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/2020/02/02/Markov-chains-and-stationary-distribution/马尔科夫1.png&quot; alt&gt;&lt;/p&gt;
     
     </summary>
     
@@ -262,9 +289,9 @@
       <category term="论文" scheme="http://yoursite.com/categories/%E8%AE%BA%E6%96%87/"/>
     
     
-      <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
-    
       <category term="QRCode" scheme="http://yoursite.com/tags/QRCode/"/>
+    
+      <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
     
   </entry>
   

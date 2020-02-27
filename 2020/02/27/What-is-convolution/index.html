@@ -20,7 +20,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    cook |  
+    什么是卷积 |  
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -46,7 +46,7 @@
   <div id="app">
     <main class="content">
       <section class="outer">
-  <article id="post-cook" class="article article-type-post" itemscope
+  <article id="post-What-is-convolution" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -54,7 +54,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  cook
+  什么是卷积
 </h1>
   
 
@@ -63,12 +63,12 @@
 
     
     <div class="article-meta">
-      <a href="/2020/01/31/cook/" class="article-date">
-  <time datetime="2020-01-31T09:57:15.000Z" itemprop="datePublished">2020-01-31</time>
+      <a href="/2020/02/27/What-is-convolution/" class="article-date">
+  <time datetime="2020-02-27T07:16:00.000Z" itemprop="datePublished">2020-02-27</time>
 </a>
       
   <div class="article-category">
-    <a class="article-category-link" href="/categories/%E9%A5%AD/">饭</a>
+    <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
   </div>
 
       
@@ -78,7 +78,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">0字</span>
+            <span class="post-count">688字</span>
         </span>
     </span>
 
@@ -87,7 +87,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1分钟</span>
+            <span class="post-count">2分钟</span>
         </span>
     </span>
 </div>
@@ -98,6 +98,8 @@
 
     
     
+    <div class="tocbot"></div>
+
 
 
 
@@ -111,7 +113,69 @@
       
 
       
-      
+      <h2 id="卷积的定义"><a href="#卷积的定义" class="headerlink" title="卷积的定义"></a>卷积的定义</h2><p>​    我们称$(f*g)(n)$为$f,g$的卷积<br>连续函数卷积定义为：</p>
+<script type="math/tex; mode=display">
+(f*g)(n) = \int_{-\infty}^{\infty} f(\tau)g(n-\tau)d\tau</script><p>离散函数定义为：</p>
+<script type="math/tex; mode=display">
+(f*g)(n) = \sum_{\tau = -\infty}^{\infty} f(\tau)g(n-\tau)</script><a id="more"></a> 
+<p>两个式子的共同特征:</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-d3df01f12b869d431c65f97ad307508f_1440w.jpg" alt="img"></p>
+<p>我们令$x = \tau,y = n-\tau $，那么$x+y = n$就是下面的直线：</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-8be52f6bada3f7a21cebfc210d2e7ea0_hd.webp" alt="img"></p>
+<h2 id="几个例子"><a href="#几个例子" class="headerlink" title="几个例子"></a>几个例子</h2><h3 id="1-离散卷积：同时掷两枚骰子，两个骰子加起来为4的概率是多少？"><a href="#1-离散卷积：同时掷两枚骰子，两个骰子加起来为4的概率是多少？" class="headerlink" title="1.离散卷积：同时掷两枚骰子，两个骰子加起来为4的概率是多少？"></a>1.离散卷积：同时掷两枚骰子，两个骰子加起来为4的概率是多少？</h3><p>把两个骰子的个点出现的概率表示出来：</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-4763fd548536b21640d01d3f8a59c546_1440w.jpg" alt="img"></p>
+<p>两枚骰子点数加起来为4的情况有：</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-a67a711702ce48cd7632e783ae0a1f42_1440w.jpg" alt="img"></p>
+<p><img src="/2020/02/27/What-is-convolution/v2-d6ff10bf39c46397ab2bebb971d4b58c_1440w.jpg" alt="img"></p>
+<p><img src="/2020/02/27/What-is-convolution/v2-0cdabcc04398ea723aa6e47e05072e5c_1440w.jpg" alt="img"></p>
+<p>因此，两枚骰子点数加起来为4的概率为：</p>
+<script type="math/tex; mode=display">
+f(1)g(3)+f(2)g(2)+f(3)g(1)</script><p>把它写成标准形式：</p>
+<script type="math/tex; mode=display">
+(f*g)(4) = \sum_{m=1}^{3}f(4-m)g(m)</script><h3 id="2-连续卷积：做馒头"><a href="#2-连续卷积：做馒头" class="headerlink" title="2.连续卷积：做馒头"></a>2.连续卷积：做馒头</h3><p>楼下早点铺子生意太好了，供不应求，就买了一台机器，不断的生产馒头。</p>
+<p>假设馒头的生产速度是$ f(t)$，那么一天后生产出来的馒头总量为：</p>
+<script type="math/tex; mode=display">
+\int_{0}^{24}f(t)dt</script><p>馒头产生出来之后，就会慢慢腐败，腐败率函数为$g(t)$。比如10个馒头，24小时腐败</p>
+<script type="math/tex; mode=display">
+10*g(t)</script><p>第一个小时生产出来的馒头，经历24小时的腐败过程，第二个小时生产出来的馒头经历23小时腐败过程。</p>
+<p>如此一天之后馒头腐败了:</p>
+<script type="math/tex; mode=display">
+\int_{0}^{24}f(t)g(24-t)dt</script><p>这就是连续函数卷积</p>
+<h3 id="3-图像处理"><a href="#3-图像处理" class="headerlink" title="3.图像处理"></a>3.图像处理</h3><h4 id="3-1原理"><a href="#3-1原理" class="headerlink" title="3.1原理"></a>3.1原理</h4><p>这幅图像有很多的噪点:<br><img src="/2020/02/27/What-is-convolution/v2-8d161328acd72d035e461c0b89b753e5_1440w.jpg" alt="img"></p>
+<p>平滑办法之一就是，把高频信号，补充到周围的信号中。用数学的话来说，就是把数值平均一下。</p>
+<p>平滑后得到：</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-83b24e8ed70f17df6bc3b921ebe6276c_1440w.jpg" alt="img"></p>
+<h4 id="4-1计算"><a href="#4-1计算" class="headerlink" title="4.1计算"></a>4.1计算</h4><p>使用卷积来实现平滑算法</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-8dd14775ab8c91a09507f52e44f347f3_1440w.jpg" alt="img"></p>
+<p>使用python 生成正态分矩阵:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> *;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">rand_Matrix</span><span class="params">()</span>:</span></span><br><span class="line">	randArr=random.randn(<span class="number">3</span>,<span class="number">3</span>);</span><br><span class="line">	randMat=mat(randArr);</span><br><span class="line">	<span class="keyword">return</span> randMat;</span><br><span class="line">g = rand_Matrix()</span><br></pre></td></tr></table></figure>
+<script type="math/tex; mode=display">
+g = \left[
+\begin{matrix}
+0.89669359 &  -0.81377852 &  0.83626426\\
+         1.69437977 &  -1.72722893 &  -0.89842572\\
+         0.1720925 &   1.07305877 &   0.60385222\\
+\end{matrix}
+\right]</script><p>使用离散卷积公式就可以对图像进行平滑操作。</p>
+<p>比如我要平滑$a_{1,1}$，就在图像矩阵中取周围的点组成矩阵$f$和$g$进行卷积运算。</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-5ee9a99988137a42d1067deab36c4e51_1440w.jpg" alt="img"></p>
+<p>要注意矩阵$g和f$的下标不同</p>
+<p><img src="/2020/02/27/What-is-convolution/v2-779d4e972dc557be55e6131edbb8db9f_1440w.jpg" alt="img"></p>
+<p>矩阵$g$从右下角开始运算</p>
+<p><img src="https://pic3.zhimg.com/50/v2-c658110eafe027eded16864fb6a28f46_hd.webp" alt="img"></p>
+<p>写成卷积公式就是：</p>
+<script type="math/tex; mode=display">
+(f*g)(1,1) = \sum_{k = 0}^{2}\sum_{k = 0}^{2}f(h,k)g(1-h,1-k)</script><p>图像的卷积如下图所示：</p>
+<p>一般情况下会对图像四周进行补0之后再进行卷积运算，该图像的核函数g为，而非图中所示。因为g是从右下角开始运算。</p>
+<script type="math/tex; mode=display">
+g = \left[
+    \begin{matrix}
+    1 &  2 &  1\\         
+    0 &  0 &  0\\         
+    -1&   -2 &   -1\\
+    \end{matrix}
+    \right]</script><p><img src="/2020/02/27/What-is-convolution/v2-15fea61b768f7561648dbea164fcb75f_hd.webp" alt="img"></p>
+
       
       <!-- 打赏 -->
       
@@ -121,10 +185,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/01/31/cook/" data-id="ck74ict9s000jrkv97edibln2"
+      <a data-url="http://yoursite.com/2020/02/27/What-is-convolution/" data-id="ck74ict9o000hrkv955fs0hug"
         class="article-share-link">分享</a>
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%90%83%E7%9A%84%E4%B8%9C%E8%A5%BF/" rel="tag">吃的东西</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E5%87%BD%E6%95%B0%E5%8D%B7%E7%A7%AF/" rel="tag">离散函数卷积</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BF%9E%E7%BB%AD%E5%87%BD%E6%95%B0%E5%8D%B7%E7%A7%AF/" rel="tag">连续函数卷积</a></li></ul>
 
     </footer>
 
@@ -134,19 +198,10 @@
   
   <nav class="article-nav">
     
-      <a href="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            ERSCC 论文笔记
-          
-        </div>
-      </a>
     
-    
-      <a href="/2020/01/06/Active-Learning/" class="article-nav-link">
+      <a href="/2020/02/22/Perspective-Transformation/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">Active Learning （主动学习）</div>
+        <div class="article-nav-title">透视变换原理</div>
       </a>
     
   </nav>
