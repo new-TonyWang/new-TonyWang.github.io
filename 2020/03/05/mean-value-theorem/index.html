@@ -20,7 +20,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    about |  
+    中值定理 |  
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -46,7 +46,7 @@
   <div id="app">
     <main class="content">
       <section class="outer">
-  <article id="page-" class="article article-type-page" itemscope
+  <article id="post-mean-value-theorem" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -54,7 +54,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  about
+  中值定理
 </h1>
   
 
@@ -62,6 +62,47 @@
     
 
     
+    <div class="article-meta">
+      <a href="/2020/03/05/mean-value-theorem/" class="article-date">
+  <time datetime="2020-03-05T04:41:29.000Z" itemprop="datePublished">2020-03-05</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">406字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">1分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
 
     
 
@@ -72,7 +113,58 @@
       
 
       
-      
+      <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>中值定理</strong>是反映函数与<a href="https://baike.baidu.com/item/导数/579188" target="_blank" rel="noopener">导数</a>之间联系的重要<a href="https://baike.baidu.com/item/定理/9488549" target="_blank" rel="noopener">定理</a>，也是微积分学的理论基础，在许多方面它都有重要的作用，在进行一些公式推导与定理证明中都有很多应用。中值定理是由众多定理共同构建的，其中拉格朗日中值定理是核心，罗尔定理是其特殊情况，柯西定理是其推广。</p>
+<a id="more"></a>
+<h2 id="罗尔定理"><a href="#罗尔定理" class="headerlink" title="罗尔定理"></a>罗尔定理</h2><p>​    如果<strong>R</strong>上的函数$f(x)$满足如下条件：</p>
+<ol>
+<li>在闭区间[a,b]连续</li>
+<li>在开区间(a,b)内可导</li>
+<li>f(a) = f(b),则至少存在一个$\xi\in(a,b)$使得$f’(\xi) = 0$</li>
+</ol>
+<p><img src="/2020/03/05/mean-value-theorem/rolle.jpg" alt="img"></p>
+<h3 id="罗尔定理应用"><a href="#罗尔定理应用" class="headerlink" title="罗尔定理应用"></a>罗尔定理应用</h3><p>用罗尔中值定理证明：方程</p>
+<script type="math/tex; mode=display">
+ax^2+2bx-(a-b) = 0</script><p>在 (0,1) 内有实根。</p>
+<p><strong>证明：</strong> 设</p>
+<script type="math/tex; mode=display">
+F(x) = ax^3+bx^2-(a+b)x</script><p>则 F(x) 在 [0,1] 上连续，在 (0,1) 内可导，</p>
+<script type="math/tex; mode=display">
+F(0) = F(1) = 0</script><p>，所以由罗尔中值定理，至少存在一点</p>
+<script type="math/tex; mode=display">
+\xi\in(0,1)</script><p>，使得</p>
+<script type="math/tex; mode=display">
+F'(\xi) = 0,F'(\xi) =3ax^2+2bx-(a+b)</script><p>，所以</p>
+<script type="math/tex; mode=display">
+3a\xi^2+2b\xi-(a+b) = 0</script><p>，所以$\xi$是<a href="https://baike.baidu.com/item/方程" target="_blank" rel="noopener">方程</a></p>
+<script type="math/tex; mode=display">
+3ax^2+2bx-(a+b) = 0</script><p>在 (0,1) 内的一个实根。</p>
+<p>结论得证。</p>
+<h2 id="拉格朗日中值定理"><a href="#拉格朗日中值定理" class="headerlink" title="拉格朗日中值定理"></a>拉格朗日中值定理</h2><p>​    如果函数$f(x)$满足：</p>
+<ol>
+<li>在闭区间[a,b]上连续；</li>
+<li>在开区间(a,b)可导;</li>
+<li>那么在开区间(a,b)至少有一点$\epsilon(a&lt;\epsilon&lt;b)$使等式$f(b)-f(a) = f’(\epsilon)(b-a)$成立</li>
+<li><img src="/2020/03/05/mean-value-theorem/watermark,g_7,image_d2F0ZXIvYmFpa2U4MA==,xp_5,yp_5.jpg" alt="img"></li>
+</ol>
+<h3 id="其他形式："><a href="#其他形式：" class="headerlink" title="其他形式："></a>其他形式：</h3><p>记$\epsilon = a+\theta(b-a) 其中(0&lt;\theta&lt;1)$,令$a = x,b = x+\Delta x$则有</p>
+<script type="math/tex; mode=display">
+\Delta y = f(x+\Delta x)-f(x) = f'(x+\Delta x)*\Delta x 其中(0<\theta<1)</script><p>上式称为<strong>有限增量公式</strong>。</p>
+<p>几何意义</p>
+<p>若连续曲线$y = f(x)$在$A(a,f(a)),B(b,f(b))$ 两点间的每一点处都有不垂直于x轴的切线，则曲线在A，B间至少存在1点$P(\xi,f(\xi))$ ，使得该曲线在P点的切线与割线AB平行。</p>
+<h2 id="柯西中值定理"><a href="#柯西中值定理" class="headerlink" title="柯西中值定理"></a>柯西中值定理</h2><p><strong>柯西（Cauchy）</strong><a href="https://baike.baidu.com/item/中值定理" target="_blank" rel="noopener">中值定理</a>**：设函数$f(x),g(x)$满足：</p>
+<ol>
+<li><p>在闭区间[a,b]上连续；</p>
+</li>
+<li><p>在开区间(a,b)可导;</p>
+</li>
+<li><p>对$\forall x\in(a,b),g’(x)\ne0$,那么在$(a,b)$内至少有一点$\xi\in(a,b)$使得</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">
+\frac{f(b) -f(a)}{g(b)-g(a)} = \frac{f'(\xi)}{g'(\xi)}</script><p>成立。<br>  几何意义</p>
+<p>  若令$u = f(x),v = g(x)$ ，这个形式可理解为<a href="https://baike.baidu.com/item/参数方程" target="_blank" rel="noopener">参数方程</a>，而$\frac{f(b) -f(a)}{g(b)-g(a)}$ 则是连接参数曲线两端点弦的斜率，$\frac{f’(\xi)}{g’(\xi)}$  表示曲线上某点处切线的斜率，在定理的条件下，结论可理解如下：<strong>用参数方程表示的曲线上至少有一点，在这一点处的切线平行于连接两个端点的弦</strong></p>
+<p><img src="/2020/03/05/mean-value-theorem/resize,m_lfit,w_268,limit_1.jpg" alt="img"></p>
+
       
       <!-- 打赏 -->
       
@@ -82,15 +174,27 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/about/index.html" data-id="ck7el7axx0003t8v97likf99w"
+      <a data-url="http://yoursite.com/2020/03/05/mean-value-theorem/" data-id="ck7el7ayp000ut8v9f1zz9gxa"
         class="article-share-link">分享</a>
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E4%B8%AD%E5%80%BC%E5%AE%9A%E7%90%86/" rel="tag">拉格朗日中值定理</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9F%AF%E8%A5%BF%E4%B8%AD%E5%80%BC%E5%AE%9A%E7%90%86/" rel="tag">柯西中值定理</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%97%E5%B0%94%E5%AE%9A%E7%90%86/" rel="tag">罗尔定理</a></li></ul>
+
     </footer>
 
   </div>
 
   
   
+  <nav class="article-nav">
+    
+    
+      <a href="/2020/03/04/channel-coding/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">channel coding</div>
+      </a>
+    
+  </nav>
+
 
   
 
@@ -149,6 +253,8 @@
   
 
   
+  
+  
 
 </article>
 </section>
@@ -190,8 +296,8 @@
       </div>
     </main>
     
-      <aside class="sidebar">
-        
+    <aside class="sidebar">
+      
         <button class="navbar-toggle"></button>
 <nav class="navbar">
   
@@ -289,6 +395,27 @@
 
 
 
+
+  
+<script src="/js/tocbot.min.js"></script>
+
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+			onClick: (e) => {
+      	document.getElementById(e.target.innerText).scrollIntoView()
+      	return false;
+    	}
+    });
+  </script>
 
 
 <script>

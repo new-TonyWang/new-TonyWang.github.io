@@ -1,20 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>中值定理</title>
+    <url>/2020/03/05/mean-value-theorem/</url>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>中值定理</strong>是反映函数与<a href="https://baike.baidu.com/item/导数/579188" target="_blank" rel="noopener">导数</a>之间联系的重要<a href="https://baike.baidu.com/item/定理/9488549" target="_blank" rel="noopener">定理</a>，也是微积分学的理论基础，在许多方面它都有重要的作用，在进行一些公式推导与定理证明中都有很多应用。中值定理是由众多定理共同构建的，其中拉格朗日中值定理是核心，罗尔定理是其特殊情况，柯西定理是其推广。</p>
+<a id="more"></a>
+<h2 id="罗尔定理"><a href="#罗尔定理" class="headerlink" title="罗尔定理"></a>罗尔定理</h2><p>​    如果<strong>R</strong>上的函数$f(x)$满足如下条件：</p>
+<ol>
+<li>在闭区间[a,b]连续</li>
+<li>在开区间(a,b)内可导</li>
+<li>f(a) = f(b),则至少存在一个$\xi\in(a,b)$使得$f’(\xi) = 0$</li>
+</ol>
+<p><img src="/2020/03/05/mean-value-theorem/rolle.jpg" alt="img"></p>
+<h3 id="罗尔定理应用"><a href="#罗尔定理应用" class="headerlink" title="罗尔定理应用"></a>罗尔定理应用</h3><p>用罗尔中值定理证明：方程</p>
+<script type="math/tex; mode=display">
+ax^2+2bx-(a-b) = 0</script><p>在 (0,1) 内有实根。</p>
+<p><strong>证明：</strong> 设</p>
+<script type="math/tex; mode=display">
+F(x) = ax^3+bx^2-(a+b)x</script><p>则 F(x) 在 [0,1] 上连续，在 (0,1) 内可导，</p>
+<script type="math/tex; mode=display">
+F(0) = F(1) = 0</script><p>，所以由罗尔中值定理，至少存在一点</p>
+<script type="math/tex; mode=display">
+\xi\in(0,1)</script><p>，使得</p>
+<script type="math/tex; mode=display">
+F'(\xi) = 0,F'(\xi) =3ax^2+2bx-(a+b)</script><p>，所以</p>
+<script type="math/tex; mode=display">
+3a\xi^2+2b\xi-(a+b) = 0</script><p>，所以$\xi$是<a href="https://baike.baidu.com/item/方程" target="_blank" rel="noopener">方程</a></p>
+<script type="math/tex; mode=display">
+3ax^2+2bx-(a+b) = 0</script><p>在 (0,1) 内的一个实根。</p>
+<p>结论得证。</p>
+<h2 id="拉格朗日中值定理"><a href="#拉格朗日中值定理" class="headerlink" title="拉格朗日中值定理"></a>拉格朗日中值定理</h2><p>​    如果函数$f(x)$满足：</p>
+<ol>
+<li>在闭区间[a,b]上连续；</li>
+<li>在开区间(a,b)可导;</li>
+<li>那么在开区间(a,b)至少有一点$\epsilon(a&lt;\epsilon&lt;b)$使等式$f(b)-f(a) = f’(\epsilon)(b-a)$成立</li>
+<li><img src="/2020/03/05/mean-value-theorem/watermark,g_7,image_d2F0ZXIvYmFpa2U4MA==,xp_5,yp_5.jpg" alt="img"></li>
+</ol>
+<h3 id="其他形式："><a href="#其他形式：" class="headerlink" title="其他形式："></a>其他形式：</h3><p>记$\epsilon = a+\theta(b-a) 其中(0&lt;\theta&lt;1)$,令$a = x,b = x+\Delta x$则有</p>
+<script type="math/tex; mode=display">
+\Delta y = f(x+\Delta x)-f(x) = f'(x+\Delta x)*\Delta x 其中(0<\theta<1)</script><p>上式称为<strong>有限增量公式</strong>。</p>
+<p>几何意义</p>
+<p>若连续曲线$y = f(x)$在$A(a,f(a)),B(b,f(b))$ 两点间的每一点处都有不垂直于x轴的切线，则曲线在A，B间至少存在1点$P(\xi,f(\xi))$ ，使得该曲线在P点的切线与割线AB平行。</p>
+<h2 id="柯西中值定理"><a href="#柯西中值定理" class="headerlink" title="柯西中值定理"></a>柯西中值定理</h2><p><strong>柯西（Cauchy）</strong><a href="https://baike.baidu.com/item/中值定理" target="_blank" rel="noopener">中值定理</a>**：设函数$f(x),g(x)$满足：</p>
+<ol>
+<li><p>在闭区间[a,b]上连续；</p>
+</li>
+<li><p>在开区间(a,b)可导;</p>
+</li>
+<li><p>对$\forall x\in(a,b),g’(x)\ne0$,那么在$(a,b)$内至少有一点$\xi\in(a,b)$使得</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">
+\frac{f(b) -f(a)}{g(b)-g(a)} = \frac{f'(\xi)}{g'(\xi)}</script><p>成立。<br>  几何意义</p>
+<p>  若令$u = f(x),v = g(x)$ ，这个形式可理解为<a href="https://baike.baidu.com/item/参数方程" target="_blank" rel="noopener">参数方程</a>，而$\frac{f(b) -f(a)}{g(b)-g(a)}$ 则是连接参数曲线两端点弦的斜率，$\frac{f’(\xi)}{g’(\xi)}$  表示曲线上某点处切线的斜率，在定理的条件下，结论可理解如下：<strong>用参数方程表示的曲线上至少有一点，在这一点处的切线平行于连接两个端点的弦</strong></p>
+<p><img src="/2020/03/05/mean-value-theorem/resize,m_lfit,w_268,limit_1.jpg" alt="img"></p>
+]]></content>
+      <categories>
+        <category>数学</category>
+      </categories>
+      <tags>
+        <tag>罗尔定理</tag>
+        <tag>拉格朗日中值定理</tag>
+        <tag>柯西中值定理</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>channel coding</title>
     <url>/2020/03/04/channel-coding/</url>
     <content><![CDATA[<p>3#</p>
 <h1 id="philosophy"><a href="#philosophy" class="headerlink" title="philosophy"></a>philosophy</h1><h1 id="PAM"><a href="#PAM" class="headerlink" title="PAM"></a>PAM</h1><p>脉冲编码调制(Pulse Code Modulation,PCM)，由A.里弗斯于1937年提出的，这一概念为<a href="https://baike.baidu.com/item/数字通信/1458211" target="_blank" rel="noopener">数字通信</a>奠定了基础，60年代它开始应用于市内电话网以扩充容量，使已有音频电缆的大部分芯线的传输容量扩大24～48倍。到70年代中、末期，各国相继把脉码调制成功地应用于同轴电缆通信、<a href="https://baike.baidu.com/item/微波接力通信/7544973" target="_blank" rel="noopener">微波接力通信</a>、卫星通信和<a href="https://baike.baidu.com/item/光纤" target="_blank" rel="noopener">光纤</a>通信等中、大容量传输系统。80年代初，脉冲编码调制已用于市话中继传输和大容量干线传输以及数字程控<a href="https://baike.baidu.com/item/交换机" target="_blank" rel="noopener">交换机</a>，并在用户话机中采用。</p>
-<h1 id="采样定理-Nyquist-theorem"><a href="#采样定理-Nyquist-theorem" class="headerlink" title="采样定理-Nyquist theorem"></a>采样定理-Nyquist theorem</h1><p>在进行模拟/数字信号的转换过程中，当<a href="https://baike.baidu.com/item/采样频率" target="_blank" rel="noopener">采样频率</a>fs.max大于信号中最高频率fmax的2倍时(fs.max&gt;2fmax)，采样之后的数字信号完整地保留了原始信号中的信息，一般实际应用中保证采样频率为信号最高频率的<em>2.56～4</em>倍；</p>
+<h1 id="采样定理-Nyquist-theorem"><a href="#采样定理-Nyquist-theorem" class="headerlink" title="采样定理-Nyquist theorem"></a>采样定理-Nyquist theorem</h1><p>在进行模拟/数字信号的转换过程中，当<a href="https://baike.baidu.com/item/采样频率" target="_blank" rel="noopener">采样频率</a>fs.max大于信号中最高频率fmax的2倍时(fs.max&gt;2fmax)，采样之后的数字信号完整地保留了原始信号中的信息，一般实际应用中保证采样频率为信号最高频率的<strong>2.56～4</strong>倍；</p>
+<p>公式表示：</p>
+<script type="math/tex; mode=display">
+C_{max} = 2B*log_{2}L</script><p>这里$C_{max}$指的是信道的最大容量，B是信道的带宽，L是信号电平的个数(相当于有几个极值点，正弦波有两个，则其他波均是不同周期的正弦波的叠加，极值点个数为$2^k$个)</p>
 <h1 id="shannoon-principle"><a href="#shannoon-principle" class="headerlink" title="shannoon principle"></a>shannoon principle</h1><p>sender to receiver, error-free transmission. People want to try their best to achieve </p>
 <p>error-free transmission.</p>
-<h2 id="香农第一定理—无失真信道编码"><a href="#香农第一定理—无失真信道编码" class="headerlink" title="香农第一定理—无失真信道编码"></a>香农第一定理—无失真信道编码</h2><h2 id="香农第二定理—有噪离散信道编码"><a href="#香农第二定理—有噪离散信道编码" class="headerlink" title="香农第二定理—有噪离散信道编码"></a>香农第二定理—有噪离散信道编码</h2><h2 id="香农第三定理—保真度准则下的信源编码"><a href="#香农第三定理—保真度准则下的信源编码" class="headerlink" title="香农第三定理—保真度准则下的信源编码"></a>香农第三定理—保真度准则下的信源编码</h2><h1 id="奇偶校验"><a href="#奇偶校验" class="headerlink" title="奇偶校验"></a>奇偶校验</h1>]]></content>
+<h2 id="香农第一定理—无失真信道编码"><a href="#香农第一定理—无失真信道编码" class="headerlink" title="香农第一定理—无失真信道编码"></a>香农第一定理—无失真信道编码</h2><h2 id="香农第二定理—有噪离散信道编码"><a href="#香农第二定理—有噪离散信道编码" class="headerlink" title="香农第二定理—有噪离散信道编码"></a>香农第二定理—有噪离散信道编码</h2><p>有噪信道编码定理。当信道的信息传输率不超过信道容量时，采用合适的信道编码方法可以实现任意高的传输可靠性，但若信息传输率超过了信道容量，就不可能实现可靠的传输。<br>设某信道有$r$个输入符号，$S$个输出符号，信道容量为$C$，当信道的信息传输率$R&lt;C$，码长N足够长时，总可以在输入的集合中(含有$r^N$个长度为N的码符号序列)，找到M $(M&lt;=2^{(N(C-a))})$，$a$为任意小的正数个码字,分别代表M个等可能性的消息，组成一个码以及相应的译码规则,使信道输出端的最小平均错误译码概率$P_{min}$达到任意小。</p>
+<script type="math/tex; mode=display">
+C = B*log_2(1+\frac{S}{N})</script><p>注：B为信道带宽；$\frac{S}{N}$为信噪比，通常用分贝（dB）表示。</p>
+<h2 id="香农第三定理—保真度准则下的信源编码"><a href="#香农第三定理—保真度准则下的信源编码" class="headerlink" title="香农第三定理—保真度准则下的信源编码"></a>香农第三定理—保真度准则下的信源编码</h2><h1 id="奇偶校验"><a href="#奇偶校验" class="headerlink" title="奇偶校验"></a>奇偶校验</h1>]]></content>
       <categories>
         <category>课堂笔记</category>
       </categories>
       <tags>
         <tag>编码</tag>
         <tag>纠错码</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>matlab小手册</title>
+    <url>/2020/02/29/matlab-pamphlet/</url>
+    <content><![CDATA[<h1 id="1-parfor并行for循环"><a href="#1-parfor并行for循环" class="headerlink" title="1.parfor并行for循环"></a>1.parfor并行for循环</h1><p>若for循环中的每次运算不和之前的相关，也就是说<em>每次迭代独立，不相互依赖</em>，那么就可使用parfor。</p>
+<p>例如：计算1+2+3…+100就可以用parfor，但是如果计算斐波那契数列的前100个数字，那就不能用parfor。</p>
+<p>parfor不能嵌套，例如遍历一个矩阵：</p>
+<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:N</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:M</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>就必须改成</p>
+<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="keyword">parfor</span> <span class="built_in">i</span>=<span class="number">1</span>:N</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:M</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">%或者</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:N</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">parfor</span> <span class="built_in">j</span>=<span class="number">1</span>:M</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>但是，这都不是最好的方法，因为如果循环的次数太少，并行就显现不出威力来，所以最好的方法是这样:</p>
+<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> k=<span class="number">1</span>:M*N</span><br><span class="line"></span><br><span class="line">　　<span class="built_in">i</span>=<span class="built_in">mod</span>(k<span class="number">-1</span>,M)+<span class="number">1</span>   <span class="comment">%行号</span></span><br><span class="line"></span><br><span class="line">　　<span class="built_in">j</span>=<span class="built_in">floor</span>((k<span class="number">-1</span>)/M)+<span class="number">1</span>   <span class="comment">%列号</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>要注意一点的是k是按照列来数的，也就是这样</p>
+<script type="math/tex; mode=display">
+\left[\begin{matrix}1 & 4 & 7\\
+2&5&8\\
+3&6&9\\
+\end{matrix}
+\right]</script><p>然后就是如何声明你要开启的核（通常来讲就是你的Pc有几个核就声明几个）？</p>
+<p>首先在matlab命令行里输入：matlabpool open local 4</p>
+<p>然后它会提示你一些消息，开启成功后就像以前一样操作就行。不想用了就再输入matlabpool close，关闭并行。</p>
+<p>这些内容也可以写到函数里面去,比如<br><figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">yourFun</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line">....</span><br><span class="line"></span><br><span class="line">　　matlabpool(<span class="string">'open'</span>,<span class="string">'local'</span>,<span class="number">4</span>);  <span class="comment">%最后一个参数是要开启的线程数</span></span><br><span class="line"></span><br><span class="line">　　　　<span class="keyword">parfor</span> <span class="built_in">i</span>=<span class="number">1</span>:N</span><br><span class="line"></span><br><span class="line">　　　　...</span><br><span class="line"></span><br><span class="line">　　　　<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">　　matlabpool close</span><br><span class="line"></span><br><span class="line">....</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>编程</category>
+      </categories>
+      <tags>
+        <tag>matlab</tag>
       </tags>
   </entry>
   <entry>
@@ -2322,8 +2421,8 @@ E = \frac{1}{m} \sum^m_{i=1}\sum^n_{j=1}g_i(t_j-y_i(x_j))^2</script><p>​      
         <category>论文</category>
       </categories>
       <tags>
-        <tag>QRCode</tag>
         <tag>MachineLearning</tag>
+        <tag>QRCode</tag>
       </tags>
   </entry>
 </search>

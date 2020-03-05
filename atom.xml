@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-03-05T04:20:41.167Z</updated>
+  <updated>2020-03-05T10:07:59.577Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,11 +17,36 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>中值定理</title>
+    <link href="http://yoursite.com/2020/03/05/mean-value-theorem/"/>
+    <id>http://yoursite.com/2020/03/05/mean-value-theorem/</id>
+    <published>2020-03-05T04:41:29.000Z</published>
+    <updated>2020-03-05T10:07:59.577Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;中值定理&lt;/strong&gt;是反映函数与&lt;a href=&quot;https://baike.baidu.com/item/导数/579188&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;导数&lt;/a&gt;之间联系的重要&lt;a href=&quot;https://baike.baidu.com/item/定理/9488549&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;定理&lt;/a&gt;，也是微积分学的理论基础，在许多方面它都有重要的作用，在进行一些公式推导与定理证明中都有很多应用。中值定理是由众多定理共同构建的，其中拉格朗日中值定理是核心，罗尔定理是其特殊情况，柯西定理是其推广。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="数学" scheme="http://yoursite.com/categories/%E6%95%B0%E5%AD%A6/"/>
+    
+    
+      <category term="罗尔定理" scheme="http://yoursite.com/tags/%E7%BD%97%E5%B0%94%E5%AE%9A%E7%90%86/"/>
+    
+      <category term="拉格朗日中值定理" scheme="http://yoursite.com/tags/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E4%B8%AD%E5%80%BC%E5%AE%9A%E7%90%86/"/>
+    
+      <category term="柯西中值定理" scheme="http://yoursite.com/tags/%E6%9F%AF%E8%A5%BF%E4%B8%AD%E5%80%BC%E5%AE%9A%E7%90%86/"/>
+    
+  </entry>
+  
+  <entry>
     <title>channel coding</title>
     <link href="http://yoursite.com/2020/03/04/channel-coding/"/>
     <id>http://yoursite.com/2020/03/04/channel-coding/</id>
     <published>2020-03-04T07:26:24.000Z</published>
-    <updated>2020-03-05T04:20:41.167Z</updated>
+    <updated>2020-03-05T10:07:03.837Z</updated>
     
     <summary type="html">
     
@@ -43,6 +68,33 @@
       <category term="编码" scheme="http://yoursite.com/tags/%E7%BC%96%E7%A0%81/"/>
     
       <category term="纠错码" scheme="http://yoursite.com/tags/%E7%BA%A0%E9%94%99%E7%A0%81/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>matlab小手册</title>
+    <link href="http://yoursite.com/2020/02/29/matlab-pamphlet/"/>
+    <id>http://yoursite.com/2020/02/29/matlab-pamphlet/</id>
+    <published>2020-02-29T04:07:38.000Z</published>
+    <updated>2020-03-05T10:07:05.599Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;1-parfor并行for循环&quot;&gt;&lt;a href=&quot;#1-parfor并行for循环&quot; class=&quot;headerlink&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="编程" scheme="http://yoursite.com/categories/%E7%BC%96%E7%A8%8B/"/>
+    
+    
+      <category term="matlab" scheme="http://yoursite.com/tags/matlab/"/>
     
   </entry>
   
@@ -319,9 +371,9 @@
       <category term="论文" scheme="http://yoursite.com/categories/%E8%AE%BA%E6%96%87/"/>
     
     
-      <category term="QRCode" scheme="http://yoursite.com/tags/QRCode/"/>
-    
       <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
+    
+      <category term="QRCode" scheme="http://yoursite.com/tags/QRCode/"/>
     
   </entry>
   
