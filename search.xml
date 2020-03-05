@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>channel coding</title>
+    <url>/2020/03/04/channel-coding/</url>
+    <content><![CDATA[<p>3#</p>
+<h1 id="philosophy"><a href="#philosophy" class="headerlink" title="philosophy"></a>philosophy</h1><h1 id="PAM"><a href="#PAM" class="headerlink" title="PAM"></a>PAM</h1><p>脉冲编码调制(Pulse Code Modulation,PCM)，由A.里弗斯于1937年提出的，这一概念为<a href="https://baike.baidu.com/item/数字通信/1458211" target="_blank" rel="noopener">数字通信</a>奠定了基础，60年代它开始应用于市内电话网以扩充容量，使已有音频电缆的大部分芯线的传输容量扩大24～48倍。到70年代中、末期，各国相继把脉码调制成功地应用于同轴电缆通信、<a href="https://baike.baidu.com/item/微波接力通信/7544973" target="_blank" rel="noopener">微波接力通信</a>、卫星通信和<a href="https://baike.baidu.com/item/光纤" target="_blank" rel="noopener">光纤</a>通信等中、大容量传输系统。80年代初，脉冲编码调制已用于市话中继传输和大容量干线传输以及数字程控<a href="https://baike.baidu.com/item/交换机" target="_blank" rel="noopener">交换机</a>，并在用户话机中采用。</p>
+<h1 id="采样定理-Nyquist-theorem"><a href="#采样定理-Nyquist-theorem" class="headerlink" title="采样定理-Nyquist theorem"></a>采样定理-Nyquist theorem</h1><p>在进行模拟/数字信号的转换过程中，当<a href="https://baike.baidu.com/item/采样频率" target="_blank" rel="noopener">采样频率</a>fs.max大于信号中最高频率fmax的2倍时(fs.max&gt;2fmax)，采样之后的数字信号完整地保留了原始信号中的信息，一般实际应用中保证采样频率为信号最高频率的<em>2.56～4</em>倍；</p>
+<h1 id="shannoon-principle"><a href="#shannoon-principle" class="headerlink" title="shannoon principle"></a>shannoon principle</h1><p>sender to receiver, error-free transmission. People want to try their best to achieve </p>
+<p>error-free transmission.</p>
+<h2 id="香农第一定理—无失真信道编码"><a href="#香农第一定理—无失真信道编码" class="headerlink" title="香农第一定理—无失真信道编码"></a>香农第一定理—无失真信道编码</h2><h2 id="香农第二定理—有噪离散信道编码"><a href="#香农第二定理—有噪离散信道编码" class="headerlink" title="香农第二定理—有噪离散信道编码"></a>香农第二定理—有噪离散信道编码</h2><h2 id="香农第三定理—保真度准则下的信源编码"><a href="#香农第三定理—保真度准则下的信源编码" class="headerlink" title="香农第三定理—保真度准则下的信源编码"></a>香农第三定理—保真度准则下的信源编码</h2><h1 id="奇偶校验"><a href="#奇偶校验" class="headerlink" title="奇偶校验"></a>奇偶校验</h1>]]></content>
+      <categories>
+        <category>课堂笔记</category>
+      </categories>
+      <tags>
+        <tag>编码</tag>
+        <tag>纠错码</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>什么是卷积</title>
     <url>/2020/02/27/What-is-convolution/</url>
     <content><![CDATA[<h2 id="卷积的定义"><a href="#卷积的定义" class="headerlink" title="卷积的定义"></a>卷积的定义</h2><p>​    我们称$(f*g)(n)$为$f,g$的卷积<br>连续函数卷积定义为：</p>
@@ -52,7 +69,7 @@ g = \left[
 <p>要注意矩阵$g和f$的下标不同</p>
 <p><img src="/2020/02/27/What-is-convolution/v2-779d4e972dc557be55e6131edbb8db9f_1440w.jpg" alt="img"></p>
 <p>矩阵$g$从右下角开始运算</p>
-<p><img src="https://pic3.zhimg.com/50/v2-c658110eafe027eded16864fb6a28f46_hd.webp" alt="img"></p>
+<p><img src="/2020/02/27/What-is-convolution/v2-c658110eafe027eded16864fb6a28f46_hd.webp" alt="img"></p>
 <p>写成卷积公式就是：</p>
 <script type="math/tex; mode=display">
 (f*g)(1,1) = \sum_{k = 0}^{2}\sum_{k = 0}^{2}f(h,k)g(1-h,1-k)</script><p>图像的卷积如下图所示：</p>
