@@ -77,6 +77,165 @@
     
     
     
+    <article id="post-Newton-s-method" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/03/13/Newton-s-method/"
+    >牛顿迭代法和拟牛顿法</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/03/13/Newton-s-method/" class="article-date">
+  <time datetime="2020-03-13T04:04:23.000Z" itemprop="datePublished">2020-03-13</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="牛顿法求零点"><a href="#牛顿法求零点" class="headerlink" title="牛顿法求零点"></a>牛顿法求零点</h2><p>假设$f(x)$在迭代自变量区间内单调且连续，则$f(x)$的零点计算：</p>
+<ol>
+<li><p>设起始点为$x_0$,计算$f(x)$的导函数$f(x)$；</p>
+</li>
+<li><p>在点$(x_0,f(x_0))$处作$f(x)$的切线$y(x) - f(x)=f’(x_0)*(x-x_0) $；</p>
+</li>
+<li><p>令$y(x)=0$，求得$x = x_0-\frac{f(x_0)}{f’(x0)}$；</p>
+</li>
+<li><p>将第三步的$x$带入第一步的$x_0$迭代计算，直到找到零点或者达到最大递归次数。</p>
+</li>
+</ol>
+<h3 id="例子：使用牛顿法求二次函数-y-x-1-2-1-的零点"><a href="#例子：使用牛顿法求二次函数-y-x-1-2-1-的零点" class="headerlink" title="例子：使用牛顿法求二次函数$y = (x-1)^2-1$的零点"></a>例子：使用牛顿法求二次函数$y = (x-1)^2-1$的零点</h3><p><img src="/2020/03/13/Newton-s-method/workspace\blog\new-TonyWang.github.io\myblog\source\_posts\Newton-s-method\二次函数.png" alt="二次函数"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fx</span><span class="params">(x)</span>:</span><span class="comment">#原函数</span></span><br><span class="line"> 	<span class="keyword">return</span> pow((x<span class="number">-1</span>),<span class="number">2</span>)<span class="number">-1</span>;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">defx</span><span class="params">(x)</span>:</span><span class="comment">#导函数</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">2</span>*(x<span class="number">-1</span>)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">newton</span><span class="params">(x,times)</span>:</span><span class="comment">#迭代初始值和迭代参数</span></span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    find = <span class="literal">False</span></span><br><span class="line">    <span class="keyword">while</span>(i&lt;=times):</span><br><span class="line">        fx_ = fx(x)</span><br><span class="line">        <span class="keyword">if</span>(fx_!=<span class="number">0</span>):</span><br><span class="line">            defx_ = defx(x)<span class="comment">#注释</span></span><br><span class="line">            x = (-fx_/defx_)+x</span><br><span class="line">            i=i+<span class="number">1</span></span><br><span class="line">            print(<span class="string">'迭代次数&#123;&#125;,x=&#123;&#125;,f(&#123;&#125;) = &#123;&#125;,f\'(&#123;&#125;) = &#123;&#125;'</span>.format(i,x,x,fx_,x,defx_))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            find = <span class="literal">True</span></span><br><span class="line">            print(<span class="string">'零点是:'</span>)</span><br><span class="line">            print(x)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">not</span> find):</span><br><span class="line">        print(<span class="string">'未找到零点,近似值为:'</span>)</span><br><span class="line">        print(x)</span><br></pre></td></tr></table></figure>
+<p>计算结果如下：</p>
+<p><img src="/2020/03/13/Newton-s-method/workspace\blog\new-TonyWang.github.io\myblog\source\_posts\Newton-s-method\image-20200314181338183.png" alt="image-20200314181338183"></p>
+<p>当初始值为8的时候，迭代7次就获得了零点。</p>
+<h2 id="牛顿法用于最优化"><a href="#牛顿法用于最优化" class="headerlink" title="牛顿法用于最优化"></a>牛顿法用于最优化</h2><p>思想和求解零点类似。假设任务是优化一个目标函数$f(x)$，求函数f的极大极小问题，可以转化为求解函数$f(x)$的导数$f’(x) = 0$的问题，这样求可以把优化问题看成方程求解问题$f’(x) = 0$。</p>
+<p>过程具体如下：</p>
+<ol>
+<li>计算$f(x)$在$x_0$处的二阶泰勒展开式:<script type="math/tex; mode=display">
+f(x) = f(x_0)+f'(x_0)* (x-x_0)+\frac{1}{2}f^{''}(x_0) (x-x_0)^2</script></li>
+<li>对$min f(x)$ 的问题近似看为二次函数最优化问题，即函数最小值问题。对上式求导：</li>
+</ol>
+<script type="math/tex; mode=display">
+f'(x) =f'(x_0)+f^{''}(x_0) (x-x_0)</script><ol>
+<li>令$f’(x) =0$，即$f’(x_0)+f^{‘’}(x_0) (x-x_0)=0$,得$x_{new} = x_0-\frac{f’(x)}{f’’(x)}$</li>
+</ol>
+<p>上述过程相当于每次迭代沿着下降方向迭代达到最优，每次迭代的步长定为$\frac{1}{f^{‘’}(x)}$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">newtonmin</span><span class="params">(x,time)</span>:</span></span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    find =<span class="literal">False</span>;</span><br><span class="line">    <span class="keyword">while</span>(i&lt;time):</span><br><span class="line">        defx_ = defx(x)</span><br><span class="line">        <span class="keyword">if</span>(defx_!=<span class="number">0</span>):</span><br><span class="line">            x = x-defx(x)/<span class="number">2</span>;</span><br><span class="line">            i=i+<span class="number">1</span></span><br><span class="line">            print(<span class="string">'迭代次数&#123;&#125;,x=&#123;&#125;,f\'(x) = &#123;&#125;,f\'\'(x) = &#123;&#125;'</span>.format(i,x,defx_,<span class="number">2</span>))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            find = <span class="literal">True</span></span><br><span class="line">            print(<span class="string">'拐点是:'</span>)</span><br><span class="line">            print(x)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">not</span> find):</span><br><span class="line">        print(<span class="string">'未找到拐点,近似值为:'</span>)</span><br><span class="line">        print(x)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/03/13/Newton-s-method/workspace\blog\new-TonyWang.github.io\myblog\source\_posts\Newton-s-method\image-20200314195741334.png" alt="image-20200314200030246"></p>
+<p>迭代一次即可找到函数驻点</p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/13/Newton-s-method/" data-id="ck7rk7b7m000ipkv9errjdgin"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9C%80%E4%BC%98%E5%8C%96%E7%90%86%E8%AE%BA/" rel="tag">最优化理论</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%9D%9E%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E6%B1%82%E8%A7%A3/" rel="tag">非线性方程求解</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-Quasi-Newton-Methods" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/03/13/Quasi-Newton-Methods/"
+    >Quasi-Newton-Methods</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/03/13/Quasi-Newton-Methods/" class="article-date">
+  <time datetime="2020-03-13T04:03:16.000Z" itemprop="datePublished">2020-03-13</time>
+</a>
+      
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/13/Quasi-Newton-Methods/" data-id="ck7rk7b7t000kpkv92wdrex7c"
+        class="article-share-link">分享</a>
+      
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
     <article id="post-mean-value-theorem" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -128,7 +287,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/05/mean-value-theorem/" data-id="ck7el7ayp000ut8v9f1zz9gxa"
+      <a data-url="http://yoursite.com/2020/03/05/mean-value-theorem/" data-id="ck7rk7b7z0010pkv96mnmgc7q"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E4%B8%AD%E5%80%BC%E5%AE%9A%E7%90%86/" rel="tag">拉格朗日中值定理</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9F%AF%E8%A5%BF%E4%B8%AD%E5%80%BC%E5%AE%9A%E7%90%86/" rel="tag">柯西中值定理</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%97%E5%B0%94%E5%AE%9A%E7%90%86/" rel="tag">罗尔定理</a></li></ul>
@@ -206,7 +365,7 @@ C = B*log_2(1+\frac{S}{N})</script><p>注：B为信道带宽；$\frac{S}{N}$为�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/04/channel-coding/" data-id="ck7el7aye000jt8v9ahgsah9p"
+      <a data-url="http://yoursite.com/2020/03/04/channel-coding/" data-id="ck7rk7b7x000tpkv93grqgfmi"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BA%A0%E9%94%99%E7%A0%81/" rel="tag">纠错码</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%96%E7%A0%81/" rel="tag">编码</a></li></ul>
@@ -291,155 +450,10 @@ C = B*log_2(1+\frac{S}{N})</script><p>注：B为信道带宽；$\frac{S}{N}$为�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/29/matlab-pamphlet/" data-id="ck7el7ayn000pt8v933eu72v9"
+      <a data-url="http://yoursite.com/2020/02/29/matlab-pamphlet/" data-id="ck7rk7b7y000vpkv94o9z7kk8"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/matlab/" rel="tag">matlab</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
-    <article id="post-What-is-convolution" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/02/27/What-is-convolution/"
-    >什么是卷积</a
-  >
-</h2>
-  
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2020/02/27/What-is-convolution/" class="article-date">
-  <time datetime="2020-02-27T07:16:00.000Z" itemprop="datePublished">2020-02-27</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-      <h2 id="卷积的定义"><a href="#卷积的定义" class="headerlink" title="卷积的定义"></a>卷积的定义</h2><p>​    我们称$(f*g)(n)$为$f,g$的卷积<br>连续函数卷积定义为：</p>
-<script type="math/tex; mode=display">
-(f*g)(n) = \int_{-\infty}^{\infty} f(\tau)g(n-\tau)d\tau</script><p>离散函数定义为：</p>
-<script type="math/tex; mode=display">
-(f*g)(n) = \sum_{\tau = -\infty}^{\infty} f(\tau)g(n-\tau)</script>
-      
-      <a class="article-more-link" href="/2020/02/27/What-is-convolution/">阅读更多...</a>
-      
-      
-      <!-- 打赏 -->
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/27/What-is-convolution/" data-id="ck7el7ayd000it8v9adi4fm78"
-        class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%A6%BB%E6%95%A3%E5%87%BD%E6%95%B0%E5%8D%B7%E7%A7%AF/" rel="tag">离散函数卷积</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BF%9E%E7%BB%AD%E5%87%BD%E6%95%B0%E5%8D%B7%E7%A7%AF/" rel="tag">连续函数卷积</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
-    <article id="post-Perspective-Transformation" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/02/22/Perspective-Transformation/"
-    >透视变换原理</a
-  >
-</h2>
-  
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2020/02/22/Perspective-Transformation/" class="article-date">
-  <time datetime="2020-02-22T02:08:13.000Z" itemprop="datePublished">2020-02-22</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9F%A5%E8%AF%86/">计算机知识</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-      <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>仿射变换:</strong>能够将平行四边形变换为另一个平行四边形<br><strong>透视变换</strong>：能够将平行四边形变换为梯形。<br>仿射变换是透视变换的子集。</p>
-<p><img src="/2020/02/22/Perspective-Transformation/透视变换和仿射变换.jpg" alt="img"></p>
-      
-      <a class="article-more-link" href="/2020/02/22/Perspective-Transformation/">阅读更多...</a>
-      
-      
-      <!-- 打赏 -->
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/22/Perspective-Transformation/" data-id="ck7el7ay9000et8v9b1cca8xh"
-        class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/" rel="tag">图像处理</a></li></ul>
 
     </footer>
 
@@ -461,7 +475,7 @@ C = B*log_2(1+\frac{S}{N})</script><p>注：B为信道带宽；$\frac{S}{N}$为�
   
   <nav class="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
   </nav>
   
 </section>
