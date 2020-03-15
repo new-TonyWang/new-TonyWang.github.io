@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-03-14T12:00:52.007Z</updated>
+  <updated>2020-03-15T02:10:30.186Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -21,17 +21,16 @@
     <link href="http://yoursite.com/2020/03/13/Newton-s-method/"/>
     <id>http://yoursite.com/2020/03/13/Newton-s-method/</id>
     <published>2020-03-13T04:04:23.000Z</published>
-    <updated>2020-03-14T12:00:52.007Z</updated>
+    <updated>2020-03-15T02:10:30.186Z</updated>
     
     <summary type="html">
     
-      
-      
-        
-        
-          &lt;h2 id=&quot;牛顿法求零点&quot;&gt;&lt;a href=&quot;#牛顿法求零点&quot; class=&quot;headerlink&quot;
-        
-      
+      &lt;h2 id=&quot;牛顿法求零点&quot;&gt;&lt;a href=&quot;#牛顿法求零点&quot; class=&quot;headerlink&quot; title=&quot;牛顿法求零点&quot;&gt;&lt;/a&gt;牛顿法求零点&lt;/h2&gt;&lt;p&gt;假设$f(x)$在迭代自变量区间内单调且连续，则$f(x)$的零点计算：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;设起始点为$x_0$,计算$f(x)$的导函数$f(x)$；&lt;/li&gt;
+&lt;li&gt;在点$(x_0,f(x_0))$处作$f(x)$的切线$y(x) - f(x)=f’(x_0)*(x-x_0) $；&lt;/li&gt;
+&lt;li&gt;令$y(x)=0$，求得$x = x_0-\frac{f(x_0)}{f’(x0)}$；&lt;/li&gt;
+&lt;li&gt;将第三步的$x$带入第一步的$x_0$迭代计算，直到找到零点或者达到最大递归次数。&lt;/li&gt;&lt;/ol&gt;
     
     </summary>
     
@@ -415,9 +414,9 @@
       <category term="论文" scheme="http://yoursite.com/categories/%E8%AE%BA%E6%96%87/"/>
     
     
-      <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
-    
       <category term="QRCode" scheme="http://yoursite.com/tags/QRCode/"/>
+    
+      <category term="MachineLearning" scheme="http://yoursite.com/tags/MachineLearning/"/>
     
   </entry>
   

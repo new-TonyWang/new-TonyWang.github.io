@@ -5,19 +5,16 @@
     <url>/2020/03/13/Newton-s-method/</url>
     <content><![CDATA[<h2 id="牛顿法求零点"><a href="#牛顿法求零点" class="headerlink" title="牛顿法求零点"></a>牛顿法求零点</h2><p>假设$f(x)$在迭代自变量区间内单调且连续，则$f(x)$的零点计算：</p>
 <ol>
-<li><p>设起始点为$x_0$,计算$f(x)$的导函数$f(x)$；</p>
-</li>
-<li><p>在点$(x_0,f(x_0))$处作$f(x)$的切线$y(x) - f(x)=f’(x_0)*(x-x_0) $；</p>
-</li>
-<li><p>令$y(x)=0$，求得$x = x_0-\frac{f(x_0)}{f’(x0)}$；</p>
-</li>
-<li><p>将第三步的$x$带入第一步的$x_0$迭代计算，直到找到零点或者达到最大递归次数。</p>
+<li>设起始点为$x_0$,计算$f(x)$的导函数$f(x)$；</li>
+<li>在点$(x_0,f(x_0))$处作$f(x)$的切线$y(x) - f(x)=f’(x_0)*(x-x_0) $；</li>
+<li>令$y(x)=0$，求得$x = x_0-\frac{f(x_0)}{f’(x0)}$；</li>
+<li>将第三步的$x$带入第一步的$x_0$迭代计算，直到找到零点或者达到最大递归次数。<a id="more"></a>
 </li>
 </ol>
-<h3 id="例子：使用牛顿法求二次函数-y-x-1-2-1-的零点"><a href="#例子：使用牛顿法求二次函数-y-x-1-2-1-的零点" class="headerlink" title="例子：使用牛顿法求二次函数$y = (x-1)^2-1$的零点"></a>例子：使用牛顿法求二次函数$y = (x-1)^2-1$的零点</h3><p><img src="/2020/03/13/Newton-s-method/workspace\blog\new-TonyWang.github.io\myblog\source\_posts\Newton-s-method\二次函数.png" alt="二次函数"></p>
+<h3 id="例子：使用牛顿法求二次函数-y-x-1-2-1-的零点"><a href="#例子：使用牛顿法求二次函数-y-x-1-2-1-的零点" class="headerlink" title="例子：使用牛顿法求二次函数$y = (x-1)^2-1$的零点"></a>例子：使用牛顿法求二次函数$y = (x-1)^2-1$的零点</h3><p><img src="/2020/03/13/Newton-s-method/二次函数.png" alt="二次函数"></p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fx</span><span class="params">(x)</span>:</span><span class="comment">#原函数</span></span><br><span class="line"> 	<span class="keyword">return</span> pow((x<span class="number">-1</span>),<span class="number">2</span>)<span class="number">-1</span>;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">defx</span><span class="params">(x)</span>:</span><span class="comment">#导函数</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">2</span>*(x<span class="number">-1</span>)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">newton</span><span class="params">(x,times)</span>:</span><span class="comment">#迭代初始值和迭代参数</span></span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    find = <span class="literal">False</span></span><br><span class="line">    <span class="keyword">while</span>(i&lt;=times):</span><br><span class="line">        fx_ = fx(x)</span><br><span class="line">        <span class="keyword">if</span>(fx_!=<span class="number">0</span>):</span><br><span class="line">            defx_ = defx(x)<span class="comment">#注释</span></span><br><span class="line">            x = (-fx_/defx_)+x</span><br><span class="line">            i=i+<span class="number">1</span></span><br><span class="line">            print(<span class="string">'迭代次数&#123;&#125;,x=&#123;&#125;,f(&#123;&#125;) = &#123;&#125;,f\'(&#123;&#125;) = &#123;&#125;'</span>.format(i,x,x,fx_,x,defx_))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            find = <span class="literal">True</span></span><br><span class="line">            print(<span class="string">'零点是:'</span>)</span><br><span class="line">            print(x)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">not</span> find):</span><br><span class="line">        print(<span class="string">'未找到零点,近似值为:'</span>)</span><br><span class="line">        print(x)</span><br></pre></td></tr></table></figure>
 <p>计算结果如下：</p>
-<p><img src="/2020/03/13/Newton-s-method/workspace\blog\new-TonyWang.github.io\myblog\source\_posts\Newton-s-method\image-20200314181338183.png" alt="image-20200314181338183"></p>
+<p><img src="/2020/03/13/Newton-s-method/image-20200314181338183.png" alt="image-20200314181338183"></p>
 <p>当初始值为8的时候，迭代7次就获得了零点。</p>
 <h2 id="牛顿法用于最优化"><a href="#牛顿法用于最优化" class="headerlink" title="牛顿法用于最优化"></a>牛顿法用于最优化</h2><p>思想和求解零点类似。假设任务是优化一个目标函数$f(x)$，求函数f的极大极小问题，可以转化为求解函数$f(x)$的导数$f’(x) = 0$的问题，这样求可以把优化问题看成方程求解问题$f’(x) = 0$。</p>
 <p>过程具体如下：</p>
@@ -32,7 +29,7 @@ f'(x) =f'(x_0)+f^{''}(x_0) (x-x_0)</script><ol>
 </ol>
 <p>上述过程相当于每次迭代沿着下降方向迭代达到最优，每次迭代的步长定为$\frac{1}{f^{‘’}(x)}$</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">newtonmin</span><span class="params">(x,time)</span>:</span></span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    find =<span class="literal">False</span>;</span><br><span class="line">    <span class="keyword">while</span>(i&lt;time):</span><br><span class="line">        defx_ = defx(x)</span><br><span class="line">        <span class="keyword">if</span>(defx_!=<span class="number">0</span>):</span><br><span class="line">            x = x-defx(x)/<span class="number">2</span>;</span><br><span class="line">            i=i+<span class="number">1</span></span><br><span class="line">            print(<span class="string">'迭代次数&#123;&#125;,x=&#123;&#125;,f\'(x) = &#123;&#125;,f\'\'(x) = &#123;&#125;'</span>.format(i,x,defx_,<span class="number">2</span>))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            find = <span class="literal">True</span></span><br><span class="line">            print(<span class="string">'拐点是:'</span>)</span><br><span class="line">            print(x)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">not</span> find):</span><br><span class="line">        print(<span class="string">'未找到拐点,近似值为:'</span>)</span><br><span class="line">        print(x)</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/03/13/Newton-s-method/workspace\blog\new-TonyWang.github.io\myblog\source\_posts\Newton-s-method\image-20200314195741334.png" alt="image-20200314200030246"></p>
+<p><img src="/2020/03/13/Newton-s-method/image-20200314195741334.png" alt="image-20200314200030246"></p>
 <p>迭代一次即可找到函数驻点</p>
 ]]></content>
       <categories>
@@ -2469,8 +2466,8 @@ E = \frac{1}{m} \sum^m_{i=1}\sum^n_{j=1}g_i(t_j-y_i(x_j))^2</script><p>​      
         <category>论文</category>
       </categories>
       <tags>
-        <tag>MachineLearning</tag>
         <tag>QRCode</tag>
+        <tag>MachineLearning</tag>
       </tags>
   </entry>
 </search>
