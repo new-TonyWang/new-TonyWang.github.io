@@ -90,7 +90,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">31</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">10</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">33</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">39</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -155,18 +155,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">39</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -194,6 +194,221 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/07/21/java%E7%9A%84volatile%E5%92%8Csynchronized/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/07/21/java%E7%9A%84volatile%E5%92%8Csynchronized/" class="post-title-link" itemprop="url">java的volatile和synchronized</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-21 20:19:37" itemprop="dateCreated datePublished" datetime="2020-07-21T20:19:37+08:00">2020-07-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/07/21/java%E7%9A%84volatile%E5%92%8Csynchronized/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/07/21/java的volatile和synchronized/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="volatile与synchronized">volatile与synchronized</h1>
+<p><strong>共性：</strong></p>
+<p>volatile与synchronized都用于保证多线程中数据的安全</p>
+<p><strong>区别：</strong></p>
+<p>（1）volatile修饰的变量，jvm每次都从主存（主内存）中读取，而不会从寄存器（工作内存）中读取。而synchronized则是锁住当前变量，同一时刻只有一个线程能够访问当前变量。</p>
+<p>（2）volatile仅能用在变量级别，而synchronized可用在变量和方法中。</p>
+<p>（3）volatie仅能实现变量的修改可见性，无法保证变量操作的原子性。而synchronized可以实现变量的修改可见性与原子性。</p>
+<p>（4）volatile不需要加锁，因此不会造成线程的阻塞，而且比synchronized更轻量级，而synchronized可能导致线程的阻塞</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/07/21/java%E7%9A%84volatile%E5%92%8Csynchronized/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="post-title-link" itemprop="url">Android汇编基础知识</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-21 13:47:29" itemprop="dateCreated datePublished" datetime="2020-05-21T13:47:29+08:00">2020-05-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/05/21/ARM汇编基础知识/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="armabi-v7a">armabi-v7a</h1>
+<ol type="1">
+<li><p>R0-R3用于函数参数的传递，相当于函数的前4个参数会在调用函数之前存入R0-R3，之后的参数会压入栈中。它们的位置在lr(R14)寄存器的位置之上。程序的返回值使用R0存放。</p></li>
+<li><p>R4-R6，R8，R10-R11没有特殊规定，是通用寄存器</p></li>
+<li><p>R7栈帧指针，指向前一个保存的栈帧和链接寄存器(lr)在栈上的地址</p></li>
+<li><p>R9操作系统保留(但是使用的时候并未提出警告)</p></li>
+<li><p>R11(fp,frame pointer)寄存器，既可以用来记录回溯信息,也可以当做局部变量来使用。</p></li>
+<li><p>R12(IP指针，intra-procedure scratch)用作子程序间scratch寄存器,在子程序的连接代码段中经常会有这种使用规则，但不是必须的。</p></li>
+<li><p>R13(SP指针)栈顶指针，该指针一个主要的用处是函数刚开始执行的时候分配内存空间pop和push指令一定伴随着SP指针的移动。</p></li>
+<li><p>R14(LR, link register)，存放函数返回地址,保证函数能够正常返回。</p></li>
+<li><p>R15(PC)，指向当前下一条。</p></li></ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -480,297 +695,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/02/29/matlab-pamphlet/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/27/What-is-convolution/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
-      <meta itemprop="name" content="Tony">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Oh, Tony">
-      <meta itemprop="description" content="GXG">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Oh, Tony">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/02/27/What-is-convolution/" class="post-title-link" itemprop="url">什么是卷积</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-02-27 15:16:00" itemprop="dateCreated datePublished" datetime="2020-02-27T15:16:00+08:00">2020-02-27</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">数学</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2020/02/27/What-is-convolution/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/02/27/What-is-convolution/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="卷积的定义">卷积的定义</h2>
-<p>​ 我们称<span class="math inline">\((f * g)(n)\)</span>为<span class="math inline">\(f,g\)</span>的卷积 连续函数卷积定义为： <span class="math display">\[
-(f * g)(n) = \int_{-\infty}^{\infty} f(\tau)g(n-\tau)d\tau
-\]</span> 离散函数定义为： <span class="math display">\[
-(f * g)(n) = \sum_{\tau = -\infty}^{\infty} f(\tau)g(n-\tau)
-\]</span> <!---more----></p>
-<p>两个式子的共同特征:</p>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-d3df01f12b869d431c65f97ad307508f_1440w.jpg" alt><figcaption>img</figcaption>
-</figure>
-<p>我们令$x = ,y = n-<span class="math inline">\(，那么\)</span>x+y = n$就是下面的直线：</p>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-8be52f6bada3f7a21cebfc210d2e7ea0_hd.webp" alt><figcaption>img</figcaption>
-</figure>
-<h2 id="几个例子">几个例子</h2>
-<h3 id="离散卷积同时掷两枚骰子两个骰子加起来为4的概率是多少">1.离散卷积：同时掷两枚骰子，两个骰子加起来为4的概率是多少？</h3>
-<p>把两个骰子的个点出现的概率表示出来：</p>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-4763fd548536b21640d01d3f8a59c546_1440w.jpg" alt><figcaption>img</figcaption>
-</figure>
-<p>两枚骰子点数加起来为4的情况有：</p>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-a67a711702ce48cd7632e783ae0a1f42_1440w.jpg" alt><figcaption>img</figcaption>
-</figure>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-d6ff10bf39c46397ab2bebb971d4b58c_1440w.jpg" alt><figcaption>img</figcaption>
-</figure>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-0cdabcc04398ea723aa6e47e05072e5c_1440w.jpg" alt><figcaption>img</figcaption>
-</figure>
-<p>因此，两枚骰子点数加起来为4的概率为： <span class="math display">\[
-f(1)g(3)+f(2)g(2)+f(3)g(1)
-\]</span> 把它写成标准形式： <span class="math display">\[
-(f*g)(4) = \sum_{m=1}^{3}f(4-m)g(m)
-\]</span></p>
-<h3 id="连续卷积做馒头">2.连续卷积：做馒头</h3>
-<p>楼下早点铺子生意太好了，供不应求，就买了一台机器，不断的生产馒头。</p>
-<p>假设馒头的生产速度是$ f(t)$，那么一天后生产出来的馒头总量为： <span class="math display">\[
-\int_{0}^{24}f(t)dt
-\]</span> 馒头产生出来之后，就会慢慢腐败，腐败率函数为<span class="math inline">\(g(t)\)</span>。比如10个馒头，24小时腐败 <span class="math display">\[
-10*g(t)
-\]</span> 第一个小时生产出来的馒头，经历24小时的腐败过程，第二个小时生产出来的馒头经历23小时腐败过程。</p>
-<p>如此一天之后馒头腐败了: <span class="math display">\[
-\int_{0}^{24}f(t)g(24-t)dt
-\]</span> 这就是连续函数卷积</p>
-<h3 id="图像处理">3.图像处理</h3>
-<h4 id="原理">3.1原理</h4>
-<p>这幅图像有很多的噪点: <img src="/2020/02/27/What-is-convolution/v2-8d161328acd72d035e461c0b89b753e5_1440w.jpg" alt="img"></p>
-<p>平滑办法之一就是，把高频信号，补充到周围的信号中。用数学的话来说，就是把数值平均一下。</p>
-<p>平滑后得到：</p>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-83b24e8ed70f17df6bc3b921ebe6276c_1440w.jpg" alt><figcaption>img</figcaption>
-</figure>
-<h4 id="计算">4.1计算</h4>
-<p>使用卷积来实现平滑算法</p>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-8dd14775ab8c91a09507f52e44f347f3_1440w.jpg" alt><figcaption>img</figcaption>
-</figure>
-<p>使用python 生成正态分矩阵:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> *;</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rand_Matrix</span>():</span><br><span class="line">	randArr=random.randn(<span class="number">3</span>,<span class="number">3</span>);</span><br><span class="line">	randMat=mat(randArr);</span><br><span class="line">	<span class="keyword">return</span> randMat;</span><br><span class="line">g = rand_Matrix()</span><br></pre></td></tr></table></figure>
-<p><span class="math display">\[
-g = \left[
-\begin{matrix}
-0.89669359 &amp;  -0.81377852 &amp;  0.83626426\\
-         1.69437977 &amp;  -1.72722893 &amp;  -0.89842572\\
-         0.1720925 &amp;   1.07305877 &amp;   0.60385222\\
-\end{matrix}
-\right]
-\]</span></p>
-<p>使用离散卷积公式就可以对图像进行平滑操作。</p>
-<p>比如我要平滑<span class="math inline">\(a_{1,1}\)</span>，就在图像矩阵中取周围的点组成矩阵<span class="math inline">\(f\)</span>和<span class="math inline">\(g\)</span>进行卷积运算。</p>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-5ee9a99988137a42d1067deab36c4e51_1440w.jpg" alt><figcaption>img</figcaption>
-</figure>
-<p>要注意矩阵<span class="math inline">\(g和f\)</span>的下标不同</p>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-779d4e972dc557be55e6131edbb8db9f_1440w.jpg" alt><figcaption>img</figcaption>
-</figure>
-<p>矩阵<span class="math inline">\(g\)</span>从右下角开始运算</p>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-c658110eafe027eded16864fb6a28f46_hd.webp" alt><figcaption>img</figcaption>
-</figure>
-<p>写成卷积公式就是： <span class="math display">\[
-(f*g)(1,1) = \sum_{k = 0}^{2}\sum_{k = 0}^{2}f(h,k)g(1-h,1-k)
-\]</span> 图像的卷积如下图所示：</p>
-<p>一般情况下会对图像四周进行补0之后再进行卷积运算，该图像的核函数g为，而非图中所示。因为g是从右下角开始运算。 <span class="math display">\[
-g = \left[
-    \begin{matrix}
-    1 &amp;  2 &amp;  1\\         
-    0 &amp;  0 &amp;  0\\         
-    -1&amp;   -2 &amp;   -1\\
-    \end{matrix}
-    \right]
-\]</span></p>
-<figure>
-<img src="/2020/02/27/What-is-convolution/v2-15fea61b768f7561648dbea164fcb75f_hd.webp" alt><figcaption>img</figcaption>
-</figure>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/22/Perspective-Transformation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
-      <meta itemprop="name" content="Tony">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Oh, Tony">
-      <meta itemprop="description" content="GXG">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Oh, Tony">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/02/22/Perspective-Transformation/" class="post-title-link" itemprop="url">透视变换原理</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-02-22 10:08:13" itemprop="dateCreated datePublished" datetime="2020-02-22T10:08:13+08:00">2020-02-22</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">计算机知识</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2020/02/22/Perspective-Transformation/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/02/22/Perspective-Transformation/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="简介">简介</h2>
-<p><strong>仿射变换:</strong>能够将平行四边形变换为另一个平行四边形 <strong>透视变换</strong>：能够将平行四边形变换为梯形。 仿射变换是透视变换的子集。</p>
-<figure>
-<img src="/2020/02/22/Perspective-Transformation/透视变换和仿射变换.jpg" alt><figcaption>img</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/02/22/Perspective-Transformation/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

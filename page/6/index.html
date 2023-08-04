@@ -90,7 +90,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">31</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">10</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">33</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">39</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -155,18 +155,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">39</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -194,6 +194,297 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/27/What-is-convolution/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/02/27/What-is-convolution/" class="post-title-link" itemprop="url">什么是卷积</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-27 15:16:00" itemprop="dateCreated datePublished" datetime="2020-02-27T15:16:00+08:00">2020-02-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">数学</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/02/27/What-is-convolution/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/02/27/What-is-convolution/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="卷积的定义">卷积的定义</h2>
+<p>​ 我们称<span class="math inline">\((f * g)(n)\)</span>为<span class="math inline">\(f,g\)</span>的卷积 连续函数卷积定义为： <span class="math display">\[
+(f * g)(n) = \int_{-\infty}^{\infty} f(\tau)g(n-\tau)d\tau
+\]</span> 离散函数定义为： <span class="math display">\[
+(f * g)(n) = \sum_{\tau = -\infty}^{\infty} f(\tau)g(n-\tau)
+\]</span> <!---more----></p>
+<p>两个式子的共同特征:</p>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-d3df01f12b869d431c65f97ad307508f_1440w.jpg" alt><figcaption>img</figcaption>
+</figure>
+<p>我们令$x = ,y = n-<span class="math inline">\(，那么\)</span>x+y = n$就是下面的直线：</p>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-8be52f6bada3f7a21cebfc210d2e7ea0_hd.webp" alt><figcaption>img</figcaption>
+</figure>
+<h2 id="几个例子">几个例子</h2>
+<h3 id="离散卷积同时掷两枚骰子两个骰子加起来为4的概率是多少">1.离散卷积：同时掷两枚骰子，两个骰子加起来为4的概率是多少？</h3>
+<p>把两个骰子的个点出现的概率表示出来：</p>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-4763fd548536b21640d01d3f8a59c546_1440w.jpg" alt><figcaption>img</figcaption>
+</figure>
+<p>两枚骰子点数加起来为4的情况有：</p>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-a67a711702ce48cd7632e783ae0a1f42_1440w.jpg" alt><figcaption>img</figcaption>
+</figure>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-d6ff10bf39c46397ab2bebb971d4b58c_1440w.jpg" alt><figcaption>img</figcaption>
+</figure>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-0cdabcc04398ea723aa6e47e05072e5c_1440w.jpg" alt><figcaption>img</figcaption>
+</figure>
+<p>因此，两枚骰子点数加起来为4的概率为： <span class="math display">\[
+f(1)g(3)+f(2)g(2)+f(3)g(1)
+\]</span> 把它写成标准形式： <span class="math display">\[
+(f*g)(4) = \sum_{m=1}^{3}f(4-m)g(m)
+\]</span></p>
+<h3 id="连续卷积做馒头">2.连续卷积：做馒头</h3>
+<p>楼下早点铺子生意太好了，供不应求，就买了一台机器，不断的生产馒头。</p>
+<p>假设馒头的生产速度是$ f(t)$，那么一天后生产出来的馒头总量为： <span class="math display">\[
+\int_{0}^{24}f(t)dt
+\]</span> 馒头产生出来之后，就会慢慢腐败，腐败率函数为<span class="math inline">\(g(t)\)</span>。比如10个馒头，24小时腐败 <span class="math display">\[
+10*g(t)
+\]</span> 第一个小时生产出来的馒头，经历24小时的腐败过程，第二个小时生产出来的馒头经历23小时腐败过程。</p>
+<p>如此一天之后馒头腐败了: <span class="math display">\[
+\int_{0}^{24}f(t)g(24-t)dt
+\]</span> 这就是连续函数卷积</p>
+<h3 id="图像处理">3.图像处理</h3>
+<h4 id="原理">3.1原理</h4>
+<p>这幅图像有很多的噪点: <img src="/2020/02/27/What-is-convolution/v2-8d161328acd72d035e461c0b89b753e5_1440w.jpg" alt="img"></p>
+<p>平滑办法之一就是，把高频信号，补充到周围的信号中。用数学的话来说，就是把数值平均一下。</p>
+<p>平滑后得到：</p>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-83b24e8ed70f17df6bc3b921ebe6276c_1440w.jpg" alt><figcaption>img</figcaption>
+</figure>
+<h4 id="计算">4.1计算</h4>
+<p>使用卷积来实现平滑算法</p>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-8dd14775ab8c91a09507f52e44f347f3_1440w.jpg" alt><figcaption>img</figcaption>
+</figure>
+<p>使用python 生成正态分矩阵:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> *;</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rand_Matrix</span>():</span><br><span class="line">	randArr=random.randn(<span class="number">3</span>,<span class="number">3</span>);</span><br><span class="line">	randMat=mat(randArr);</span><br><span class="line">	<span class="keyword">return</span> randMat;</span><br><span class="line">g = rand_Matrix()</span><br></pre></td></tr></table></figure>
+<p><span class="math display">\[
+g = \left[
+\begin{matrix}
+0.89669359 &amp;  -0.81377852 &amp;  0.83626426\\
+         1.69437977 &amp;  -1.72722893 &amp;  -0.89842572\\
+         0.1720925 &amp;   1.07305877 &amp;   0.60385222\\
+\end{matrix}
+\right]
+\]</span></p>
+<p>使用离散卷积公式就可以对图像进行平滑操作。</p>
+<p>比如我要平滑<span class="math inline">\(a_{1,1}\)</span>，就在图像矩阵中取周围的点组成矩阵<span class="math inline">\(f\)</span>和<span class="math inline">\(g\)</span>进行卷积运算。</p>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-5ee9a99988137a42d1067deab36c4e51_1440w.jpg" alt><figcaption>img</figcaption>
+</figure>
+<p>要注意矩阵<span class="math inline">\(g和f\)</span>的下标不同</p>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-779d4e972dc557be55e6131edbb8db9f_1440w.jpg" alt><figcaption>img</figcaption>
+</figure>
+<p>矩阵<span class="math inline">\(g\)</span>从右下角开始运算</p>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-c658110eafe027eded16864fb6a28f46_hd.webp" alt><figcaption>img</figcaption>
+</figure>
+<p>写成卷积公式就是： <span class="math display">\[
+(f*g)(1,1) = \sum_{k = 0}^{2}\sum_{k = 0}^{2}f(h,k)g(1-h,1-k)
+\]</span> 图像的卷积如下图所示：</p>
+<p>一般情况下会对图像四周进行补0之后再进行卷积运算，该图像的核函数g为，而非图中所示。因为g是从右下角开始运算。 <span class="math display">\[
+g = \left[
+    \begin{matrix}
+    1 &amp;  2 &amp;  1\\         
+    0 &amp;  0 &amp;  0\\         
+    -1&amp;   -2 &amp;   -1\\
+    \end{matrix}
+    \right]
+\]</span></p>
+<figure>
+<img src="/2020/02/27/What-is-convolution/v2-15fea61b768f7561648dbea164fcb75f_hd.webp" alt><figcaption>img</figcaption>
+</figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/22/Perspective-Transformation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/02/22/Perspective-Transformation/" class="post-title-link" itemprop="url">透视变换原理</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-22 10:08:13" itemprop="dateCreated datePublished" datetime="2020-02-22T10:08:13+08:00">2020-02-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">计算机知识</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/02/22/Perspective-Transformation/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/02/22/Perspective-Transformation/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="简介">简介</h2>
+<p><strong>仿射变换:</strong>能够将平行四边形变换为另一个平行四边形 <strong>透视变换</strong>：能够将平行四边形变换为梯形。 仿射变换是透视变换的子集。</p>
+<figure>
+<img src="/2020/02/22/Perspective-Transformation/透视变换和仿射变换.jpg" alt><figcaption>img</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/02/22/Perspective-Transformation/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -502,208 +793,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/07/%E7%AE%97%E6%B3%95-%E5%90%88%E5%B9%B6k%E4%B8%AA%E6%8E%92%E5%BA%8F%E9%93%BE%E8%A1%A8%E5%B9%B6%E8%BE%93%E5%87%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
-      <meta itemprop="name" content="Tony">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Oh, Tony">
-      <meta itemprop="description" content="GXG">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Oh, Tony">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/02/07/%E7%AE%97%E6%B3%95-%E5%90%88%E5%B9%B6k%E4%B8%AA%E6%8E%92%E5%BA%8F%E9%93%BE%E8%A1%A8%E5%B9%B6%E8%BE%93%E5%87%BA/" class="post-title-link" itemprop="url">算法-合并k个排序链表并输出</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-02-07 15:23:29" itemprop="dateCreated datePublished" datetime="2020-02-07T15:23:29+08:00">2020-02-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/LeetCode/" itemprop="url" rel="index"><span itemprop="name">LeetCode</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2020/02/07/%E7%AE%97%E6%B3%95-%E5%90%88%E5%B9%B6k%E4%B8%AA%E6%8E%92%E5%BA%8F%E9%93%BE%E8%A1%A8%E5%B9%B6%E8%BE%93%E5%87%BA/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/02/07/算法-合并k个排序链表并输出/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="题目-合并-k-个排序链表返回合并后的排序链表">题目： 合并 k 个排序链表，返回合并后的排序链表</h2>
-<p>示例: 输入: [ 1-&gt;4-&gt;5, 1-&gt;3-&gt;4, 2-&gt;6 ] 输出: 1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4-&gt;5-&gt;6</p>
-<p>来源：力扣（LeetCode） 链接：https://leetcode-cn.com/problems/merge-k-sorted-lists</p>
-<p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Definition for singly-linked list.</span></span><br><span class="line"> <span class="keyword">class</span> <span class="title class_">ListNode</span> &#123;</span><br><span class="line">    <span class="type">int</span> val;</span><br><span class="line">    ListNode next;</span><br><span class="line">    ListNode(<span class="type">int</span> x) &#123; val = x; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/02/07/%E7%AE%97%E6%B3%95-%E5%90%88%E5%B9%B6k%E4%B8%AA%E6%8E%92%E5%BA%8F%E9%93%BE%E8%A1%A8%E5%B9%B6%E8%BE%93%E5%87%BA/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/02/Markov-chains-and-stationary-distribution/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
-      <meta itemprop="name" content="Tony">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Oh, Tony">
-      <meta itemprop="description" content="GXG">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Oh, Tony">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/02/02/Markov-chains-and-stationary-distribution/" class="post-title-link" itemprop="url">马氏链及其平稳分布</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-02-02 12:07:38" itemprop="dateCreated datePublished" datetime="2020-02-02T12:07:38+08:00">2020-02-02</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">数学</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2020/02/02/Markov-chains-and-stationary-distribution/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/02/02/Markov-chains-and-stationary-distribution/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>平稳分布（马尔可夫链的）具有某种不变（或者说平稳）性质的概率分布</p>
-<p><img src="/2020/02/02/Markov-chains-and-stationary-distribution/马尔科夫1.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/02/02/Markov-chains-and-stationary-distribution/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/5/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/7/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -768,7 +857,7 @@
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","mhchem":true,"cdn2":"https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML","cdn3":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","mhchem":true,"cdn2":"https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML","cdn3":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/math/mathjax.min.js"></script>
 
 
