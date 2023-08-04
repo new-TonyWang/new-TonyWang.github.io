@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":10,"offset":5},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
 
     <meta name="description" content="parfor并行for循环 若for循环中的每次运算不和之前的相关，也就是说每次迭代独立，不相互依赖，那么就可使用parfor。 例如：计算1+2+3...+100就可以用parfor，但是如果计算斐波那契数列的前100个数字，那就不能用parfor。 parfor不能嵌套，例如遍历一个矩阵：">
 <meta property="og:type" content="article">
@@ -277,11 +277,39 @@
 <p>例如：计算1+2+3...+100就可以用parfor，但是如果计算斐波那契数列的前100个数字，那就不能用parfor。</p>
 <p>parfor不能嵌套，例如遍历一个矩阵：</p>
 <span id="more"></span>
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:N</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:M</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-matlab" data-language="matlab"><code class="language-matlab"><span class="token keyword">for</span> <span class="token number">i</span><span class="token operator">=</span><span class="token number">1</span><span class="token operator">:</span>N
+
+　　<span class="token keyword">for</span> <span class="token number">j</span><span class="token operator">=</span><span class="token number">1</span><span class="token operator">:</span>M
+
+　　<span class="token keyword">end</span>
+
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>就必须改成</p>
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">parfor</span> <span class="built_in">i</span>=<span class="number">1</span>:N</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:M</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">%或者</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:N</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">parfor</span> <span class="built_in">j</span>=<span class="number">1</span>:M</span><br><span class="line"></span><br><span class="line">　　<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-matlab" data-language="matlab"><code class="language-matlab"><span class="token keyword">parfor</span> <span class="token number">i</span><span class="token operator">=</span><span class="token number">1</span><span class="token operator">:</span>N
+
+　　<span class="token keyword">for</span> <span class="token number">j</span><span class="token operator">=</span><span class="token number">1</span><span class="token operator">:</span>M
+
+　　<span class="token keyword">end</span>
+
+<span class="token keyword">end</span>
+
+<span class="token comment">%或者</span>
+
+<span class="token keyword">for</span> <span class="token number">i</span><span class="token operator">=</span><span class="token number">1</span><span class="token operator">:</span>N
+
+　　<span class="token keyword">parfor</span> <span class="token number">j</span><span class="token operator">=</span><span class="token number">1</span><span class="token operator">:</span>M
+
+　　<span class="token keyword">end</span>
+
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>但是，这都不是最好的方法，因为如果循环的次数太少，并行就显现不出威力来，所以最好的方法是这样:</p>
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> k=<span class="number">1</span>:M*N</span><br><span class="line"></span><br><span class="line">　　<span class="built_in">i</span>=<span class="built_in">mod</span>(k<span class="number">-1</span>,M)+<span class="number">1</span>   <span class="comment">%行号</span></span><br><span class="line"></span><br><span class="line">　　<span class="built_in">j</span>=<span class="built_in">floor</span>((k<span class="number">-1</span>)/M)+<span class="number">1</span>   <span class="comment">%列号</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-matlab" data-language="matlab"><code class="language-matlab"><span class="token keyword">for</span> k<span class="token operator">=</span><span class="token number">1</span><span class="token operator">:</span>M<span class="token operator">*</span>N
+
+　　<span class="token number">i</span><span class="token operator">=</span><span class="token function">mod</span><span class="token punctuation">(</span>k<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span>M<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span>   <span class="token comment">%行号</span>
+
+　　<span class="token number">j</span><span class="token operator">=</span><span class="token function">floor</span><span class="token punctuation">(</span><span class="token punctuation">(</span>k<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">/</span>M<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span>   <span class="token comment">%列号</span>
+
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>要注意一点的是k是按照列来数的，也就是这样</p>
 <p><span class="math display">\[
 \left[\begin{matrix}1 &amp; 4 &amp; 7\\
@@ -292,7 +320,23 @@
 \]</span> 然后就是如何声明你要开启的核（通常来讲就是你的Pc有几个核就声明几个）？</p>
 <p>首先在matlab命令行里输入：matlabpool open local 4</p>
 <p>然后它会提示你一些消息，开启成功后就像以前一样操作就行。不想用了就再输入matlabpool close，关闭并行。</p>
-<p>这些内容也可以写到函数里面去,比如 <figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">yourFun</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line">....</span><br><span class="line"></span><br><span class="line">　　matlabpool(<span class="string">&#x27;open&#x27;</span>,<span class="string">&#x27;local&#x27;</span>,<span class="number">4</span>);  <span class="comment">%最后一个参数是要开启的线程数</span></span><br><span class="line"></span><br><span class="line">　　　　<span class="keyword">parfor</span> <span class="built_in">i</span>=<span class="number">1</span>:N</span><br><span class="line"></span><br><span class="line">　　　　...</span><br><span class="line"></span><br><span class="line">　　　　<span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">　　matlabpool close</span><br><span class="line"></span><br><span class="line">....</span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></p>
+<p>这些内容也可以写到函数里面去,比如 <pre class="line-numbers language-matlab" data-language="matlab"><code class="language-matlab"><span class="token keyword">function</span> <span class="token function">yourFun</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">...</span><span class="token punctuation">.</span>
+
+　　<span class="token function">matlabpool</span><span class="token punctuation">(</span><span class="token string">'open'</span><span class="token punctuation">,</span><span class="token string">'local'</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">%最后一个参数是要开启的线程数</span>
+
+　　　　<span class="token keyword">parfor</span> <span class="token number">i</span><span class="token operator">=</span><span class="token number">1</span><span class="token operator">:</span>N
+
+　　　　<span class="token punctuation">...</span>
+
+　　　　<span class="token keyword">end</span>
+
+　　matlabpool close
+
+<span class="token punctuation">...</span><span class="token punctuation">.</span>
+
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></p>
 
     </div>
 

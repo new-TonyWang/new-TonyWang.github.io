@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":10,"offset":5},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
 
     <meta name="description" content="GXG">
 <meta property="og:type" content="website">
@@ -445,7 +445,17 @@
           <h2 id="从一道入门题目开始">从一道入门题目开始</h2>
 <p>题目来源:https://buuoj.cn/challenges，Pwn目录下的<code>rip1</code>，下载附件<code>pwn1</code>。</p>
 <h3 id="查看pwn1的安全设置">查看pwn1的安全设置</h3>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">checksec --file=./pwn1</span><br><span class="line">RELRO: Partial RELRO</span><br><span class="line">STACK CANARY: No canary found #没有cannary</span><br><span class="line">NX: NX disabled   #栈可执行         </span><br><span class="line">PIE: No PIE	#未开启代码段随机化(程序被加载进了固定的地址中)</span><br><span class="line">RPATH: No RPATH </span><br><span class="line">RUNPATH:  No RUNPATH</span><br><span class="line">Symbols: 64 Symbols 		</span><br><span class="line">FORTIFY	Fortified: No	</span><br><span class="line">Fortifiable: 0</span><br><span class="line">FILE: ./pwn1</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">checksec <span class="token parameter variable">--file</span><span class="token operator">=</span>./pwn1
+RELRO: Partial RELRO
+STACK CANARY: No canary found <span class="token comment">#没有cannary</span>
+NX: NX disabled   <span class="token comment">#栈可执行         </span>
+PIE: No PIE	<span class="token comment">#未开启代码段随机化(程序被加载进了固定的地址中)</span>
+RPATH: No RPATH 
+RUNPATH:  No RUNPATH
+Symbols: <span class="token number">64</span> Symbols 		
+FORTIFY	Fortified: No	
+Fortifiable: <span class="token number">0</span>
+FILE: ./pwn1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/#more" rel="contents">
@@ -536,7 +546,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <ul>
-<li>_mm_shuffle_ps <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__m128 _mm_shuffle_ps (__m128 a, __m128 b, <span class="type">unsigned</span> <span class="type">int</span> imm8)</span><br></pre></td></tr></table></figure> 分别选择a，b中的两个 64 位数，放入结果中。_m128 分成4个数，用两个比特位选择4个数中的一个，利用 mask 的低8位，四次选择（对应下图中的 z, y, x, w），洗牌成一个新的数。对应 SSE 的指令为 SHUFPS。<img src="https://pic4.zhimg.com/v2-dbfb5c1de2f45583452215a412edc353_b.jpg" data-caption data-size="normal" data-rawwidth="316" data-rawheight="221" data-default-watermark-src="https://pic3.zhimg.com/v2-96f032e0f64739b5f3c0f3bde3dcd00e_b.jpg" class="content_image" width="316"></li>
+<li>_mm_shuffle_ps <pre class="line-numbers language-c" data-language="c"><code class="language-c">__m128 <span class="token function">_mm_shuffle_ps</span> <span class="token punctuation">(</span>__m128 a<span class="token punctuation">,</span> __m128 b<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> imm8<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre> 分别选择a，b中的两个 64 位数，放入结果中。_m128 分成4个数，用两个比特位选择4个数中的一个，利用 mask 的低8位，四次选择（对应下图中的 z, y, x, w），洗牌成一个新的数。对应 SSE 的指令为 SHUFPS。<img src="https://pic4.zhimg.com/v2-dbfb5c1de2f45583452215a412edc353_b.jpg" data-caption data-size="normal" data-rawwidth="316" data-rawheight="221" data-default-watermark-src="https://pic3.zhimg.com/v2-96f032e0f64739b5f3c0f3bde3dcd00e_b.jpg" class="content_image" width="316"></li>
 </ul>
 
       

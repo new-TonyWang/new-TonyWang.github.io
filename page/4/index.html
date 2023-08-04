@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":10,"offset":5},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
 
     <meta name="description" content="GXG">
 <meta property="og:type" content="website">
@@ -369,7 +369,10 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>首先使用<code>readelf</code> 和<code>objdump</code>获取信息: <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">readelf -a &lt;filename&gt; #查看elf文件全部内容</span><br><span class="line">readelf -S &lt;filename&gt; #查看所有节头</span><br><span class="line">objdump -h &lt;filename&gt; #查看elf头</span><br><span class="line">objdump -s &lt;filename&gt; #查看所有节的详细信息</span><br></pre></td></tr></table></figure></p>
+          <p>首先使用<code>readelf</code> 和<code>objdump</code>获取信息: <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">readelf <span class="token parameter variable">-a</span> <span class="token operator">&lt;</span>filename<span class="token operator">></span> <span class="token comment">#查看elf文件全部内容</span>
+readelf <span class="token parameter variable">-S</span> <span class="token operator">&lt;</span>filename<span class="token operator">></span> <span class="token comment">#查看所有节头</span>
+objdump <span class="token parameter variable">-h</span> <span class="token operator">&lt;</span>filename<span class="token operator">></span> <span class="token comment">#查看elf头</span>
+objdump <span class="token parameter variable">-s</span> <span class="token operator">&lt;</span>filename<span class="token operator">></span> <span class="token comment">#查看所有节的详细信息</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/03/01/ELF%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/#more" rel="contents">
@@ -570,9 +573,27 @@
           <h2 id="native-函数参数的jobject-和jclass区别">native 函数参数的jobject 和jclass区别</h2>
 <p>​ 用TFlite和paddle lite的模型调用为例：</p>
 <p>​ TFlite中的NativeInterpreterWrapper类中的 <em>run()</em> 方法是java 调用模型的接口，其函数如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">(<span class="type">long</span> interpreterHandle, <span class="type">long</span> errorHandle)</span>;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">native</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token keyword">long</span> interpreterHandle<span class="token punctuation">,</span> <span class="token keyword">long</span> errorHandle<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>其对应的native函数体如下:</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Sets inputs, runs inference, and returns outputs as long handles.</span></span><br><span class="line"><span class="function">JNIEXPORT <span class="type">void</span> JNICALL <span class="title">Java_org_tensorflow_lite_NativeInterpreterWrapper_run</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    JNIEnv* env, jclass clazz, jlong interpreter_handle, jlong error_handle)</span> </span>&#123;</span><br><span class="line">  tflite::Interpreter* interpreter =</span><br><span class="line">      <span class="built_in">convertLongToInterpreter</span>(env, interpreter_handle);</span><br><span class="line">  <span class="keyword">if</span> (interpreter == <span class="literal">nullptr</span>) <span class="keyword">return</span>;</span><br><span class="line">  BufferErrorReporter* error_reporter =</span><br><span class="line">      <span class="built_in">convertLongToErrorReporter</span>(env, error_handle);</span><br><span class="line">  <span class="keyword">if</span> (error_reporter == <span class="literal">nullptr</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (interpreter-&gt;<span class="built_in">Invoke</span>() != kTfLiteOk) &#123;</span><br><span class="line">    <span class="comment">// TODO(b/168266570): Return InterruptedException.</span></span><br><span class="line">    <span class="built_in">ThrowException</span>(env, tflite::jni::kIllegalArgumentException,</span><br><span class="line">                   <span class="string">&quot;Internal error: Failed to run on the given Interpreter: %s&quot;</span>,</span><br><span class="line">                   error_reporter-&gt;<span class="built_in">CachedErrorMessage</span>());</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; Sets inputs, runs inference, and returns outputs as long handles.
+JNIEXPORT void JNICALL Java_org_tensorflow_lite_NativeInterpreterWrapper_run(
+    JNIEnv* env, jclass clazz, jlong interpreter_handle, jlong error_handle) &#123;
+  tflite::Interpreter* interpreter &#x3D;
+      convertLongToInterpreter(env, interpreter_handle);
+  if (interpreter &#x3D;&#x3D; nullptr) return;
+  BufferErrorReporter* error_reporter &#x3D;
+      convertLongToErrorReporter(env, error_handle);
+  if (error_reporter &#x3D;&#x3D; nullptr) return;
+
+  if (interpreter-&gt;Invoke() !&#x3D; kTfLiteOk) &#123;
+    &#x2F;&#x2F; TODO(b&#x2F;168266570): Return InterruptedException.
+    ThrowException(env, tflite::jni::kIllegalArgumentException,
+                   &quot;Internal error: Failed to run on the given Interpreter: %s&quot;,
+                   error_reporter-&gt;CachedErrorMessage());
+    return;
+  &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/10/21/Android-JNI/#more" rel="contents">
@@ -674,11 +695,11 @@
           <h1 id="android-smali-调试">Android smali 调试</h1>
 <h2 id="apktool-拆app">apktool 拆app</h2>
 <p>首先，将任意一个app使用apktool逆向，如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apktool d app.apk</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">apktool d app.apk<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>然后就会得到一个新的目录:</p>
 <p>​ <img src="/2020/08/26/%E8%B0%83%E8%AF%95-smali/image-20201226150602472.png" alt="image-20201226150602472" style="zoom:33%;"></p>
 <p>为了能够debug smali文件，需要找到该app中的启动的Activity,并在对应的OnCreate()方法中加入如下语句:</p>
-<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">invoke-static &#123;&#125;, <span class="class">Landroid/os/Debug;</span>-&gt;waitForDebugger()V</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-smali" data-language="smali"><code class="language-smali">invoke-static <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token class-name"><span class="token builtin">L</span><span class="token namespace">android<span class="token punctuation">/</span>os<span class="token punctuation">/</span></span><span class="token class-name">Debug</span></span><span class="token punctuation">;</span><span class="token operator">-></span><span class="token function">waitForDebugger</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token builtin">V</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/08/26/%E8%B0%83%E8%AF%95-smali/#more" rel="contents">

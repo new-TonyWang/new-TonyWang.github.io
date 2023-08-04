@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":10,"offset":5},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
 
     <meta name="description" content="CUDA入门总结 本周主要学习了CUDA相关的知识，也算是对GPU入了个门，以方便后续深入学习ai编译器。 以下是本周的总结。 异构计算和CUDA  左图：一个四核CPU一般有四个ALU，ALU是完成逻辑计算的核心，也是我们平时说四核八核的核，控制单元，缓存也在片上，DRAM是内存，一般不在片上，CPU通过总线访问内存。 右图：GPU，绿色小方块是ALU，我们注意红色框内的部分SM，这一组ALU公">
 <meta property="og:type" content="article">
@@ -348,7 +348,49 @@
 </figure>
 <p>需要注意的是，一般情况下cuda kernel只能访问device侧的数据，访问host内存时会失败，但是程序并不会因此退出，类似的，host 侧代码也不能访问device的内存，否则会出现段错误。</p>
 <p>下面举一个反例</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Matrix</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">Matrix</span>() &#123;&#125;</span><br><span class="line">    <span class="built_in">Matrix</span>(<span class="type">int</span> width, <span class="type">int</span> height) : <span class="built_in">width</span>(width), <span class="built_in">height</span>(height)</span><br><span class="line">    &#123;</span><br><span class="line">        stride = width;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Matrix</span>(<span class="type">int</span> width, <span class="type">int</span> height, string name_) : <span class="built_in">width</span>(width), <span class="built_in">height</span>(height), <span class="built_in">name</span>(name_)</span><br><span class="line">    &#123;</span><br><span class="line">        stride = width;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Matrix</span>(<span class="type">int</span> width, <span class="type">int</span> height, <span class="type">int</span> stride, string name_) : <span class="built_in">width</span>(width), <span class="built_in">height</span>(height), <span class="built_in">stride</span>(stride), <span class="built_in">name</span>(name_) &#123;&#125;</span><br><span class="line">    <span class="type">int</span> width = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> height = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> stride = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="type">size_t</span> <span class="title">size</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> width * height * <span class="built_in">sizeof</span>(<span class="type">float</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    string name = <span class="string">&quot;NameNone&quot;</span>;</span><br><span class="line">    <span class="type">float</span> *elements = <span class="literal">nullptr</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//kernel中的参数是host侧对象的引用，一定会出问题，此处正确的写法是值传递。</span></span><br><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">MyMatMulKernel</span><span class="params">(Matrix&amp; A, Matrix&amp; B, Matrix&amp; C)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">float</span> Cvalue = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> row = blockIdx.y * blockDim.y + threadIdx.y;</span><br><span class="line">    <span class="type">int</span> col = blockIdx.x * blockDim.x + threadIdx.x;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> e = <span class="number">0</span>; e &lt; A.width; ++e)</span><br><span class="line">        Cvalue += A.elements[row * A.width + e] * B.elements[e * B.width + col];</span><br><span class="line">    C.elements[row * C.width + col] = Cvalue;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Matrix A; </span><br><span class="line">    Matrix B;</span><br><span class="line">    Matrix C;</span><br><span class="line">    <span class="function">dim3 <span class="title">dimBlock</span><span class="params">(BLOCK_SIZE, BLOCK_SIZE)</span></span>;</span><br><span class="line">    <span class="function">dim3 <span class="title">dimGrid</span><span class="params">(B.width / dimBlock.x, A.height / dimBlock.y)</span></span>;</span><br><span class="line">    <span class="function">dim3 <span class="title">dimGridC</span><span class="params">((C.height + dimBlock.y) / dimBlock.y, (C.width + dimBlock.x) / dimBlock.x)</span></span>;</span><br><span class="line">    MatMulKernel&lt;&lt;&lt;dimGrid, dimBlock, <span class="number">0</span>, stream&gt;&gt;&gt;(A, B, C);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">struct Matrix
+&#123;
+    Matrix() &#123;&#125;
+    Matrix(int width, int height) : width(width), height(height)
+    &#123;
+        stride &#x3D; width;
+    &#125;
+    Matrix(int width, int height, string name_) : width(width), height(height), name(name_)
+    &#123;
+        stride &#x3D; width;
+    &#125;
+    Matrix(int width, int height, int stride, string name_) : width(width), height(height), stride(stride), name(name_) &#123;&#125;
+    int width &#x3D; 0;
+    int height &#x3D; 0;
+    int stride &#x3D; 0;
+    size_t size()
+    &#123;
+        return width * height * sizeof(float);
+    &#125;
+    string name &#x3D; &quot;NameNone&quot;;
+    float *elements &#x3D; nullptr;
+&#125;;
+
+&#x2F;&#x2F;kernel中的参数是host侧对象的引用，一定会出问题，此处正确的写法是值传递。
+__global__ void MyMatMulKernel(Matrix&amp; A, Matrix&amp; B, Matrix&amp; C)
+&#123;
+    float Cvalue &#x3D; 0;
+    int row &#x3D; blockIdx.y * blockDim.y + threadIdx.y;
+    int col &#x3D; blockIdx.x * blockDim.x + threadIdx.x;
+    for (int e &#x3D; 0; e &lt; A.width; ++e)
+        Cvalue +&#x3D; A.elements[row * A.width + e] * B.elements[e * B.width + col];
+    C.elements[row * C.width + col] &#x3D; Cvalue;
+&#125;
+int main()&#123;
+    Matrix A; 
+    Matrix B;
+    Matrix C;
+    dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
+    dim3 dimGrid(B.width &#x2F; dimBlock.x, A.height &#x2F; dimBlock.y);
+    dim3 dimGridC((C.height + dimBlock.y) &#x2F; dimBlock.y, (C.width + dimBlock.x) &#x2F; dimBlock.x);
+    MatMulKernel&lt;&lt;&lt;dimGrid, dimBlock, 0, stream&gt;&gt;&gt;(A, B, C);
+    return 0;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="线程管理">线程管理</h3>
 <p>在GPU中，一个核函数只能有一个grid，一个grid可以有很多个Block，每个Block可以有很多的Thread，这种分层的组织结构使得我们的并行过程更加自如灵活，注意不同块内线程不能相互影响，他们是物理隔离的。</p>
 <figure>
@@ -357,13 +399,33 @@
 <p>上图中我们观察到，所有的Block和Thread都是有一个坐标来唯一标识的，这种标识方法是CUDA独有的一套机制。CUDA使用<code>dim3</code>类型结构体来标识Block和Thread.</p>
 <p><code>dim3</code>就是由<code>x,y,z</code>构成的结构体，在host端执行kernel前需要指定该kernel使用的grid和block的dim3结构体，device侧需要获取当前block和thread的标识并绑定到具体运算。</p>
 <p>我们看一个简单的例子，直接用数字配置1维度的block和thread</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kernel_name&lt;&lt;&lt;<span class="number">4</span>,<span class="number">8</span>&gt;&gt;&gt;(argument list);</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">kernel_name&lt;&lt;&lt;4,8&gt;&gt;&gt;(argument list);<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>block和thread的对应关系具体如下：</p>
 <figure>
 <img src="/2023/08/05/CUDA%E5%85%A5%E9%97%A8%E6%80%BB%E7%BB%93/5.png" alt><figcaption>5</figcaption>
 </figure>
 <p>下面看稍微一个调用cuda kernel的例子：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> BLOCK_SIZE 32</span></span><br><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">MatMulKernel</span><span class="params">(Matrix A, Matrix B, Matrix C)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">float</span> Cvalue = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> row = blockIdx.y * blockDim.y + threadIdx.y;</span><br><span class="line">    <span class="type">int</span> col = blockIdx.x * blockDim.x + threadIdx.x;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> e = <span class="number">0</span>; e &lt; A.width; ++e)</span><br><span class="line">        Cvalue += A.elements[row * A.width + e] * B.elements[e * B.width + col];</span><br><span class="line">    C.elements[row * C.width + col] = Cvalue;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    cudaStream_t stream;</span><br><span class="line">    <span class="built_in">cudaStreamCreate</span>(&amp;stream);</span><br><span class="line">    Matrix A; </span><br><span class="line">    Matrix B;</span><br><span class="line">    Matrix C;</span><br><span class="line">    <span class="function">dim3 <span class="title">dimBlock</span><span class="params">(BLOCK_SIZE, BLOCK_SIZE)</span></span>;<span class="comment">//指定的block为(32,32,1)，未设置的维度默认为1</span></span><br><span class="line">    <span class="function">dim3 <span class="title">dimGrid</span><span class="params">(B.width / dimBlock.x, A.height / dimBlock.y)</span></span>;</span><br><span class="line">    <span class="comment">//kernel执行时需要设置CUDA Kernel的参数，参数一共有4个，具体的意义是&lt;&lt;&lt;block数量，thread数量，共享内存大小，cuda流&gt;&gt;&gt;</span></span><br><span class="line">    MatMulKernel&lt;&lt;&lt;dimGrid, dimBlock, <span class="number">0</span>, stream&gt;&gt;&gt;(A, B, C);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#define BLOCK_SIZE 32
+__global__ void MatMulKernel(Matrix A, Matrix B, Matrix C)
+&#123;
+    float Cvalue &#x3D; 0;
+    int row &#x3D; blockIdx.y * blockDim.y + threadIdx.y;
+    int col &#x3D; blockIdx.x * blockDim.x + threadIdx.x;
+    for (int e &#x3D; 0; e &lt; A.width; ++e)
+        Cvalue +&#x3D; A.elements[row * A.width + e] * B.elements[e * B.width + col];
+    C.elements[row * C.width + col] &#x3D; Cvalue;
+&#125;
+int main()&#123;
+    cudaStream_t stream;
+    cudaStreamCreate(&amp;stream);
+    Matrix A; 
+    Matrix B;
+    Matrix C;
+    dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);&#x2F;&#x2F;指定的block为(32,32,1)，未设置的维度默认为1
+    dim3 dimGrid(B.width &#x2F; dimBlock.x, A.height &#x2F; dimBlock.y);
+    &#x2F;&#x2F;kernel执行时需要设置CUDA Kernel的参数，参数一共有4个，具体的意义是&lt;&lt;&lt;block数量，thread数量，共享内存大小，cuda流&gt;&gt;&gt;
+    MatMulKernel&lt;&lt;&lt;dimGrid, dimBlock, 0, stream&gt;&gt;&gt;(A, B, C);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>如上述代码所示，host侧的写法和常见的C++类似，但是在kernel函数中就有所不同。在kernel函数中依靠下面两个内置结构体确定线程标号：</p>
 <ul>
 <li>blockIdx（线程块在线程网格内的位置索引）</li>
@@ -423,9 +485,10 @@
 </tbody>
 </table>
 <p>想要主机等待设备端执行可以用下面这个指令：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">cudaError_t <span class="title">cudaDeviceSynchronize</span><span class="params">(<span class="type">void</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">cudaError_t cudaDeviceSynchronize(void);<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>这是一个显示的方法，对应的也有隐式方法，隐式方法就是不明确说明主机要等待设备端，而是设备端不执行完，主机没办法进行，比如内存拷贝函数：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">cudaError_t <span class="title">cudaMemcpy</span><span class="params">(<span class="type">void</span>* dst,<span class="type">const</span> <span class="type">void</span> * src,</span></span></span><br><span class="line"><span class="params"><span class="function">  <span class="type">size_t</span> count,cudaMemcpyKind kind)</span></span>;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">cudaError_t cudaMemcpy(void* dst,const void * src,
+  size_t count,cudaMemcpyKind kind);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Kernel核函数编写有以下限制</p>
 <ol type="1">
 <li>只能访问设备内存</li>
@@ -436,14 +499,76 @@
 </ol>
 <p>并行程序中经常的一种现象：把串行代码并行化时对串行代码块for的操作，也就是把for并行化。</p>
 <p>串行：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">sumArraysOnHost</span><span class="params">(<span class="type">float</span> *A, <span class="type">float</span> *B, <span class="type">float</span> *C, <span class="type">const</span> <span class="type">int</span> N)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; N; i++)</span><br><span class="line">    C[i] = A[i] + B[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">void sumArraysOnHost(float *A, float *B, float *C, const int N) &#123;
+  for (int i &#x3D; 0; i &lt; N; i++)
+    C[i] &#x3D; A[i] + B[i];
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>并行：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">sumArraysOnGPU</span><span class="params">(<span class="type">float</span> *A, <span class="type">float</span> *B, <span class="type">float</span> *C)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> i = threadIdx.x;</span><br><span class="line">  C[i] = A[i] + B[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">__global__ void sumArraysOnGPU(float *A, float *B, float *C) &#123;
+  int i &#x3D; threadIdx.x;
+  C[i] &#x3D; A[i] + B[i];
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="错误处理">错误处理</h3>
 <p>CUDA基本都是异步执行的，当错误出现的时候，不一定是哪一条指令触发的，这一点非常头疼；这时候我们就需要对错误进行防御性处理了，此处借鉴谭生大佬代码库头文件里面的这个宏：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> CHECK(call)\</span></span><br><span class="line"><span class="meta">&#123;\</span></span><br><span class="line"><span class="meta">  const cudaError_t <span class="keyword">error</span>=call;\</span></span><br><span class="line"><span class="meta">  <span class="keyword">if</span>(<span class="keyword">error</span>!=cudaSuccess)\</span></span><br><span class="line"><span class="meta">  &#123;\</span></span><br><span class="line"><span class="meta">      printf(<span class="string">&quot;ERROR: %s:%d,&quot;</span>,__FILE__,__LINE__);\</span></span><br><span class="line"><span class="meta">      printf(<span class="string">&quot;code:%d,reason:%s\n&quot;</span>,<span class="keyword">error</span>,cudaGetErrorString(<span class="keyword">error</span>));\</span></span><br><span class="line"><span class="meta">      exit(1);\</span></span><br><span class="line"><span class="meta">  &#125;\</span></span><br><span class="line"><span class="meta">&#125;</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">CHECK</span><span class="token expression"><span class="token punctuation">(</span>call<span class="token punctuation">)</span></span><span class="token punctuation">\</span>
+<span class="token expression"><span class="token punctuation">&#123;</span></span><span class="token punctuation">\</span>
+  <span class="token expression"><span class="token keyword">const</span> <span class="token class-name">cudaError_t</span> error<span class="token operator">=</span>call<span class="token punctuation">;</span></span><span class="token punctuation">\</span>
+  <span class="token expression"><span class="token keyword">if</span><span class="token punctuation">(</span>error<span class="token operator">!=</span>cudaSuccess<span class="token punctuation">)</span></span><span class="token punctuation">\</span>
+  <span class="token expression"><span class="token punctuation">&#123;</span></span><span class="token punctuation">\</span>
+      <span class="token expression"><span class="token function">printf</span><span class="token punctuation">(</span></span><span class="token string">"ERROR: %s:%d,"</span><span class="token expression"><span class="token punctuation">,</span><span class="token constant">__FILE__</span><span class="token punctuation">,</span><span class="token constant">__LINE__</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="token punctuation">\</span>
+      <span class="token expression"><span class="token function">printf</span><span class="token punctuation">(</span></span><span class="token string">"code:%d,reason:%s\n"</span><span class="token expression"><span class="token punctuation">,</span>error<span class="token punctuation">,</span><span class="token function">cudaGetErrorString</span><span class="token punctuation">(</span>error<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="token punctuation">\</span>
+      <span class="token expression"><span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="token punctuation">\</span>
+  <span class="token expression"><span class="token punctuation">&#125;</span></span><span class="token punctuation">\</span>
+<span class="token expression"><span class="token punctuation">&#125;</span></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="第一个cuda程序vector-add">第一个cuda程序vector add</h2>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stdio.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stdlib.h&quot;</span>    </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;time.h&quot;</span></span></span><br><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">VecAdd</span><span class="params">(<span class="type">float</span> * a, <span class="type">float</span>* b,<span class="type">float</span>* c,<span class="type">int</span> N)</span></span>&#123;</span><br><span class="line">    <span class="comment">//获取当前的线程编号</span></span><br><span class="line">    <span class="type">int</span> i = threadIdx.x;</span><br><span class="line">    <span class="comment">//边界判断</span></span><br><span class="line">    <span class="keyword">if</span>(i &lt; N)&#123;</span><br><span class="line">    <span class="comment">//线程绑定</span></span><br><span class="line">        c[i] = a[i] + b[i];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">size_t</span> vector_size = <span class="number">1</span>&lt;&lt;<span class="number">30</span>;</span><br><span class="line">    <span class="type">size_t</span> size = vector_size * <span class="built_in">sizeof</span>(<span class="type">float</span>);</span><br><span class="line">    <span class="comment">// 在host侧分配内存</span></span><br><span class="line">    <span class="type">float</span>* h_A = (<span class="type">float</span>*)<span class="built_in">malloc</span>(size);</span><br><span class="line">    <span class="type">float</span>* h_B = (<span class="type">float</span>*)<span class="built_in">malloc</span>(size);</span><br><span class="line">    <span class="type">float</span>* h_C = (<span class="type">float</span>*)<span class="built_in">malloc</span>(size);</span><br><span class="line">    <span class="comment">// 在device侧分配内存</span></span><br><span class="line">    <span class="type">float</span>* d_A;</span><br><span class="line">    <span class="built_in">cudaMalloc</span>(&amp;d_A, size);</span><br><span class="line">    <span class="type">float</span>* d_B;</span><br><span class="line">    <span class="built_in">cudaMalloc</span>(&amp;d_B, size);</span><br><span class="line">    <span class="type">float</span>* d_C;</span><br><span class="line">    <span class="built_in">cudaMalloc</span>(&amp;d_C, size);</span><br><span class="line">    <span class="comment">// 从host拷贝数据到device侧</span></span><br><span class="line">    <span class="built_in">cudaMemcpy</span>(d_A, h_A, size, cudaMemcpyHostToDevice);</span><br><span class="line">    <span class="built_in">cudaMemcpy</span>(d_B, h_B, size, cudaMemcpyHostToDevice);</span><br><span class="line">    <span class="comment">// 调用kernel</span></span><br><span class="line">    <span class="type">int</span> threadsPerBlock = <span class="number">256</span>;</span><br><span class="line">    <span class="type">int</span> blocksPerGrid = (vector_size + threadsPerBlock <span class="number">-1</span>)/threadsPerBlock;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;vector_size=%d,%d\n&quot;</span>,vector_size,blocksPerGrid);</span><br><span class="line">    <span class="keyword">auto</span> start = <span class="built_in">clock</span>(); </span><br><span class="line">    VecAdd&lt;&lt;&lt;blocksPerGrid,threadsPerBlock&gt;&gt;&gt;(d_A,d_B,d_C,vector_size);</span><br><span class="line">    <span class="keyword">auto</span> finish = <span class="built_in">clock</span>();</span><br><span class="line">    <span class="keyword">auto</span> duration = (<span class="type">double</span>)(finish - start) / CLOCKS_PER_SEC;    </span><br><span class="line">    <span class="built_in">printf</span>( <span class="string">&quot;%f seconds\n&quot;</span>, duration );</span><br><span class="line">    <span class="built_in">cudaMemcpy</span>(h_C,d_C,size,cudaMemcpyDeviceToHost);</span><br><span class="line">    <span class="built_in">cudaFree</span>(d_A);</span><br><span class="line">    <span class="built_in">cudaFree</span>(d_B);</span><br><span class="line">    <span class="built_in">cudaFree</span>(d_C);</span><br><span class="line">    <span class="built_in">free</span>(h_A);</span><br><span class="line">    <span class="built_in">free</span>(h_B);</span><br><span class="line">    <span class="built_in">free</span>(h_C);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+#include &quot;stdlib.h&quot;    
+#include &quot;time.h&quot;
+__global__ void VecAdd(float * a, float* b,float* c,int N)&#123;
+    &#x2F;&#x2F;获取当前的线程编号
+    int i &#x3D; threadIdx.x;
+    &#x2F;&#x2F;边界判断
+    if(i &lt; N)&#123;
+    &#x2F;&#x2F;线程绑定
+        c[i] &#x3D; a[i] + b[i];
+    &#125;
+&#125;
+
+int main()&#123;
+    size_t vector_size &#x3D; 1&lt;&lt;30;
+    size_t size &#x3D; vector_size * sizeof(float);
+    &#x2F;&#x2F; 在host侧分配内存
+    float* h_A &#x3D; (float*)malloc(size);
+    float* h_B &#x3D; (float*)malloc(size);
+    float* h_C &#x3D; (float*)malloc(size);
+    &#x2F;&#x2F; 在device侧分配内存
+    float* d_A;
+    cudaMalloc(&amp;d_A, size);
+    float* d_B;
+    cudaMalloc(&amp;d_B, size);
+    float* d_C;
+    cudaMalloc(&amp;d_C, size);
+    &#x2F;&#x2F; 从host拷贝数据到device侧
+    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
+    &#x2F;&#x2F; 调用kernel
+    int threadsPerBlock &#x3D; 256;
+    int blocksPerGrid &#x3D; (vector_size + threadsPerBlock -1)&#x2F;threadsPerBlock;
+    printf(&quot;vector_size&#x3D;%d,%d\n&quot;,vector_size,blocksPerGrid);
+    auto start &#x3D; clock(); 
+    VecAdd&lt;&lt;&lt;blocksPerGrid,threadsPerBlock&gt;&gt;&gt;(d_A,d_B,d_C,vector_size);
+    auto finish &#x3D; clock();
+    auto duration &#x3D; (double)(finish - start) &#x2F; CLOCKS_PER_SEC;    
+    printf( &quot;%f seconds\n&quot;, duration );
+    cudaMemcpy(h_C,d_C,size,cudaMemcpyDeviceToHost);
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_C);
+    free(h_A);
+    free(h_B);
+    free(h_C);
+    return 1;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>执行结果如下：</p>
 <figure>
 <img src="/2023/08/05/CUDA%E5%85%A5%E9%97%A8%E6%80%BB%E7%BB%93/image-20230729211230457.png" alt><figcaption>image-20230729211230457</figcaption>
