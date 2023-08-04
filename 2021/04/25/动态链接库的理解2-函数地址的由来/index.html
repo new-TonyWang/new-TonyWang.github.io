@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+
+    <meta name="description" content="前言 之前我们了解到在动态加载的时候.plt和.got.plt实现了函数延迟加载。但是我们的脑海中又冒出产生了一系列新的问题： 1. 若不通过延迟加载，那么函数的地址被加载进了什么位置呢？ 2. 假设A调用B，那么如何找到B动态链plt接库中函数的地址呢？ 带着这两个问题，我们继续对上次的invoker.so和.&#x2F;polymorphismCC.x86so进行分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动态链接库的理解2--函数地址的由来">
+<meta property="og:url" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/index.html">
+<meta property="og:site_name" content="Oh, Tony">
+<meta property="og:description" content="前言 之前我们了解到在动态加载的时候.plt和.got.plt实现了函数延迟加载。但是我们的脑海中又冒出产生了一系列新的问题： 1. 若不通过延迟加载，那么函数的地址被加载进了什么位置呢？ 2. 假设A调用B，那么如何找到B动态链plt接库中函数的地址呢？ 带着这两个问题，我们继续对上次的invoker.so和.&#x2F;polymorphismCC.x86so进行分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/elfview.png">
+<meta property="og:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426110131954.png">
+<meta property="og:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426110259817.png">
+<meta property="og:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426110336708.png">
+<meta property="og:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426110725254.png">
+<meta property="og:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426143841258.png">
+<meta property="og:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426142047701.png">
+<meta property="og:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426143914848.png">
+<meta property="og:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426144250855.png">
+<meta property="og:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426144603736.png">
+<meta property="article:published_time" content="2021-04-25T13:59:10.000Z">
+<meta property="article:modified_time" content="2023-08-04T12:54:58.504Z">
+<meta property="article:author" content="Tony">
+<meta property="article:tag" content="ELF文件">
+<meta property="article:tag" content="动态链接库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/elfview.png">
+
+
+<link rel="canonical" href="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/","path":"2021/04/25/动态链接库的理解2-函数地址的由来/","title":"动态链接库的理解2--函数地址的由来"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>动态链接库的理解2--函数地址的由来 | Oh, Tony</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Oh, Tony</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">31</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#program-header"><span class="nav-number">1.1.</span> <span class="nav-text">Program Header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dynamic%E6%AE%B5"><span class="nav-number">1.2.</span> <span class="nav-text">DYNAMIC段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%A1%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">字符串表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%A6%E5%8F%B7%E8%A1%A8"><span class="nav-number">1.2.2.</span> <span class="nav-text">符号表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#got.plt"><span class="nav-number">1.2.3.</span> <span class="nav-text">.got.plt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pltrel%E5%92%8Crela"><span class="nav-number">1.2.4.</span> <span class="nav-text">PLTREL和RELA</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%A4%A7%E8%87%B4%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">动态链接大致步骤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E4%B8%AD%E5%87%BD%E6%95%B0%E7%9A%84%E5%9C%B0%E5%9D%80"><span class="nav-number">3.</span> <span class="nav-text">动态链接库中函数的地址</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8C%9C%E6%B5%8B"><span class="nav-number">3.1.</span> <span class="nav-text">猜测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">3.2.</span> <span class="nav-text">验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E5%87%BD%E6%95%B0%E5%8A%A0%E8%BD%BD%E7%9A%84%E6%9C%BA%E5%88%B6"><span class="nav-number">4.</span> <span class="nav-text">如何利用函数加载的机制</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Tony"
+      src="https://avatars.githubusercontent.com/u/46778179?v=4">
+  <p class="site-author-name" itemprop="name">Tony</p>
+  <div class="site-description" itemprop="description">GXG</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL25ldy1Ub255V2FuZw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;new-TonyWang"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9uZXctdG9ueXdhbmcuZ2l0aHViLmlvL3dhbmd0b255eXUyMjJAZ21haWwuY29t" title="Email → https:&#x2F;&#x2F;new-tonywang.github.io&#x2F;wangtonyyu222@gmail.com"><i class="fa fa-envelope fa-fw"></i>Email</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9udWFhLXMzbGFiLmdpdGh1Yi5pby9kYWlseVBhcGVyLw==" title="S3Lab论文推荐 → https:&#x2F;&#x2F;nuaa-s3lab.github.io&#x2F;dailyPaper&#x2F;">S3Lab论文推荐</span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="动态链接库的理解2--函数地址的由来 | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          动态链接库的理解2--函数地址的由来<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvdGhlbWUtbmV4dC1kb2NzL2VkaXQvbWFzdGVyL3NvdXJjZS9fcG9zdHMv5Yqo5oCB6ZO+5o6l5bqT55qE55CG6KejMi3lh73mlbDlnLDlnYDnmoTnlLHmnaUubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-04-25 21:59:10" itemprop="dateCreated datePublished" datetime="2021-04-25T21:59:10+08:00">2021-04-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%80%86%E5%90%91/" itemprop="url" rel="index"><span itemprop="name">逆向</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/04/25/动态链接库的理解2-函数地址的由来/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="前言">前言</h1>
+<p>之前我们了解到在动态加载的时候.plt和.got.plt实现了函数延迟加载。但是我们的脑海中又冒出产生了一系列新的问题： 1. 若不通过延迟加载，那么函数的地址被加载进了什么位置呢？ 2. 假设A调用B，那么如何找到B动态链plt接库中函数的地址呢？</p>
+<p>带着这两个问题，我们继续对上次的<code>invoker.so和./polymorphismCC.x86so</code>进行分析。 <span id="more"></span> # 相关知识</p>
+<p>使用<code>readelf 查看一下待链接的 invoker.so的段</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">readelf -S ./polymorphismCC.x86so -W</span><br><span class="line">There are 29 section headers, starting at offset 0x3f60:</span><br><span class="line"></span><br><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al</span><br><span class="line"> ...</span><br><span class="line">  [ 2] .dynsym           DYNSYM          00000000000002c0 0002c0 0003a8 18   A  3   1  8</span><br><span class="line">  [ 3] .dynstr           STRTAB          0000000000000668 000668 000355 00   A  0   0  1</span><br><span class="line"> ...</span><br><span class="line">  [ 6] .rela.dyn         RELA            0000000000000a80 000a80 000318 18   A  2   0  8</span><br><span class="line">  [ 7] .rela.plt         RELA            0000000000000d98 000d98 000138 18  AI  2  22  8</span><br><span class="line">  [ 8] .init             PROGBITS        0000000000001000 001000 00001b 00  AX  0   0  4</span><br><span class="line">  [ 9] .plt              PROGBITS        0000000000001020 001020 0000e0 10  AX  0   0 16</span><br><span class="line">  [10] .plt.got          PROGBITS        0000000000001100 001100 000008 08  AX  0   0  8</span><br><span class="line">  [11] .text             PROGBITS        0000000000001110 001110 00047a 00  AX  0   0 16</span><br><span class="line">...</span><br><span class="line">  [20] .dynamic          DYNAMIC         0000000000003dd0 002dd0 0001f0 10  WA  3   0  8</span><br><span class="line">  [21] .got              PROGBITS        0000000000003fc0 002fc0 000040 08  WA  0   0  8</span><br><span class="line">  [22] .got.plt          PROGBITS        0000000000004000 003000 000080 08  WA  0   0  8</span><br><span class="line">...</span><br><span class="line">Key to Flags:</span><br><span class="line">  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),</span><br><span class="line">  L (link order), O (extra OS processing required), G (group), T (TLS),</span><br><span class="line">  C (compressed), x (unknown), o (OS specific), E (exclude),</span><br><span class="line">  l (large), p (processor specific)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>经过一番调查，我们发现了如下几个关键的段：</p>
+<p><strong>.dynstr：</strong>保存了所有的字符串常量信息。 <strong>.dynsym：</strong>保存了符号（symbol）的信息（符号的类型、起始地址、大小、符号名称在 .dynstr 中的索引编号等）。函数也是一种符号。 <strong>.text：</strong>程序代码经过编译后生成的机器指令。 <strong>.dynamic：</strong>供动态链接器使用的各项信息，记录了当前 ELF 的外部依赖，以及其他各个重要 section 的起始位置等信息。 <strong>.got：</strong>Global Offset Table。用于记录外部调用的入口地址。动态链接器（linker）执行重定位（relocate）操作时，这里会被填入真实的外部调用的绝对地址。 <strong>.plt：</strong>Procedure Linkage Table。外部调用的跳板，主要用于支持 lazy binding 方式的外部调用重定位。（Android 目前只有 MIPS 架构支持 lazy binding） <strong>.rela.plt：</strong>对外部函数直接调用的重定位信息,里面保存的是内部函数的偏移。 <strong>.rela.dyn：</strong>除 .rel.plt 以外的重定位信息。（比如通过全局函数指针来调用外部函数）</p>
+<p>此时已经回答了第一个问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">若不通过延迟加载，那么函数的地址被加载进了什么位置呢？</span><br><span class="line">答：被写入了.rela.dyn,.got和.rela.plt中</span><br></pre></td></tr></table></figure>
+<p>回想起android的ELF文件结构，可以使用下图表示。</p>
+<figure>
+<img src="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/elfview.png" alt><figcaption>img</figcaption>
+</figure>
+<ul>
+<li>左边是连接视图，它表示ELF 未被加载到内存执行前，以 section 为单位的数据组织形式。</li>
+<li>右图是执行视图，它表示ELF 被加载到内存后，以 segment 为单位的数据组织形式。</li>
+</ul>
+<h2 id="program-header">Program Header</h2>
+<p>在执行视图中<code>Program Header Table</code>十分重要，它保存了所有segment的位置和信息，其结构体如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">elf64_phdr</span> &#123;</span></span><br><span class="line">  Elf64_Word p_type;</span><br><span class="line">  Elf64_Word p_flags;</span><br><span class="line">  Elf64_Off p_offset;   <span class="comment">/* Segment file offset */</span></span><br><span class="line">  Elf64_Addr p_vaddr;   <span class="comment">/* Segment virtual address */</span></span><br><span class="line">  Elf64_Addr p_paddr;   <span class="comment">/* Segment physical address */</span></span><br><span class="line">  Elf64_Xword p_filesz;   <span class="comment">/* Segment size in file */</span></span><br><span class="line">  Elf64_Xword p_memsz;    <span class="comment">/* Segment size in memory */</span></span><br><span class="line">  Elf64_Xword p_align;    <span class="comment">/* Segment alignment, file &amp; memory */</span></span><br><span class="line">&#125; Elf64_Phdr;</span><br></pre></td></tr></table></figure>
+<p>使用<code>readelf 查看一下待链接的 ./polymorphismCC.mx86的所有的phdr</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"> readelf -l ./polymorphismCC.x86so -W</span><br><span class="line"></span><br><span class="line">Elf file type is DYN (Shared object file)</span><br><span class="line">Entry point 0x1110</span><br><span class="line">There are 8 program headers, starting at offset 64</span><br><span class="line"></span><br><span class="line">Program Headers:</span><br><span class="line">  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align</span><br><span class="line">  LOAD           0x000000 0x0000000000000000 0x0000000000000000 0x000ed0 0x000ed0 R   0x1000</span><br><span class="line">  LOAD           0x001000 0x0000000000001000 0x0000000000001000 0x000599 0x000599 R E 0x1000</span><br><span class="line">  LOAD           0x002000 0x0000000000002000 0x0000000000002000 0x000374 0x000374 R   0x1000</span><br><span class="line">  LOAD           0x002d00 0x0000000000003d00 0x0000000000003d00 0x000390 0x000398 RW  0x1000</span><br><span class="line">  DYNAMIC        0x002dd0 0x0000000000003dd0 0x0000000000003dd0 0x0001f0 0x0001f0 RW  0x8</span><br><span class="line">  GNU_EH_FRAME   0x002038 0x0000000000002038 0x0000000000002038 0x00009c 0x00009c R   0x4</span><br><span class="line">  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x000000 RW  0x10</span><br><span class="line">  GNU_RELRO      0x002d00 0x0000000000003d00 0x0000000000003d00 0x000300 0x000300 R   0x1</span><br><span class="line"></span><br><span class="line"> Section to Segment mapping:</span><br><span class="line">  Segment Sections...</span><br><span class="line">   00     .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn .rela.plt </span><br><span class="line">   01     .init .plt .plt.got .text .fini </span><br><span class="line">   02     .rodata .eh_frame_hdr .eh_frame .gcc_except_table </span><br><span class="line">   03     .init_array .fini_array .data.rel.ro .dynamic .got .got.plt .data .bss </span><br><span class="line">   04     .dynamic </span><br><span class="line">   05     .eh_frame_hdr </span><br><span class="line">   06     </span><br><span class="line">   07     .init_array .fini_array .data.rel.ro .dynamic .got </span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>我们发现其中有一个程序头是<code>DYNAMIC</code>，它正是我们要找的和动态链接相关的程序头。</p>
+<h2 id="dynamic段">DYNAMIC段</h2>
+<p>和<code>DYNAMIC</code>相关的结构体如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  Elf64_Sxword	d_tag;			<span class="comment">/* Dynamic entry type ，表示entry的类型，具体需要参考elf.h文件*/</span></span><br><span class="line">  <span class="class"><span class="keyword">union</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">      Elf64_Xword d_val;		<span class="comment">/* Integer value */</span></span><br><span class="line">      Elf64_Addr d_ptr;			<span class="comment">/* Address value */</span></span><br><span class="line">    &#125; d_un;<span class="comment">//根据不同entry取数字或者地址</span></span><br><span class="line">&#125; Elf64_Dyn;<span class="comment">//记录Dynamic section 的所有entry</span></span><br></pre></td></tr></table></figure>
+<p>我们继续查看<code>DYNAMIC</code>对应的段所包含的所有与动态链接相关的entry:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">readelf -d ./polymorphismCC.x86so -W</span><br><span class="line"></span><br><span class="line">Dynamic section at offset 0x2dd0 contains 27 entries:#对应.dynamic</span><br><span class="line">  Tag        Type                         Name/Value</span><br><span class="line"> 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]</span><br><span class="line"> 0x000000000000000c (INIT)               0x1000</span><br><span class="line"> 0x000000000000000d (FINI)               0x158c</span><br><span class="line"> 0x0000000000000019 (INIT_ARRAY)         0x3d00</span><br><span class="line"> 0x000000000000001b (INIT_ARRAYSZ)       16 (bytes)</span><br><span class="line"> 0x000000000000001a (FINI_ARRAY)         0x3d10</span><br><span class="line"> 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)</span><br><span class="line"> 0x000000006ffffef5 (GNU_HASH)           0x200</span><br><span class="line"> 0x0000000000000005 (STRTAB)             0x668 #对应.dynstr</span><br><span class="line"> 0x0000000000000006 (SYMTAB)             0x2c0 #对应.dynsym</span><br><span class="line"> 0x000000000000000a (STRSZ)              853 (bytes)</span><br><span class="line"> 0x000000000000000b (SYMENT)             24 (bytes)</span><br><span class="line"> 0x0000000000000003 (PLTGOT)             0x4000 #对应.got.plt </span><br><span class="line"> 0x0000000000000002 (PLTRELSZ)           312 (bytes)</span><br><span class="line"> 0x0000000000000014 (PLTREL)             RELA</span><br><span class="line"> 0x0000000000000017 (JMPREL)             0xd98 # 对应 .rela.plt (ELF RELA Relocation Table)</span><br><span class="line"> 0x0000000000000007 (RELA)               0xa80 # 对应 .rela.dyn (ELF JMPREL Relocation Table)</span><br><span class="line"> 0x0000000000000008 (RELASZ)             792 (bytes)</span><br><span class="line"> 0x0000000000000009 (RELAENT)            24 (bytes)</span><br><span class="line"> 0x000000006ffffffe (VERNEED)            0xa10</span><br><span class="line"> 0x000000006fffffff (VERNEEDNUM)         3</span><br><span class="line"> 0x000000006ffffff0 (VERSYM)             0x9be</span><br><span class="line"> 0x000000006ffffff9 (RELACOUNT)          4</span><br><span class="line"> 0x0000000000000000 (NULL)               0x0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">readelf -d ./invoker.so -W</span><br><span class="line"></span><br><span class="line">Dynamic section at offset 0x2de0 contains 28 entries: </span><br><span class="line">  Tag        Type                         Name/Value</span><br><span class="line"> 0x0000000000000001 (NEEDED)             Shared library: [./polymorphismCC.x86so]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]</span><br><span class="line"> 0x000000000000000c (INIT)               0x401000</span><br><span class="line"> 0x000000000000000d (FINI)               0x4015a8</span><br><span class="line"> 0x0000000000000019 (INIT_ARRAY)         0x403d20</span><br><span class="line"> 0x000000000000001b (INIT_ARRAYSZ)       16 (bytes)</span><br><span class="line"> 0x000000000000001a (FINI_ARRAY)         0x403d30</span><br><span class="line"> 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)</span><br><span class="line"> 0x000000006ffffef5 (GNU_HASH)           0x4002e8</span><br><span class="line"> 0x0000000000000005 (STRTAB)             0x4005d8 </span><br><span class="line"> 0x0000000000000006 (SYMTAB)             0x400350</span><br><span class="line"> 0x000000000000000a (STRSZ)              532 (bytes)</span><br><span class="line"> 0x000000000000000b (SYMENT)             24 (bytes)</span><br><span class="line"> 0x0000000000000015 (DEBUG)              0x0</span><br><span class="line"> 0x0000000000000003 (PLTGOT)             0x404000#对应.got.plt </span><br><span class="line"> 0x0000000000000002 (PLTRELSZ)           264 (bytes)</span><br><span class="line"> 0x0000000000000014 (PLTREL)             RELA</span><br><span class="line"> 0x0000000000000017 (JMPREL)             0x400928# 对应 .rela.plt (ELF RELA Relocation Table)</span><br><span class="line"> 0x0000000000000007 (RELA)               0x400898# 对应 .rela.dyn (ELF JMPREL Relocation Table)</span><br><span class="line"> 0x0000000000000008 (RELASZ)             144 (bytes)</span><br><span class="line"> 0x0000000000000009 (RELAENT)            24 (bytes)</span><br><span class="line"> 0x000000006ffffffe (VERNEED)            0x400828</span><br><span class="line"> 0x000000006fffffff (VERNEEDNUM)         3</span><br><span class="line"> 0x000000006ffffff0 (VERSYM)             0x4007ec</span><br><span class="line"> 0x0000000000000000 (NULL)               0x0</span><br></pre></td></tr></table></figure>
+<p>我们逐个进行分析。</p>
+<h3 id="字符串表">字符串表</h3>
+<p><code>STRTAB</code>中保存了所有与动态链接相关的字符串，比如函数名称，动态链接库的名称等等，如下：</p>
+<p><img src="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426110131954.png" alt="image-20210426110131954" style="zoom:50%;"></p>
+<h3 id="符号表">符号表</h3>
+<p><code>SYMTAB</code>保存了所有函数的函数名称、函数地址偏移、大小等信息，其每个表项的结构如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  Elf64_Word	st_name;		<span class="comment">/* Symbol name (string tbl index) 通过基址寻址，基于STRTAB的首地址+st_name找到真正的名称*/</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">char</span>	st_info;		<span class="comment">/* Symbol type and binding */</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">char</span> st_other;		<span class="comment">/* Symbol visibility */</span></span><br><span class="line">  Elf64_Section	st_shndx;		<span class="comment">/* Section index */</span></span><br><span class="line">  Elf64_Addr	st_value;		<span class="comment">/* Symbol value 通过基址寻址，基于文件的首地址+st_value找到真正函数地址*/</span></span><br><span class="line">  Elf64_Xword	st_size;		<span class="comment">/* Symbol size */</span></span><br><span class="line">&#125; Elf64_Sym;</span><br></pre></td></tr></table></figure>
+<p><code>./polymorphismCC.x86so</code>的符号表在ida pro 中它的结构如下：</p>
+<p><img src="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426110259817.png" alt="image-20210426110259817" style="zoom:33%;"></p>
+<p>可以发现符号表记录了以下信息:</p>
+<ol type="1">
+<li>函数的地址，包括对虚函数实现的函数以及其他的函数例如<code>printf</code>,<code>_ZN14polymorphismCC3addEv</code>,<code>_Z4calciiii</code>，对于库中未实现的函数例如<code>printf</code>，则会指向该文件的首地址(本例中为<code>dword_0</code>)；</li>
+<li>类名信息( type descriptor name)，例如<code>_ZTS14polymorphismCC</code>,<code>_ZTS4base</code>和<code>_ZTS20polymorphismCC_child</code>则会指向<code>.rodata</code>段中的字符串;</li>
+<li>类信息(typeinfo)，例如<code>_ZTI20polymorphismCC_child</code>,<code>_ZTV14polymorphismCC</code>和<code>_ZTV4base</code>，会指向<code>.data.rel.ro</code>段中的类信息；</li>
+<li>类的虚函数表(vtable)，例如<code>_ZTI20polymorphismCC_child</code>,<code>_ZTV14polymorphismCC</code>和<code>_ZTV4base</code>，会指向<code>.data.rel.ro</code>段中的虚函数表；</li>
+</ol>
+<h3 id="got.plt">.got.plt</h3>
+<p>用于运行时懒加载的重定向，详情见上一篇博客。</p>
+<h3 id="pltrel和rela">PLTREL和RELA</h3>
+<p>与<code>PLTREL</code>和<code>RELA</code>相关的结构体如下,他们使用了相同的结构体，但是有两种不同的形式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="type">uint64_t</span> Elf64_Xword;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  Elf64_Addr	r_offset;		<span class="comment">/* Address 相对偏移*/</span></span><br><span class="line">  Elf64_Xword	r_info;			<span class="comment">/* Relocation type and symbol index */</span></span><br><span class="line">  Elf64_Sxword	r_addend;		<span class="comment">/* Addend */</span></span><br><span class="line">&#125; Elf64_Rela;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  Elf64_Addr	r_offset;		<span class="comment">/* Address */</span></span><br><span class="line">  Elf64_Xword	r_info;			<span class="comment">/* Relocation type and symbol index */</span></span><br><span class="line">&#125; Elf64_Rel;</span><br><span class="line"><span class="comment">//r_info的运算规则</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF64_R_SYM(i)			((i) &gt;&gt; 32)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF64_R_TYPE(i)			((i) &amp; 0xffffffff)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF64_R_INFO(sym,type)		((((Elf64_Xword) (sym)) &lt;&lt; 32) + (type))</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><code>./polymorphismCC.x86so</code>在ida pro中如下：</p>
+<p><img src="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426110336708.png" alt="image-20210426110336708" style="zoom:50%;"></p>
+<p><code>./invoker.so</code>在ida pro中如下：</p>
+<p><img src="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426110725254.png" alt="image-20210426110725254" style="zoom:50%;"></p>
+<p>可以发现两个表的通性：</p>
+<ol type="1">
+<li><code>r_offset</code>中存储的就是函数的相对偏移。</li>
+<li>两个表都会记录函数的地址，但是记录的方式不同。</li>
+</ol>
+<p>对于<code>RELA</code>:</p>
+<ol type="1">
+<li>记录了与<code>.data.rel.ro</code>相关的内容</li>
+<li><code>./polymorphismCC.x86so</code>中与面向对象相关的，名称以类名为结束的例如<code>_ZTV20polymorphismCC_child</code>,<code>_ZTV14polymorphismCC</code>,<code>_ZTI4base</code>则会指向对应类在<code>.data.rel.ro</code>中的虚函数表；每个虚函数的实现例如<code>_ZN20polymorphismCC_childD2Ev</code>,<code>_ZN20polymorphismCC_child3addEv</code>,<code>_ZN4base3addEv</code>等指向了虚函数表的对应表项。</li>
+<li><code>./polymorphismCC.x86so</code>中没有<code>_z4calciiii</code>这个函数相关的信息，因为该函数就在该动态链接库当中，不需要重定位。</li>
+<li><code>./invoker.so</code>中对于<code>_ZTV14polymorphismCC</code>和<code>_ZTV20polymorphismCC_child</code>则会指向<code>.data.rel.ro</code>段中与其对应的虚函数表，并且初始的时候为空，然后在运行时更新该类中的虚函数的地址。</li>
+</ol>
+<p>对于<code>PLTREL</code>：</p>
+<ol type="1">
+<li>记录的信息主要和<code>.got.plt</code>中内容相关的信息</li>
+<li><code>./polymorphismCC.x86so</code>中与面向对象相关的，例如<code>_ZN14polymorphismCCD2Ev</code>,<code>_ZN14polymorphismCCC2EiPc</code>,<code>_ZN20polymorphismCC_childD2Ev</code>,<code>_ZN4baseD2Ev</code>均指向了<code>.got.plt</code>表，通过<code>.got.plt</code>表再跳转到具体函数</li>
+<li>.<code>/invoker.so</code>中例如<code>_z4calciiii</code>和<code>printf</code>它会指向.got.plt表中对应的表项，该表最终会通过运行时重定向来更新函数具体位置；</li>
+</ol>
+<h1 id="动态链接大致步骤">动态链接大致步骤</h1>
+<p>例子中，我们的主程序是<code>invoker.so</code>,它依赖一个动态链接库<code>polymorphismCC.x86so</code>,假设<code>invoker.so</code>已经加载到了内存，下一步需要加载<code>polymorphismCC.x86so</code></p>
+<p>动态链接（比如执行 dlopen）的大致步骤是：</p>
+<ol type="1">
+<li>检查已加载的 ELF 列表。（如果 <code>polymorphismCC.x86so</code> 已经加载，就不再重复加载了，仅把 <code>polymorphismCC.x86so</code> 的引用计数加一，然后直接返回。）</li>
+<li>从 <code>polymorphismCC.x86so</code> 的 .dynamic section 中读取 <code>polymorphismCC.x86so</code> 的外部依赖的 ELF 列表，从此列表中剔除已加载的 ELF，最后得到本次需要加载的 ELF 完整列表（包括<code>polymorphismCC.x86so</code>自身）。</li>
+<li>逐个加载列表中的 ELF。加载步骤：
+<ul>
+<li>用 <code>mmap</code> 预留一块足够大的内存，用于后续映射 ELF。（<code>MAP_PRIVATE</code> 方式）</li>
+<li>读 ELF 的 PHT，用 <code>mmap</code> 把所有类型为 <code>PT_LOAD</code> 的 segment 依次映射到内存中。</li>
+<li>从 .dynamic segment 中读取各信息项，主要是各个 section 的虚拟内存相对地址，然后计算并保存各个 section 的虚拟内存绝对地址。</li>
+<li>执行重定位操作（relocate），这是最关键的一步。重定位信息可能存在于下面的一个或多个 section 中：<code>.rel.plt</code>, <code>.rela.plt</code>, <code>.rel.dyn</code>, <code>.rela.dyn</code>, <code>.rel.android</code>, <code>.rela.android</code>。动态链接器需要逐个处理这些 <code>.relxxx</code> section 中的重定位诉求。根据已加载的 ELF 的信息，动态链接器查找所需符号的地址（比如<code>polymorphismCC.x86so</code> 的符号 <code>printf</code>），找到后，将地址值填入 <code>.relxxx</code> 中指明的<strong>目标地址</strong>中，这些“<strong>目标地址</strong>”一般存在于<code>.got</code> 或 <code>.data</code> 中。</li>
+<li>ELF 的引用计数加一。</li>
+</ul></li>
+<li>逐个调用列表中 ELF 的构造函数（constructor），这些构造函数的地址是之前从 .dynamic segment 中读取到的（类型为 <code>DT_INIT</code> 和 <code>DT_INIT_ARRAY</code>）。各 ELF 的构造函数是按照依赖关系逐层调用的，先调用被依赖 ELF 的构造函数，最后调用 <code>polymorphismCC.x86so</code>自己的构造函数。（ELF 也可以定义自己的析构函数（destructor），在 ELF 被 unload 的时候会被自动调用）</li>
+</ol>
+<h1 id="动态链接库中函数的地址">动态链接库中函数的地址</h1>
+<p>终于来回答第一个问题了，我们以<code>calc</code>为例子来看一下invoker.so的<code>.got.plt</code>表中函数的地址是从哪里来的。</p>
+<h2 id="猜测">猜测</h2>
+<p>首先，基于已有的知识，我们猜测一下可能步骤：</p>
+<ol type="1">
+<li>invoker.so 需要知道<code>polymorphismCC.x86so</code>在内存中的首地址(基址)，这样才能使用偏移定位到函数地址；</li>
+<li>invoker.so 一定需要定位到polymorphismCC.x86so中的<code>DYNAMIC</code>然后从<code>SYMTAB</code>获取到<code>calc</code>函数的偏移；</li>
+</ol>
+<p>因此我们使用ida pro在<code>polymorphismCC.x86so</code>的<code>calc</code>对应的符号表的地址打断点</p>
+<figure>
+<img src="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426143841258.png" alt><figcaption>image-20210426143841258</figcaption>
+</figure>
+<p>我们推测，在invoker.so中calc函数的地址为polymorphismCC.x86so的基址加上符号表中calc这一项的偏移如下公式： <span class="math display">\[
+addr_{calc} = base_{polymorphismCC.x86so}+bais_{calc}
+\]</span> 最终 <span class="math display">\[
+addr_{calc}=0x7F9455B0C000+0x1250=0x7f9455b0d250
+\]</span></p>
+<h2 id="验证">验证</h2>
+<p>我们也在invoker.so 的<code>.got.plt</code>中calc函数对应地址打断点，可以发现目前地址的值还是calc在<code>.plt</code>中的位置</p>
+<figure>
+<img src="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426142047701.png" alt><figcaption>image-20210426142047701</figcaption>
+</figure>
+<p>放任程序运行，然后程序由于触发了<code>00007F9455B0C638</code>地址上的断点(也就是在<code>polymorphismCC.x86so</code>的<code>calc</code>在符号表中的位置)。此时寄存器rbx存储的就是<code>00007F9455B0C638</code></p>
+<figure>
+<img src="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426143914848.png" alt><figcaption>image-20210426143914848</figcaption>
+</figure>
+<p>再放任程序运行，程序触发了<code>0000000000404050</code>也就是invoker.so中的<code>.got.plt</code>存放calc函数地址的表项。此时RBX存储的就是<code>0000000000404050</code>。</p>
+<figure>
+<img src="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426144250855.png" alt><figcaption>image-20210426144250855</figcaption>
+</figure>
+<p>我们单步执行，并查看invoker.so中<code>.got.plt</code>中存放的calc的地址。不出所料，跳转的地址变为了<code>0x7f9455b0d250</code>，和我们猜想的完全一样，证明猜想正确。</p>
+<figure>
+<img src="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A32-%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80%E7%9A%84%E7%94%B1%E6%9D%A5/image-20210426144603736.png" alt><figcaption>image-20210426144603736</figcaption>
+</figure>
+<h1 id="如何利用函数加载的机制">如何利用函数加载的机制</h1>
+<p>现在我们知道了函数地址的计算方法，它其实就是<code>基址+偏移</code>，因此我们可以利用这个原理来做一些有趣的事情，比如plthook，推荐一个<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2lxaXlpL3hIb29r">很牛皮的hook框架<i class="fa fa-external-link-alt"></i></span>。那么plthook能做什么呢？</p>
+<ol type="1">
+<li>so热修复。假如A调用B中的一个函数func，但是func()出现了bug，我们想在不重新编译B的情况下修复这个bug。我们可以这么做：
+<ol type="1">
+<li>重新写一个正确的函数func_fix()，找到func在A中<code>.got.plt</code>,<code>.got</code>的地址add1；</li>
+<li>在程序运行时将add1的地址修改为func_fix()的地址(基址+偏移)，这样就完成了so文件的修复，并且也不需要重新编译B文件。</li>
+</ol></li>
+<li>监控内存。我们使用类似的手段也可以hook系统函数，例如malloc和free函数。在调用malloc之前，hook函数可以收集开辟内存的大小，相同的，在free之前也可以收集free的大小，若两者相等则开辟的内存全部被回收，若malloc&gt;free则证明回收的内存小于开辟的内存，很可能出现了内存泄露。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ELF%E6%96%87%E4%BB%B6/" rel="tag"># ELF文件</a>
+              <a href="/tags/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93/" rel="tag"># 动态链接库</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/18/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A3--%E5%BB%B6%E8%BF%9F%E5%8A%A0%E8%BD%BD/" rel="prev" title="动态链接库的理解1--延迟加载">
+                  <i class="fa fa-angle-left"></i> 动态链接库的理解1--延迟加载
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/04/25/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A33-%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%AD%98%E5%82%A8/" rel="next" title="动态链接库的理解3--虚函数的存储">
+                  动态链接库的理解3--虚函数的存储 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2014 – 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">GXG</span>
+  </div>
+  <div class="powered-by">由 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvaGV4by10aGVtZS1uZXh0" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.8/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.3.0/mermaid.min.js","integrity":"sha256-9y71g5Lz/KLsHjB8uXwnkuWDtAMDSzD/HdIbqhJfTAI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/wavedrom.min.js","integrity":"sha256-IRMDzTC+wK5stMucZ/XSXkeS5VNtxZ+/Bm8Mcqfoxdo="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","mhchem":true,"cdn2":"https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML","cdn3":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/math/mathjax.min.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"next-theme","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/comments/disqus.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+
+    <meta name="description" content="摘要 ​ 在这项工作中，我们设计了一个移动对移动屏幕-摄像头通信系统来处理滚动快门问题，提高可靠性。 首先，我们提出了一种时域自恢复编码方案来识别混合帧，使编码效率提高一倍。 其次，我们设计了可靠的反馈通道,实现在具有复杂环境下的鲁棒性。 ​ 我们在Android平台上实现了系统原型，并进行了大量的实验。结果表明，与现有的rolling-shutter解决方案相比，我们的系统提高了一个数量级(16">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ERSCC 论文笔记">
+<meta property="og:url" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/index.html">
+<meta property="og:site_name" content="Oh, Tony">
+<meta property="og:description" content="摘要 ​ 在这项工作中，我们设计了一个移动对移动屏幕-摄像头通信系统来处理滚动快门问题，提高可靠性。 首先，我们提出了一种时域自恢复编码方案来识别混合帧，使编码效率提高一倍。 其次，我们设计了可靠的反馈通道,实现在具有复杂环境下的鲁棒性。 ​ 我们在Android平台上实现了系统原型，并进行了大量的实验。结果表明，与现有的rolling-shutter解决方案相比，我们的系统提高了一个数量级(16">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Roalling-shutter.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E5%B8%A7%E6%B7%B7%E5%90%88.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E7%B3%BB%E7%BB%9F%E6%A6%82%E8%BF%B0.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E7%A9%BA%E9%97%B4%E5%88%86%E5%B8%83%E7%9A%84%E6%95%B0%E6%8D%AE%E6%B5%81.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E5%8E%9F%E5%A7%8B%E9%A2%9C%E8%89%B2%E6%8F%90%E5%8F%96.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E8%B0%83%E5%88%B6%E7%BC%96%E7%A0%81%E8%A1%A8.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E6%B2%A1%E7%90%86%E8%A7%A3%E7%9A%84%E9%83%A8%E5%88%86.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E4%BD%BF%E7%94%A8Wiki%E6%95%B0%E6%8D%AE%E7%9A%84%E9%87%87%E6%A0%B7%E7%8E%87%E5%92%8C%E5%B8%A7%E7%8E%87%E5%8F%98%E5%8A%A8.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E7%AE%97%E6%B3%951.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E5%8F%8D%E9%A6%88%E9%80%9A%E8%AE%AF%E4%BE%8B%E5%AD%90.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Symbol_mix_pattern.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E5%9B%BE11%E5%92%8C%E5%9B%BE12.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Fig14.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E8%B7%9D%E7%A6%BB.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E5%85%89%E7%85%A7%E5%92%8C%E8%A7%92%E5%BA%A6.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E5%85%89%E7%85%A7%E5%92%8C%E5%8A%A0%E9%80%9F%E5%BA%A6.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E5%9D%97%E5%A4%A7%E5%B0%8F%E5%92%8CRS%E7%BA%A0%E9%94%99.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E5%9D%97%E5%A4%A7%E5%B0%8F%E9%9A%8F%E8%B7%9D%E7%A6%BB%E5%8F%98%E5%8C%96.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Code-scheme-adaptation.png">
+<meta property="og:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/%E5%B8%A7%E6%B7%B7%E5%90%88.png">
+<meta property="article:published_time" content="2020-02-01T08:53:19.000Z">
+<meta property="article:modified_time" content="2023-08-03T15:45:01.714Z">
+<meta property="article:author" content="Tony">
+<meta property="article:tag" content="QRCode">
+<meta property="article:tag" content="帧混淆">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Roalling-shutter.png">
+
+
+<link rel="canonical" href="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/","path":"2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/","title":"ERSCC 论文笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ERSCC 论文笔记 | Oh, Tony</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Oh, Tony</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">31</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%91%E6%88%98"><span class="nav-number">2.</span> <span class="nav-text">1.挑战</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.</span> <span class="nav-text">2.背景介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%8D%E6%91%84%E7%94%BB%E9%9D%A2%E4%B8%AD%E7%9A%84%E5%9B%BE%E5%83%8F%E6%B7%B7%E5%90%88"><span class="nav-number">3.1.</span> <span class="nav-text">拍摄画面中的图像混合</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E6%A6%82%E8%BF%B0"><span class="nav-number">4.</span> <span class="nav-text">3.系统概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#erscc-%E8%AE%BE%E8%AE%A1"><span class="nav-number">5.</span> <span class="nav-text">4.ERSCC 设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A9%BA%E9%97%B4%E5%88%86%E5%B8%83%E7%9A%84%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="nav-number">5.1.</span> <span class="nav-text">空间分布的数据流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Epre-color%E7%9A%84%E8%B0%83%E5%88%B6"><span class="nav-number">5.2.</span> <span class="nav-text">基于pre-color的调制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-number">5.2.1.</span> <span class="nav-text">设计原则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E5%88%B6%E9%A2%9C%E8%89%B2%E9%80%89%E6%8B%A9"><span class="nav-number">5.3.</span> <span class="nav-text">调制颜色选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#how-is-the-pre-color-based-modulation-compared-with-the-naive-one-with-only-three-symbols"><span class="nav-number">5.4.</span> <span class="nav-text">How is the pre-color based modulation compared with the naive one with only three symbols?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%A7%E7%8E%87%E9%97%B4%E9%9A%94%E5%92%8C%E9%94%99%E8%AF%AF%E4%BC%A0%E6%92%AD"><span class="nav-number">5.4.1.</span> <span class="nav-text">帧率间隔和错误传播</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%A5%E5%A3%AE%E7%9A%84%E7%BB%93%E6%9D%9F%E7%AC%A6"><span class="nav-number">5.4.2.</span> <span class="nav-text">健壮的结束符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E9%A6%88%E4%BF%A1%E6%81%AF%E6%9C%BA%E5%88%B6"><span class="nav-number">5.5.</span> <span class="nav-text">反馈信息机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AC%E4%BB%B6%E9%85%8D%E7%BD%AE"><span class="nav-number">5.5.1.</span> <span class="nav-text">硬件配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E9%A6%88%E8%AE%BE%E8%AE%A1"><span class="nav-number">5.5.2.</span> <span class="nav-text">反馈设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E9%85%8D%E7%AD%96%E7%95%A5"><span class="nav-number">5.5.3.</span> <span class="nav-text">适配策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%A7%E7%8E%87%E9%80%82%E9%85%8D"><span class="nav-number">5.5.3.1.</span> <span class="nav-text">帧率适配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9D%97%E5%A4%A7%E5%B0%8F%E9%80%82%E9%85%8D"><span class="nav-number">5.5.3.2.</span> <span class="nav-text">块大小适配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E7%A0%81%E6%96%B9%E6%A1%88%E9%80%82%E9%85%8D"><span class="nav-number">5.5.3.3.</span> <span class="nav-text">编码方案适配</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.</span> <span class="nav-text">5.系统实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0"><span class="nav-number">6.1.</span> <span class="nav-text">系统评估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">6.1.1.</span> <span class="nav-text">实验设置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tdsr%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0"><span class="nav-number">6.2.</span> <span class="nav-text">TDSR性能评估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%92%8C%E7%8E%B0%E6%9C%89%E7%A0%94%E7%A9%B6%E6%88%90%E6%9E%9C%E5%AF%B9%E6%AF%94"><span class="nav-number">6.2.1.</span> <span class="nav-text">和现有研究成果对比</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B7%9D%E7%A6%BB%E6%B5%8B%E8%AF%95"><span class="nav-number">6.2.1.1.</span> <span class="nav-text">距离测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%92%E5%BA%A6%E5%92%8C%E4%BA%AE%E5%BA%A6%E6%B5%8B%E8%AF%95"><span class="nav-number">6.2.1.2.</span> <span class="nav-text">角度和亮度测试</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E9%A6%88%E8%AE%BE%E8%AE%A1%E7%9A%84%E8%AF%84%E4%BC%B0"><span class="nav-number">6.2.2.</span> <span class="nav-text">反馈设计的评估</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E9%80%82%E5%BA%94%E6%80%A7%E8%AF%84%E4%BC%B0"><span class="nav-number">6.3.</span> <span class="nav-text">自适应性评估</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">7.</span> <span class="nav-text">6.结论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">7.总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%96%91%E9%97%AE"><span class="nav-number">9.</span> <span class="nav-text">8.疑问</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Tony"
+      src="https://avatars.githubusercontent.com/u/46778179?v=4">
+  <p class="site-author-name" itemprop="name">Tony</p>
+  <div class="site-description" itemprop="description">GXG</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL25ldy1Ub255V2FuZw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;new-TonyWang"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9uZXctdG9ueXdhbmcuZ2l0aHViLmlvL3dhbmd0b255eXUyMjJAZ21haWwuY29t" title="Email → https:&#x2F;&#x2F;new-tonywang.github.io&#x2F;wangtonyyu222@gmail.com"><i class="fa fa-envelope fa-fw"></i>Email</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9udWFhLXMzbGFiLmdpdGh1Yi5pby9kYWlseVBhcGVyLw==" title="S3Lab论文推荐 → https:&#x2F;&#x2F;nuaa-s3lab.github.io&#x2F;dailyPaper&#x2F;">S3Lab论文推荐</span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ERSCC 论文笔记 | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ERSCC 论文笔记<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvdGhlbWUtbmV4dC1kb2NzL2VkaXQvbWFzdGVyL3NvdXJjZS9fcG9zdHMvRVJTQ0MtRW5hYmxlLUVjaWVudC1hbmQtUmVsaWFibGUtU2NyZWVuLUNhbWVyYS5tZA==" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-01 16:53:19" itemprop="dateCreated datePublished" datetime="2020-02-01T16:53:19+08:00">2020-02-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%BA%E6%96%87/" itemprop="url" rel="index"><span itemprop="name">论文</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="摘要">摘要</h1>
+<p>​ 在这项工作中，我们设计了一个移动对移动屏幕-摄像头通信系统来处理滚动快门问题，提高可靠性。</p>
+<p>首先，我们提出了一种时域自恢复编码方案来识别混合帧，使编码效率提高一倍。 其次，我们设计了可靠的反馈通道,实现在具有复杂环境下的鲁棒性。</p>
+<p>​ 我们在Android平台上实现了系统原型，并进行了大量的实验。结果表明，与现有的rolling-shutter解决方案相比，我们的系统提高了一个数量级(16倍)的吞吐量，比彩色条形码系统提高了两倍(1.8倍)。</p>
+<p>该文章发表在 2019 ACM <em>Mobihoc ’19, July 2–5, 2019, Catania, Italy</em></p>
+<span id="more"></span>
+<h1 id="挑战">1.挑战</h1>
+<p>​ <strong>Rolling Shutter Effect:</strong> 使用CMOS传感器[6]的滚动快门机制，摄像机逐行扫描场景。在相机曝光时间内，如果当前扫描行切换到下一帧，则捕获的图像是两帧的混合，很难解码。传统的方法是将相机拍摄帧率提为播放帧率的两倍，这样连续两张图像中的一张就可以有一张完整的。因此，一半的容量丢失了。</p>
+<p><strong>Visible light based feedback:</strong>在实践中，SCC系统由于设备不完善、视角偏斜、环境光等原因，产生了较大的误差。为了实现可靠性，SCC系统需要反馈传输信息。虽然有几篇文献提到了针对VLC(而不是SCC)使用wifi或蓝牙进行反馈实现，但这些方法都强调了SCC系统的优点，如方便、部署密集、安全性高。反馈消息可能包含有关通信状态的信息，攻击者可能会对这些信息感兴趣，以便决定下一步的操作。此外，用户密码可能会在蓝牙传输中被破解。这些问题促使我们设计一种基于可见光的反馈机制来保留SCC系统的上述优点。</p>
+<h1 id="背景介绍">2.背景介绍</h1>
+<p>## CMOS和滚动快门机制</p>
+<p>​ CMOS图像传感器收集光子并转换成电子信号。CMOS(互补金属氧化物半导体[6])传感器在智能手机中占据主导地位。与CCD相比，CMOS采用滚动快门模式而不是全局快门模式来读出每个像素。在滚动快门模式下，相机开始曝光的时间不同，会出现多排，如图2(a)所示。这种机制导致曝光窗口扫描从上到下的传感器阵列。例如，在图2(a)中，从“Row 2”开始到“Row 0”结束，“Row 1”和“Row 2”同时出现在曝光窗口中。摄像头扫描曝光窗口如图2(b)所示，从上到下滑动。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Roalling-shutter.png" alt="image-20200201172013428" style="zoom:40%;"></p>
+<h2 id="拍摄画面中的图像混合">拍摄画面中的图像混合</h2>
+<p>​ 类似地，像LCD这样的数字显示器逐行刷新。这将导致一个刷新窗口，如图2(b)所示。通常，刷新率在60Hz到200Hz之间。一方面，相机的曝光窗口一行一行曝光。另一方面，刷新窗口将场景一行一行得更新。因此，在这两个扫描窗口的交叉区域，传感器从两个帧中积累光子，从而形成一个两帧画面得混合。并且由于刷新窗口和曝光窗口移动方向不同，不同角度拍摄的两帧图像的混淆也不同。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/帧混合.png" alt="image-20200201172936502" style="zoom:40%;"></p>
+<h1 id="系统概述">3.系统概述</h1>
+<p>​ 整个传输一共有两个阶段。初始适配和数据传输。</p>
+<p>​ 初始适配阶段，发送端和接收端使用静态的图片发送配置信息并适配rate和块的大小。数据传输阶段，发送端将待传输数据经过RS纠错和颜色调制之后将二维码再显示屏播放；接收端拍摄二维码并使用颜色解调和RS纠错，如果帧出现了错误，就发送反馈信息。</p>
+<p>​ 为了支持这两个阶段，ERSCC的设计包括三个部分:TDSR编码、反馈机制和自适应策略。</p>
+<p>​ TDSR编码采用基于空间无关数据流的预彩色调制来处理混合帧。</p>
+<p>​ 反馈机制使基于可见光的反向通道允许接收方将信息发送回发送方。</p>
+<p>​ 适应策略使设备的配置能够适应复杂的光线环境。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/系统概述.png" alt="image-20200201173324110" style="zoom:40%;"></p>
+<h1 id="erscc-设计">4.ERSCC 设计</h1>
+<h2 id="空间分布的数据流">空间分布的数据流</h2>
+<p>​ TDSR编码将数据按空间块的顺序分布。每个块包含一个颜色符号。具体来说，假设在一帧中有B个空间块。如果总数据有M位，我们将数据D平均分成B个子数据流，每个子数据流有M/B位。每个子流被分配到一个空间块，并在时间上跨帧编码，如图5所示。因此，每一个分配给空间块的子流，都使用不同的数量的颜色服好来编码相同数量的数据位。可能会出现reshuffle情况，再序列的末尾会有一些没有被编码的数据。为了解决这个问题，我们的解决方案是为每个空间块分配相同数量的颜色符号(经过调制后)。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/空间分布的数据流.png" alt="image-20200201183120654" style="zoom:40%;"></p>
+<h2 id="基于pre-color的调制">基于pre-color的调制</h2>
+<p>​ 我们提出了一种基于颜色预处理的调制方案，该方案将每个子流编码到同一块区域中，我们称为时域自恢复编码方案(TDSR)。我们首先讨论从混合物中实现自我修复的设计原则。然后，我们用编码表1的插图来讨论颜色选择。</p>
+<h3 id="设计原则">设计原则</h3>
+<div style="color:#F00">
+ERSCC基本思想是确保混合颜色在一个颜色子空间中，这样它的组成颜色就可以被解析。
+</div>
+<p>​ 基于此思想，我们设计了一种时域颜色调制，如图6所示。第一行是在一个空间块中检测到的颜色序列，它跨越沿时间方向捕获的帧。第一个颜色是固定的初始参考颜色。连续的混合颜色表示为“Blend 1”，“Blend 2”，…， ' Blend 4 '，它们是连续捕获的第1张、第2张...的相同区域的颜色。当显示刷新率和相机捕获率大致相同时，捕获的颜色可能是混合的或未混合的(如“分辨颜色序列”所示)。例如，“Blend 1”是“Color 1”和“Color 2”的混合，而“Blend 3”只有“Color 4”。有了上述思想，每个捕获颜色中的组件颜色都得到了解析。这样，利用参考颜色的知识，就可以检索出原始的颜色序列。具体来说，我们知道“Blend 1”由“Color 1”和“Color 2”组成，而“Color 1”是前一个颜色，然后“Color 2”是下一个颜色。接下来，我们知道“Blend 2”由“Color 2”和“Color 3”组成，而“Color 2”是之前的颜色，然后“Color 3”是下一个颜色。为了实现这个想法，接下来我们将介绍我们的调制颜色选择策略。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/原始颜色提取.png" alt="image-20200201183719901" style="zoom:40%;"></p>
+<h2 id="调制颜色选择">调制颜色选择</h2>
+<p>​ 为了提高调制速率，我们可以利用先前解码的颜色(称为pre-color)。也就是说，一旦我们知道了之前解码的颜色，下一种颜色(称为post-color)就有一些特定的选择，可以满足设计原则。</p>
+​ 让我们看看如何调制位序列' 001001100111 '。首先，我们有参考色100作为第一个 pre-color。在表1中，要调制比特“00”，后彩色为000。000再次成为第二个 pre-color。下一步，调制位' 100 '，后彩色是100。因此，最终调制的颜色序列为000,100,011,000,011,100。因此，如果任意两个连续的颜色混合，我们可以提取后颜色与前颜色的知识。例如，如果第二种颜色100和第三种颜色011混合，那么混合后的颜色是111。在pre-color 为100的post-color选项中，只有011可以生成混合颜色111，从而识别post-color 011。
+<div style="color:#F00">
+存疑，若序列为001011，初始颜色为100，按照下表前两个颜色为000,101，当101作为pre-color的时候post-color应该为什么？
+</div>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/调制编码表.png" alt="image-20200202105533932" style="zoom:40%;"></p>
+<h2 id="how-is-the-pre-color-based-modulation-compared-with-the-naive-one-with-only-three-symbols">How is the pre-color based modulation compared with the naive one with only three symbols?</h2>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/没理解的部分.png" alt="image-20200204170336732" style="zoom:50%;"></p>
+<h3 id="帧率间隔和错误传播">帧率间隔和错误传播</h3>
+<p>​ 在随机数据中，生成的画面通常具有稳定的光强度。在焦区光强度稳定的情况下，相机的帧率随时间变化不大。为了研究相机的帧率随时间变化，我们测量了多个智能手机(如三星Galaxy S4, Moto X Pure，中兴Z831)上的摄像头的帧率，得到了图7(b)中的分布。在30帧的情况下，每300帧至少有一个帧偏移。</p>
+<p>​ 另一个问题是错误传播。在预彩色调制的情况下，如果颜色识别错误，那么错误将传播到以下符号。为了解决这一问题，我们提出了插入轨音来处理速率偏移和终止错误的传播。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/使用Wiki数据的采样率和帧率变动.png" alt="image-20200202153441527" style="zoom:40%;"></p>
+<p>​ 在ERSCC中，我们将播放帧降至稍低于拍摄帧率。也就是说，如果相机捕获速率为30fps，我们选择29.9fps作为视频显示速率，而将相机的速率设置为30fps。这样，就只有重复的帧，而没有丢失的帧。然后，我们在符号序列中以一定的间隔N重复插入音轨符号，在音轨的每一段间隔的开始和结尾都由音轨符号标识。由于音轨符号是固定的，因此可以控制识别错误的扩散。如果发生移位，最后解码的符号将与音轨符号不匹配，从而检测并纠正移位。译码过程如算法1所示。</p>
+<div style="color:#F00">
+存大疑，block是按照哪一个block计算？为什么下方算法为什么要trac tone为100，如果符号中没有100怎么办？自认为应该判断最后一个颜色是否与音轨相同，100只是举了一个例子
+</div>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/算法1.png" alt="image-20200202160559144" style="zoom:40%;"></p>
+<h3 id="健壮的结束符">健壮的结束符</h3>
+<p>​ 一个传输可以有多个数据段紧邻。由于编码方案的适应性(第3.3.3节)，一次传输的帧数可能会随时间变化。在传统的通信中，报文长度包含在报头字段中。但是，由于数据是空间分布的，所以这种策略不适用于ERSCC。为了标记一次传输的终止，我们使用了一个特殊的符号序列000,000,111，即黑、黑、白。由于数据调制中没有使用白色(表1)，它无疑标志着传输的结束。使用两个黑色符号，即使在帧移位的情况下，对白色符号的检测仍然是健壮的。</p>
+<h2 id="反馈信息机制">反馈信息机制</h2>
+<p>​ 在ERSCC中，我们利用发送方的前置摄像头和接收方的闪光灯设计了一个基于可见光的反馈通道。在下面，我们提出了我们的反馈编码与手电筒的设计。</p>
+<h3 id="硬件配置">硬件配置</h3>
+<p>Android ADK 23-39的 API支持0-100Hz开关速度的后置闪光灯。</p>
+<h3 id="反馈设计">反馈设计</h3>
+<p>​ 由于闪光灯受到系统限制，但是可以通过控制LED手电筒的开关(OOK)来模仿闪光灯。例如编码1bit数据时使用一次LED的闪烁。但是，一次闪烁可能会跨越画面的两帧。为了解决这个问题，我们使用两个连续的帧为一个符号调制的手电筒。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/反馈通讯例子.png" alt="image-20200203104004720" style="zoom:40%;"></p>
+<p>图8，展示了闪光灯传输101的两种可能出现的情况。case1时，闪关灯没有和拍摄同步，所以拍摄到了连续两张都有闪光灯的画面；case2时，只拍摄到了一张有闪光的画面。</p>
+<p>​ 解析闪光灯的数据前，我们首先校准拍摄到闪光的画面。若连续两张均捕捉到了闪光，那么连续两张中的第一张校准为无闪光(non-flash)。case1当中，{flash, flash, non-flash, non-flash, flash, flash}被校准为{non-flash, flash, non-flash, non-flash, non-flash, flash}。</p>
+<h3 id="适配策略">适配策略</h3>
+<h4 id="帧率适配">帧率适配</h4>
+<p>​ 再初始适配阶段，发送端向接收端展示存有播放帧率，LED闪光灯速率等信息的图片。</p>
+<h4 id="块大小适配">块大小适配</h4>
+<p>​ 发送端块大小越大，接收端对图像模糊、距离、颜色混淆的的处理就更好。块越大，接收端采样的点就会距离块边缘（出现颜色混合最严重的地方）越远。在ERSCC中，块大小取决于接收端拍摄画面的模糊程度。</p>
+<p>​ 接收端通过判断<strong>初始适配图片</strong>的模糊程度来判断发送端块儿的大小。假设，相机的空间分辨率（<em>空间分辨率，是指图像上能够详细区分的最小单元的尺寸或大小</em>）支持块大小<span class="math inline">\(S_f\)</span>。当初始适配块大小为<span class="math inline">\(S_i\)</span>时，接收方获得一个收缩率<span class="math inline">\(R_s = \frac {S_f}{S_i}\)</span> ，该收缩率可以调整发送方展示的块的大小，谋求接收端拍摄到的块的大小均接近$ S_f$。此外，通过在整个帧中随机选择像素，测量一个模糊等级来评估像素颜色与其原始值的偏差。由于我们在静态条码中使用纯色(即红、绿、蓝、黑)，因此每个像素的模糊度Bp按照如下公式计算: <span class="math display">\[
+B_p = \sum_{V \in \lbrace{R,G,B} \rbrace } {\frac{min(|255-V|,V)}{3}}
+\]</span> ​ 当得到平均模糊程度<span class="math inline">\(\overline{B}\)</span>,我们可以，我们可以测量其他因素的影响，比如相对运动。于是，可以得到最终的收缩率<span class="math inline">\(R_{sf} = F(\overline{B})R_s\)</span>,其中<span class="math inline">\(F(\overline B)\)</span>是一个减函数。模糊等级越高，块的大小越大。参数<span class="math inline">\(R_{sf}\)</span>在初始适配阶段由接收端通过回馈信道发送。</p>
+<h4 id="编码方案适配">编码方案适配</h4>
+<p>​ 当接收端接收到的数据包无法解析的时候，接收端向发送端发送请求重传消息，同时发送端也可以计算误码率。当误码率提高时整个系统会添加更多的纠错信息。</p>
+<h1 id="系统实现">5.系统实现</h1>
+<p><strong>发送端：</strong>一共两个线程。一个线程用于播放二维码视频；另一个线程负责收集发送端的反馈信息。由于需要适应不同的传输配置，例如块大小，帧率等等，所以在传输之前需要根据不同配置来编码多个视频流。由于时间延迟不稳定，所以无法在播放视频的同时动态生成视频。</p>
+<p><strong>接收端：</strong>使用照相机捕捉视频图片，在需要的时候使用另一个线程传输反馈消息。在图像处理方面，使用<em>RenderScript</em>转码YUV-RGB。</p>
+<h2 id="系统评估">系统评估</h2>
+<h3 id="实验设置">实验设置</h3>
+<p>​ 将ERSCC和RDCode,COBRA,LightSyn,ShiftCode在分辨率相同且纠错级别最低的情况下进行对比。</p>
+<table>
+<colgroup>
+<col style="width: 43%">
+<col style="width: 28%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">实验场景</th>
+<th style="text-align: center;">发送端</th>
+<th style="text-align: center;">接收端</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">光照强度100LUX的室内环境，发送端和接收端间隔12cm，旋转角度0°，每一帧画面有100x50块(包含定位符)。</td>
+<td style="text-align: center;">Moto Puree X 5.7-in 显示屏；屏幕亮度100%</td>
+<td style="text-align: center;">Galaxy S4 拍摄帧率30fps；分辨率 960x720</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/实验环境.png" alt="image-20200204104437032" style="zoom:40%;"></p>
+<h2 id="tdsr性能评估">TDSR性能评估</h2>
+<p>​ <strong>图像混合：</strong> 假设发生混合的只能是连续的两帧。为了验证猜想，我们测试了不同显示/拍摄帧率 15fps, 20fpx,25fps和30fps，亮度的变换从100LUX到500LUX。为了判断 符号是否混合，我们比较原始图片序列和拍摄到的图片序列。最终发现单张和两张混合的占到了拍摄总画面的96%，证明猜想正确。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Symbol_mix_pattern.png" alt="image-20200204112200438" style="zoom:40%;"></p>
+<p>​ <strong>音轨符号间隔：</strong>我们研究了音轨播放的策略和错误传播的相关性。我们发现，音轨播放的间隔越短，错误传播终止的越早，但是音频编码开销会增大。实验当中，我们测试了在播放帧率为25fps和30fps的时候音轨播放间隔为5到20个符号的情况。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/图11和图12.png" alt="image-20200204113517577" style="zoom:40%;"></p>
+<p>​ 图11指出音轨间隔越小，成功解析的比率就越大；但是图12指出当间距太小的时候，系统吞吐量出现大幅度下降，这是因为过多的音轨会带来很高的编码开销。基于以上实验，</p>
+<div style="color:#F00">
+音轨间隔设置为10
+</div>
+<h3 id="和现有研究成果对比">和现有研究成果对比</h3>
+<p><strong>LightSync</strong>的效果和显示器和相机方向有关。为了测量实际中的倾斜程度，我们在三种情况下对录像进行了测试:a)使用支架;b)稳定手持;c)自由手持。通过稳定手持，用户可以尝试在录制过程中匹配方向。自由手持，我们只是确保屏幕是在相机能拍摄到的范围内。如图14所示，在1920x1080的显示器上，最好的倾斜度是1.9，即扫描线倾斜63像素。因此，63像素是LightSync的最小块大小。LightSync中的每个符号编码两位。此外，为了与方向匹配，LightSync的空间效率约为1/2，如图3(a)所示。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Fig14.png" alt="image-20200204123228201" style="zoom:50%;"></p>
+<p><strong>ShiftCode</strong>采用了5个非均匀采样点的空间移位编码设计，需要16个子块的分辨率。因此，为了便于比较，ERSCC中的块的空间分辨率与ShiftCode中的采样点相同。此外，扩展的color ShiftCode可以支持每个符号4种颜色。最小rs编码开销是10%。在最佳条件下，帧错误率为0。</p>
+<p>与COBRA相比，<strong>RDCode</strong>具有更低的误码率和更复杂的纠错编码。每个符号有四种颜色，即2位。rs编码开销是2.08%。类似地，报告的最小错误率为0。</p>
+<h4 id="距离测试">距离测试</h4>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/距离.png" alt="image-20200204122735012" style="zoom:50%;"></p>
+<p>​ ERSCC最强</p>
+<h4 id="角度和亮度测试">角度和亮度测试</h4>
+<p>​ 在图15(a)中，我们从不同角度测试了系统的吞吐量。结果表明，ERSCC对角度不敏感。相反，角度会导致扫描线更加倾斜，从而大大降低了LightSync的吞吐量。在图15(b)中，我们测试了不同屏幕亮度下的吞吐量。从结果上看，在大部分的亮度范围内性能是稳定的。当亮度低于25%时，吞吐量开始显著下降。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/光照和角度.png" alt="image-20200204145825965" style="zoom:50%;"></p>
+<h3 id="反馈设计的评估">反馈设计的评估</h3>
+<p>接下来，我们将检验反馈通道设计的有效性，以及它在各种条件下所能达到的最佳性能。在实验中，我们利用环境光的亮度和相对移动率来测量译码率。加速度“1.0 g”对应的是一个行走缓慢的人。从图16中可以看出，译码率平均为98%。当环境光为1000lux，加速度为1.0g时，解码率仍然达到96%。反馈编码设计也能抵抗帧的移位。这意味着，在重复捕获或丢失一帧的情况下，由于使用了LED开关键编码，紧接着的编码位仍然可以正确提取。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/光照和加速度.png" alt="image-20200204150058510" style="zoom:40%;"></p>
+<h2 id="自适应性评估">自适应性评估</h2>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/块大小和RS纠错.png" alt="image-20200204162955827" style="zoom:40%;"></p>
+<p>块大小越大，解析成功率越高，RS纠错能力越强，成功率越高。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/块大小随距离变化.png" alt="image-20200204163700101" style="zoom:40%;"></p>
+<p>在ERSCC中，图像模糊程度增加，而收缩程度降低。因此，COBRA的译码率在20CM的距离内迅速下降到26%，而ERSCC的译码率仍然保持在90%以上。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/Code-scheme-adaptation.png" alt="image-20200204165729126" style="zoom:40%;"></p>
+<p>​ ERSCC编码方案根据传输性能(由重传请求的频率决定)来调整其校验位。为此，我们让ERSCC进行了9次传输。在图19中，在第4次传输时，我们将环境光强度从100LUX增加到500LUX，与显示的视频相融合。因此，发送方会收到更多的重发请求，这将引导它将校验位增加到160。这样，在下一次传输T5时，解码速率就恢复了。相比之下，COBRA没有适应传输性能的机制，因此在这种情况下效果较差。</p>
+<h1 id="结论">6.结论</h1>
+<p>​ 在本工作中，我们提出并实现了一种屏幕摄像头通信系统调用ERSCC的设计。ERSCC采用时域自恢复编码(TDSR)实现了更高的数据传输效率(≥1.8x)，解决了滚动快门问题。此外，ERSCC有一个专门的反馈通道，使自适应的可靠性更高。我们注意到目前的反馈通道存在数据率低的局限性，并将在未来探索如何提高反向通道的数据率。</p>
+<h1 id="总结">7.总结</h1>
+<p>本篇文章使用了时域编码解决了帧混合问题。</p>
+<p><img src="/2020/02/01/ERSCC-Enable-Ecient-and-Reliable-Screen-Camera/帧混合.png" style="zoom:40%;"></p>
+<h1 id="疑问">8.疑问</h1>
+<ol type="1">
+<li>由于视频是提前生成的，那么如何进行数据重传呢？</li>
+<li>如果接收的时候距离发生了变化，该系统能否自适应？</li>
+<li>音轨如何传数据？算法1没完全看明白。</li>
+<li>如果文件传输的时候手机掉地上了或者其他原因传输中断，那么是不是需要重新开始传输？</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/QRCode/" rel="tag"># QRCode</a>
+              <a href="/tags/%E5%B8%A7%E6%B7%B7%E6%B7%86/" rel="tag"># 帧混淆</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/02/02/Markov-chains-and-stationary-distribution/" rel="next" title="马氏链及其平稳分布">
+                  马氏链及其平稳分布 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2014 – 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">GXG</span>
+  </div>
+  <div class="powered-by">由 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvaGV4by10aGVtZS1uZXh0" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.8/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.3.0/mermaid.min.js","integrity":"sha256-9y71g5Lz/KLsHjB8uXwnkuWDtAMDSzD/HdIbqhJfTAI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/wavedrom.min.js","integrity":"sha256-IRMDzTC+wK5stMucZ/XSXkeS5VNtxZ+/Bm8Mcqfoxdo="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","mhchem":true,"cdn2":"https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML","cdn3":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/math/mathjax.min.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"next-theme","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/comments/disqus.min.js"></script>
+
+</body>
+</html>

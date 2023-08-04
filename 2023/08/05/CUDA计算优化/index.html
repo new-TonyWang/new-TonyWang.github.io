@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+
+    <meta name="description" content="CUDA计算优化和访存优化 GPU架构概述 GPU架构是围绕一个流式多处理器（SM）的扩展阵列搭建的。通过复制这种结构来实现GPU的硬件并行。 下图是 A100 (GA100) SM 架构 GPU中每个SM都能支持数百个线程并发执行，每个GPU通常有多个SM，当一个核函数的网格被启动的时候，多个block会被同时分配给可用的SM上执行。 当一个blcok被分配给一个SM后，他就只能在这个SM上执行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CUDA计算优化">
+<meta property="og:url" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="Oh, Tony">
+<meta property="og:description" content="CUDA计算优化和访存优化 GPU架构概述 GPU架构是围绕一个流式多处理器（SM）的扩展阵列搭建的。通过复制这种结构来实现GPU的硬件并行。 下图是 A100 (GA100) SM 架构 GPU中每个SM都能支持数百个线程并发执行，每个GPU通常有多个SM，当一个核函数的网格被启动的时候，多个block会被同时分配给可用的SM上执行。 当一个blcok被分配给一个SM后，他就只能在这个SM上执行">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/%E5%AE%89%E5%9F%B9%E6%9E%B6%E6%9E%84SMpng.png">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/image-20230729223723083.png">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/Warp%20Divergence.webp">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/xianglin.png">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/jiaocuo.png">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_22.png">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_22.png">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/cuda_reduce0.webp">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_23.png">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_24.png">
+<meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/image-20230729234323225.png">
+<meta property="article:published_time" content="2023-08-04T16:26:26.000Z">
+<meta property="article:modified_time" content="2023-08-04T16:27:54.271Z">
+<meta property="article:author" content="Tony">
+<meta property="article:tag" content="CUDA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/%E5%AE%89%E5%9F%B9%E6%9E%B6%E6%9E%84SMpng.png">
+
+
+<link rel="canonical" href="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/","path":"2023/08/05/CUDA计算优化/","title":"CUDA计算优化"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CUDA计算优化 | Oh, Tony</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Oh, Tony</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">31</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#cuda%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96%E5%92%8C%E8%AE%BF%E5%AD%98%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">CUDA计算优化和访存优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#gpu%E6%9E%B6%E6%9E%84%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">GPU架构概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%9D%9Fwarp"><span class="nav-number">1.2.</span> <span class="nav-text">线程束(warp)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reduce-%E4%BC%98%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">Reduce 优化</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Tony"
+      src="https://avatars.githubusercontent.com/u/46778179?v=4">
+  <p class="site-author-name" itemprop="name">Tony</p>
+  <div class="site-description" itemprop="description">GXG</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL25ldy1Ub255V2FuZw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;new-TonyWang"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9uZXctdG9ueXdhbmcuZ2l0aHViLmlvL3dhbmd0b255eXUyMjJAZ21haWwuY29t" title="Email → https:&#x2F;&#x2F;new-tonywang.github.io&#x2F;wangtonyyu222@gmail.com"><i class="fa fa-envelope fa-fw"></i>Email</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9udWFhLXMzbGFiLmdpdGh1Yi5pby9kYWlseVBhcGVyLw==" title="S3Lab论文推荐 → https:&#x2F;&#x2F;nuaa-s3lab.github.io&#x2F;dailyPaper&#x2F;">S3Lab论文推荐</span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CUDA计算优化 | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CUDA计算优化<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvdGhlbWUtbmV4dC1kb2NzL2VkaXQvbWFzdGVyL3NvdXJjZS9fcG9zdHMvQ1VEQeiuoeeul+S8mOWMli5tZA==" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-08-05 00:26:26" itemprop="dateCreated datePublished" datetime="2023-08-05T00:26:26+08:00">2023-08-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/GPU/" itemprop="url" rel="index"><span itemprop="name">GPU</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2023/08/05/CUDA计算优化/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="cuda计算优化和访存优化">CUDA计算优化和访存优化</h1>
+<h2 id="gpu架构概述">GPU架构概述</h2>
+<p>GPU架构是围绕一个流式多处理器（SM）的扩展阵列搭建的。通过复制这种结构来实现GPU的硬件并行。</p>
+<p>下图是 A100 (GA100) SM 架构<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/安培架构SMpng.png" alt="安培架构SMpng"></p>
+<p>GPU中每个SM都能支持数百个线程并发执行，每个GPU通常有多个SM，当一个核函数的网格被启动的时候，多个block会被同时分配给可用的SM上执行。</p>
+<p>当一个blcok被分配给一个SM后，他就只能在这个SM上执行了，不可能重新分配到其他SM上了，多个线程块可以被分配到同一个SM上。</p>
+<p>在SM上同一个块内的多个线程进行线程级别并行，而同一线程内，指令利用指令级并行将单个线程处理成流水线。</p>
+<h2 id="线程束warp">线程束(warp)</h2>
+<p>CUDA 采用单指令多线程SIMT架构管理执行线程，不同设备有不同的线程束大小，但是到目前为止基本所有设备都是维持在32，也就是说每个SM上有多个block，一个block有多个线程（可以是几百个，但不会超过某个最大值），但是从机器的角度，在某时刻T，SM上只执行一个线程束，也就是32个线程在同时同步执行，线程束中的每个线程执行同一条指令，包括有分支的部分。</p>
+<span id="more"></span>
+<p>下面我们看一个线程束优化的例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stdlib.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;time.h&quot;</span></span></span><br><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">mathKernel1</span><span class="params">(<span class="type">float</span> *c)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//分支未适配warp</span></span><br><span class="line">    <span class="type">int</span> tid = blockIdx.x * blockDim.x + threadIdx.x;</span><br><span class="line">    <span class="type">float</span> a, b;</span><br><span class="line">    a = b = <span class="number">0.0f</span>;</span><br><span class="line">    <span class="keyword">if</span> (tid % <span class="number">2</span> == <span class="number">0</span>)</span><br><span class="line">        a = <span class="number">100.0f</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b = <span class="number">200.0f</span>;</span><br><span class="line">    c[tid] = a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">int</span> warpSize = <span class="number">32</span>;</span><br><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">mathKernelWarp</span><span class="params">(<span class="type">float</span> *c)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//分支适配warp,warp size=32</span></span><br><span class="line">    <span class="type">int</span> tid = blockIdx.x * blockDim.x + threadIdx.x;</span><br><span class="line">    <span class="type">float</span> a, b;</span><br><span class="line">    a = b = <span class="number">0.0f</span>;</span><br><span class="line">    <span class="keyword">if</span> ((tid / warpSize) % <span class="number">2</span> == <span class="number">0</span>)<span class="comment">//保证每一个分支中都可以有连续的32个线程运行</span></span><br><span class="line">        a = <span class="number">100.0f</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b = <span class="number">200.0f</span>;</span><br><span class="line">    c[tid] = a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    dim3 dimGrid = (<span class="number">64</span>);</span><br><span class="line">    dim3 dimBlock = (<span class="number">128</span>);</span><br><span class="line">    <span class="keyword">auto</span>* C = (<span class="type">float</span>*)<span class="built_in">malloc</span>(<span class="number">64</span>*<span class="number">128</span>*<span class="built_in">sizeof</span>(<span class="type">float</span>));</span><br><span class="line">    <span class="keyword">auto</span> start = <span class="built_in">clock</span>();</span><br><span class="line">        mathKernel1&lt;&lt;&lt;dimGrid, dimBlock&gt;&gt;&gt;(C);</span><br><span class="line">    <span class="keyword">auto</span> finish = <span class="built_in">clock</span>();</span><br><span class="line">    <span class="keyword">auto</span> duration = (<span class="type">double</span>)(finish - start) / (CLOCKS_PER_SEC / <span class="number">100</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;mathKernel1 %f ms\n&quot;</span>, duration);</span><br><span class="line">    start = <span class="built_in">clock</span>();</span><br><span class="line">    mathKernelWarp&lt;&lt;&lt;dimGrid, dimBlock&gt;&gt;&gt;(C);</span><br><span class="line">    finish = <span class="built_in">clock</span>();</span><br><span class="line">    duration = (<span class="type">double</span>)(finish - start) / (CLOCKS_PER_SEC / <span class="number">100</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;mathKernel2 %f ms\n&quot;</span>, duration);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>执行结果如下：</p>
+<figure>
+<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/image-20230729223723083.png" alt><figcaption>image-20230729223723083</figcaption>
+</figure>
+<p>使用warp友好的kernel的时延基本上就是未优化kernel的零头。怎么会这样？</p>
+<p>因为同处于一个warp中的线程必须执行相同的指令，也就是说如果同一个warp的线程进入了不同分支，那么处于同一分支的线程会执行，其他线程则会被阻塞，这样也就产生了Warp Divergence(warp分歧)。</p>
+<figure>
+<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/Warp%20Divergence.webp" alt><figcaption>Warp Divergence</figcaption>
+</figure>
+<p>紫色块标识该线程在当前时间点被阻塞，无法执行。这样，我们的优化思路就是尽可能多得消除Warp Divergence，也就是说要想办法让每个分支运行到得线程数量是warp size得整数倍。</p>
+<p>其他优化策略见<a href="%5Bwarp深度解析_51CTO博客_warp原理%5D(https://blog.51cto.com/u_15127500/3641722)">warp深度解析</a>。</p>
+<p>延迟隐藏之后再补充，还没学会。</p>
+<h2 id="reduce-优化">Reduce 优化</h2>
+<p>Reduce操作在AI领域是一种常见的操作，常见的就是，将张量的某个轴进行某种运算之后消除。在CPU后端，reduce有两种实现方式：相邻配对，交错配对。</p>
+<ul>
+<li>相邻配对：元素与他们相邻的元素配对</li>
+</ul>
+<figure>
+<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/xianglin.png" alt><figcaption>xianglin</figcaption>
+</figure>
+<ul>
+<li>交错配对：元素与一定距离的元素配对<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/jiaocuo.png" alt="jiaocuo"></li>
+</ul>
+<p>我们先写一个CPU的交错Reduce的base line</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//c++ 递归一维reduce</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">CpuReduce</span><span class="params">(<span class="type">int</span> * data, <span class="type">int</span> <span class="type">const</span> size)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(size == <span class="number">1</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> data[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> <span class="type">const</span> stride = size/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">if</span>(size % <span class="number">2</span> ==<span class="number">1</span>)&#123;</span><br><span class="line">        data[<span class="number">0</span>] +=data[size<span class="number">-1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>;i&lt;stride;i++)&#123;</span><br><span class="line">        data[i] +=data[i+stride];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CpuReduce</span>(data,stride);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后用CUDA实现相邻配对的reduce</p>
+<figure>
+<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_22.png" alt><figcaption>3_22</figcaption>
+</figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">GpuReduce</span><span class="params">(<span class="type">int</span>* data_in,<span class="type">int</span> * data_out, <span class="type">int</span> <span class="type">const</span> size)</span></span>&#123;</span><br><span class="line">	<span class="comment">//set thread ID</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> tid = threadIdx.x;</span><br><span class="line">	<span class="comment">//boundary check</span></span><br><span class="line">	<span class="keyword">if</span> (tid &gt;= size) <span class="keyword">return</span>;</span><br><span class="line">	<span class="comment">//convert global data pointer to the</span></span><br><span class="line">	<span class="type">int</span> *idata = data_in + blockIdx.x*blockDim.x;</span><br><span class="line">	<span class="comment">//in-place reduction in global memory</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> stride = <span class="number">1</span>; stride &lt; blockDim.x; stride *= <span class="number">2</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> ((tid % (<span class="number">2</span> * stride)) == <span class="number">0</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			idata[tid] += idata[tid + stride];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//synchronize within block，对应下图得不同stage</span></span><br><span class="line">		__syncthreads();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//write result for this block to global mem</span></span><br><span class="line">	<span class="keyword">if</span> (tid == <span class="number">0</span>)</span><br><span class="line">		data_out[blockIdx.x] = idata[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">reduce</span><span class="params">(<span class="type">int</span>* data_in,<span class="type">int</span> * data_out, <span class="type">int</span> <span class="type">const</span> size)</span></span>&#123;</span><br><span class="line">   <span class="function">dim3 <span class="title">thread_per_block</span><span class="params">(<span class="number">1024</span>,<span class="number">1</span>)</span></span>;</span><br><span class="line">   <span class="function">dim3 <span class="title">block_per_grid</span><span class="params">((size - <span class="number">1</span>) / thread_per_block.x + <span class="number">1</span>, <span class="number">1</span>)</span></span>;</span><br><span class="line">          <span class="type">int</span>* cpu_reduce_data =  (<span class="type">int</span>*)<span class="built_in">malloc</span>(block_per_grid.x*<span class="built_in">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">      GpuReduce&lt;&lt;&lt;block_per_grid,thread_per_block&gt;&gt;&gt;(vec_gpu,gpu_reduce_data,size);</span><br><span class="line">    <span class="built_in">cudaMemcpy</span>(cpu_reduce_data, gpu_reduce_data, block_per_grid.x * <span class="built_in">sizeof</span>(<span class="type">int</span>), cudaMemcpyDeviceToHost);</span><br><span class="line">    <span class="type">int</span> result = <span class="number">0</span>;</span><br><span class="line">   <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>;i&lt;block_per_grid.x;i++)&#123;</span><br><span class="line">    result+=cpu_reduce_data[i];</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种思路，是将多个block映射到data的不同区域，并且使用每一个block中偶数位的线程进行运算，然后在host侧进行最终得运算具体示例如下：<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_22.png" alt="3_22"></p>
+<figure>
+<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/cuda_reduce0.webp" alt><figcaption>cuda_reduce0</figcaption>
+</figure>
+<p>这种方法是最容易想到的，但是线程的利用率非常低，在step1的时候只有一半线程在工作，step2时有4个线程工作，最后一个step只有一个线程在工作，这样极大得浪费了线程资源。并且同一个half warp中（16个线程），线程间有分歧，这种情况是不高效的。</p>
+<p>接下来，我们对线程使用率进行优化，让连续的线程进行运算。<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_23.png" alt="3_23"></p>
+<p>cuda代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">reduceNeighboredLess</span><span class="params">(<span class="type">int</span>* data_in,<span class="type">int</span> * data_out, <span class="type">int</span> <span class="type">const</span> size)</span></span>&#123;</span><br><span class="line">	<span class="comment">//set thread ID</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> tid = threadIdx.x;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> idx = blockIdx.x*blockDim.x+threadIdx.x;</span><br><span class="line">    <span class="keyword">if</span>(idx &gt; size) <span class="keyword">return</span>;</span><br><span class="line">    </span><br><span class="line">	<span class="comment">//convert global data pointer to the</span></span><br><span class="line">	<span class="type">int</span> *idata = data_in + blockIdx.x*blockDim.x;</span><br><span class="line">	<span class="comment">//in-place reduction in global memory</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> stride = <span class="number">1</span>; stride &lt; blockDim.x; stride *= <span class="number">2</span>)</span><br><span class="line">	&#123;</span><br><span class="line">        <span class="type">int</span> index = <span class="number">2</span>*stride*tid;</span><br><span class="line">		<span class="keyword">if</span> (index &lt; blockDim.x)</span><br><span class="line">		&#123;</span><br><span class="line">			idata[index] += idata[index + stride];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//synchronize within block</span></span><br><span class="line">		__syncthreads();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//write result for this block to global mem</span></span><br><span class="line">	<span class="keyword">if</span> (tid == <span class="number">0</span>)</span><br><span class="line">		data_out[blockIdx.x] = idata[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这一步保证index能够向后移动到有数据要处理的内存位置，而不是简单的用tid对应内存地址，导致大量线程空闲。我们保证在一个块中前几个执行的线程束是在接近满跑的，而后半部分线程束基本是不需要执行的，当一个线程束内存在分支，而分支都不需要执行的时候，硬件会停止他们调用别人，这样就节省了资源。</p>
+<p>但是此时又面临一个问题。因为GPU的内存中是以bank作为划分的，一个bank的大小是4字节，一共有16个bank，这样就导致data[0]和data[16]会使用相同的bank，data[0]和data[17]会使用相同的bank，如果同一个half-warp中同时访问了相同的bank，则会产生bank冲突，这样对访存性能不利。</p>
+<p>回到本例当中，同一个half-warp中，0-15号线程负责的share memory的位置分别为0、2、4、6、8、... 12、14、... 28、30。其中0号线程和8号线程会访问data_in[0]和data_in[16]，其他线程也类似，这样会导致<span class="exturl" data-url="aHR0cHM6Ly9saW5rLnpoaWh1LmNvbS8/dGFyZ2V0PWh0dHBzJTNBLy9ibG9nLmNzZG4ubmV0L0JydWNlXzA3MTIvYXJ0aWNsZS9kZXRhaWxzLzY1NDQ3NjA4">share memory bank conflict<i class="fa fa-external-link-alt"></i></span>。</p>
+<p>我们再使用交错配对的思路实现一下GPU的Reduce，让同一个half-warp的线程数据访问离得远一些，此时对，保证同一个half-warp的不同线程访问不同的bank，reduce方法如下图：</p>
+<figure>
+<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_24.png" alt><figcaption>3_24</figcaption>
+</figure>
+<p>代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">reduceInterleaved</span><span class="params">(<span class="type">int</span> * data_in, <span class="type">int</span> *data_out, <span class="type">unsigned</span> <span class="type">int</span> size)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//set thread ID</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> tid = threadIdx.x;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> idx = blockIdx.x*blockDim.x+threadIdx.x;</span><br><span class="line">    <span class="keyword">if</span>(idx &gt;= size) <span class="keyword">return</span>;</span><br><span class="line">    </span><br><span class="line">	<span class="comment">//convert global data pointer to the</span></span><br><span class="line">	<span class="type">int</span> *idata = data_in + blockIdx.x*blockDim.x;</span><br><span class="line">	<span class="comment">//in-place reduction in global memory</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> stride = blockDim.x/<span class="number">2</span>; stride &gt;= <span class="number">1</span>; stride &gt;&gt;= <span class="number">1</span>)<span class="comment">//改变stride，避免bank冲突</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (tid &lt; stride)</span><br><span class="line">		&#123;</span><br><span class="line">			idata[tid] += idata[tid + stride];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//synchronize within block</span></span><br><span class="line">		__syncthreads();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//write result for this block to global mem</span></span><br><span class="line">	<span class="keyword">if</span> (tid == <span class="number">0</span>)</span><br><span class="line">		data_out[blockIdx.x] = idata[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后我们对比一下性能，我们设置block和thread的数量如下，这个数值也是跑了多次之后找到的最优值。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">dim3 <span class="title">thread_per_block</span><span class="params">(<span class="number">64</span>,<span class="number">1</span>)</span></span>;</span><br><span class="line"><span class="function">dim3 <span class="title">block_per_grid</span><span class="params">((size - <span class="number">1</span>) / thread_per_block.x + <span class="number">1</span>, <span class="number">1</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/image-20230729234323225.png" alt><figcaption>image-20230729234323225</figcaption>
+</figure>
+<p>经过我们一步一步得优化，让reduce运算变得越来越快了。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CUDA/" rel="tag"># CUDA</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/08/05/CUDA%E5%85%A5%E9%97%A8%E6%80%BB%E7%BB%93/" rel="prev" title="CUDA入门总结">
+                  <i class="fa fa-angle-left"></i> CUDA入门总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2014 – 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">GXG</span>
+  </div>
+  <div class="powered-by">由 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvaGV4by10aGVtZS1uZXh0" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.8/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.3.0/mermaid.min.js","integrity":"sha256-9y71g5Lz/KLsHjB8uXwnkuWDtAMDSzD/HdIbqhJfTAI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/wavedrom.min.js","integrity":"sha256-IRMDzTC+wK5stMucZ/XSXkeS5VNtxZ+/Bm8Mcqfoxdo="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","mhchem":true,"cdn2":"https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML","cdn3":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/math/mathjax.min.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"next-theme","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/comments/disqus.min.js"></script>
+
+</body>
+</html>

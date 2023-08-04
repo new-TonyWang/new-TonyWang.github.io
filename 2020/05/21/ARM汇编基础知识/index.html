@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+
+    <meta name="description" content="armabi-v7a  R0-R3用于函数参数的传递，相当于函数的前4个参数会在调用函数之前存入R0-R3，之后的参数会压入栈中。它们的位置在lr(R14)寄存器的位置之上。程序的返回值使用R0存放。 R4-R6，R8，R10-R11没有特殊规定，是通用寄存器 R7栈帧指针，指向前一个保存的栈帧和链接寄存器(lr)在栈上的地址 R9操作系统保留(但是使用的时候并未提出警告) R11(fp,fram">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android汇编基础知识">
+<meta property="og:url" content="http://example.com/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:site_name" content="Oh, Tony">
+<meta property="og:description" content="armabi-v7a  R0-R3用于函数参数的传递，相当于函数的前4个参数会在调用函数之前存入R0-R3，之后的参数会压入栈中。它们的位置在lr(R14)寄存器的位置之上。程序的返回值使用R0存放。 R4-R6，R8，R10-R11没有特殊规定，是通用寄存器 R7栈帧指针，指向前一个保存的栈帧和链接寄存器(lr)在栈上的地址 R9操作系统保留(但是使用的时候并未提出警告) R11(fp,fram">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/push.jpg">
+<meta property="og:image" content="http://example.com/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/pop.jpg">
+<meta property="article:published_time" content="2020-05-21T05:47:29.000Z">
+<meta property="article:modified_time" content="2023-08-04T12:54:58.514Z">
+<meta property="article:author" content="Tony">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="c++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/push.jpg">
+
+
+<link rel="canonical" href="http://example.com/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/","path":"2020/05/21/ARM汇编基础知识/","title":"Android汇编基础知识"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Android汇编基础知识 | Oh, Tony</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/analytics/google-analytics.min.js"></script>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Oh, Tony</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">31</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">37</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#armabi-v7a"><span class="nav-number">1.</span> <span class="nav-text">armabi-v7a</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%AF%84%E5%AD%98%E5%99%A8%E5%8A%A0%E8%BD%BD%E4%B8%8E%E5%AD%98%E5%82%A8%E6%8C%87%E4%BB%A4"><span class="nav-number">1.1.</span> <span class="nav-text">单寄存器加载与存储指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%94%AF%E5%88%87%E6%8D%A2"><span class="nav-number">1.2.</span> <span class="nav-text">分支切换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8android-toolchain-%E7%BC%96%E8%AF%91c%E7%94%9F%E6%88%90arm%E4%B8%8B%E7%9A%84so%E6%96%87%E4%BB%B6%E5%92%8C.s%E6%B1%87%E7%BC%96"><span class="nav-number">1.3.</span> <span class="nav-text">使用android toolchain 编译c++生成ARM下的so文件和.s汇编</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c%E5%86%85%E8%81%94%E6%B1%87%E7%BC%96"><span class="nav-number">1.4.</span> <span class="nav-text">c++内联汇编</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#arm64-v8a"><span class="nav-number">2.</span> <span class="nav-text">arm64-v8a</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%94%AF%E5%88%87%E6%8D%A2-1"><span class="nav-number">2.1.</span> <span class="nav-text">分支切换</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Tony"
+      src="https://avatars.githubusercontent.com/u/46778179?v=4">
+  <p class="site-author-name" itemprop="name">Tony</p>
+  <div class="site-description" itemprop="description">GXG</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL25ldy1Ub255V2FuZw==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;new-TonyWang"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9uZXctdG9ueXdhbmcuZ2l0aHViLmlvL3dhbmd0b255eXUyMjJAZ21haWwuY29t" title="Email → https:&#x2F;&#x2F;new-tonywang.github.io&#x2F;wangtonyyu222@gmail.com"><i class="fa fa-envelope fa-fw"></i>Email</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9udWFhLXMzbGFiLmdpdGh1Yi5pby9kYWlseVBhcGVyLw==" title="S3Lab论文推荐 → https:&#x2F;&#x2F;nuaa-s3lab.github.io&#x2F;dailyPaper&#x2F;">S3Lab论文推荐</span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Android汇编基础知识 | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android汇编基础知识<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvdGhlbWUtbmV4dC1kb2NzL2VkaXQvbWFzdGVyL3NvdXJjZS9fcG9zdHMvQVJN5rGH57yW5Z+656GA55+l6K+GLm1k" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-21 13:47:29" itemprop="dateCreated datePublished" datetime="2020-05-21T13:47:29+08:00">2020-05-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/05/21/ARM汇编基础知识/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="armabi-v7a">armabi-v7a</h1>
+<ol type="1">
+<li><p>R0-R3用于函数参数的传递，相当于函数的前4个参数会在调用函数之前存入R0-R3，之后的参数会压入栈中。它们的位置在lr(R14)寄存器的位置之上。程序的返回值使用R0存放。</p></li>
+<li><p>R4-R6，R8，R10-R11没有特殊规定，是通用寄存器</p></li>
+<li><p>R7栈帧指针，指向前一个保存的栈帧和链接寄存器(lr)在栈上的地址</p></li>
+<li><p>R9操作系统保留(但是使用的时候并未提出警告)</p></li>
+<li><p>R11(fp,frame pointer)寄存器，既可以用来记录回溯信息,也可以当做局部变量来使用。</p></li>
+<li><p>R12(IP指针，intra-procedure scratch)用作子程序间scratch寄存器,在子程序的连接代码段中经常会有这种使用规则，但不是必须的。</p></li>
+<li><p>R13(SP指针)栈顶指针，该指针一个主要的用处是函数刚开始执行的时候分配内存空间pop和push指令一定伴随着SP指针的移动。</p></li>
+<li><p>R14(LR, link register)，存放函数返回地址,保证函数能够正常返回。</p></li>
+<li><p>R15(PC)，指向当前下一条。 <span id="more"></span></p></li>
+<li><p>一般使用FD（FullDescending）类型的数据栈！所以经常使用的指令就有STMFD和LDMFD。这两个指令一般用于进行程序搬移等大规模操作前的cpu现场保护和操作结束后的现场恢复，属于非单一连续的压栈和出栈。 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">STMFD SP! ,&#123;R0-R7，LR&#125;#将 R1~R7he LR压栈(相当于push&#123;R0-R7，LR&#125;)</span><br><span class="line">LDMFD SP! ,&#123;R0-R7，LR&#125;#出栈(相当于pop&#123;R0-R7，LR&#125;)</span><br></pre></td></tr></table></figure></p></li>
+<li><p>多寄存器寻址，一次可以完成多个寄存器值的传送</p></li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LDMIA R0,&#123;R1,R2,R3,R4&#125; #R1&lt;-[R0],R2&lt;-[R0+<span class="number">4</span>],R3&lt;-[R0+<span class="number">8</span>],R0&lt;-[R0+<span class="number">12</span>]</span><br></pre></td></tr></table></figure>
+<p>一个SP指针开辟空间的操作的例子(压栈和出栈)：</p>
+<p>伪代码如下:</p>
+<p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@压栈</span><br><span class="line">memory[sp] = lr</span><br><span class="line"><span class="keyword">for</span> i = <span class="number">7</span> to <span class="number">0</span></span><br><span class="line">    sp = sp - <span class="number">4</span></span><br><span class="line">    memory[sp] = ri</span><br><span class="line">@出栈</span><br><span class="line"><span class="keyword">for</span> i = <span class="number">0</span> to <span class="number">7</span></span><br><span class="line">    ri = memory[sp]</span><br><span class="line">    sp = sp + <span class="number">4</span></span><br><span class="line">lr = memory[sp]</span><br></pre></td></tr></table></figure></p>
+<p>压栈:</p>
+<p><img src="/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/push.jpg" style="zoom: 50%;"></p>
+<p>出栈</p>
+<p><img src="/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/pop.jpg" style="zoom:50%;"></p>
+<h2 id="单寄存器加载与存储指令">单寄存器加载与存储指令</h2>
+<table>
+<thead>
+<tr class="header">
+<th>指令</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LDR R0，[R1]</td>
+<td>将存储器地址为R1的字数据读入寄存器R0。</td>
+</tr>
+<tr class="even">
+<td>LDR R0，[R1，R2]</td>
+<td>将存储器地址为R1+R2的字数据读入寄存器R0。</td>
+</tr>
+<tr class="odd">
+<td>LDR R0，[R1，#8]</td>
+<td>将存储器地址为R1+8的字数据读入寄存器R0。</td>
+</tr>
+<tr class="even">
+<td>LDR R0，[R1],R2</td>
+<td>将存储器地址为R1的字数据读入寄存器R0，然后R1=R1+8。</td>
+</tr>
+<tr class="odd">
+<td>LDR R0，[R1],#8</td>
+<td>将存储器地址为R1的字数据读入寄存器R0，并将R1+8的值存入R1。</td>
+</tr>
+<tr class="even">
+<td>LDR R0，[R1，R2]!</td>
+<td>将存储器地址为R1+R2的字数据读入寄存器R0，并将R1+R2的值存入R1。</td>
+</tr>
+<tr class="odd">
+<td>LDR R0，[R1，LSL #3]</td>
+<td>将存储器地址为R1*8的字数据读入寄存器R0。</td>
+</tr>
+<tr class="even">
+<td>LDR R0，[R1，R2，LSL #2]</td>
+<td>将存储器地址为R1+R2*4的字数据读入寄存器R0。</td>
+</tr>
+<tr class="odd">
+<td>LDR R0，[R1,,R2，LSL #2]！</td>
+<td>将存储器地址为R1+R2*4的字数据读入寄存器R0，并将R1+R24的值存入R1。</td>
+</tr>
+<tr class="even">
+<td>LDR R0，[R1],R2，LSL #2</td>
+<td>将存储器地址为R1的字数据读入寄存器R0，并将R1+R2*4的值存入R1。</td>
+</tr>
+<tr class="odd">
+<td>LDR R0，Label</td>
+<td>Label为程序标号，Label必须是当前指令的-4~4KB范围内。</td>
+</tr>
+<tr class="even">
+<td>cmp R0，ip</td>
+<td>修改cmp对应寄存器的值(比大小)</td>
+</tr>
+<tr class="odd">
+<td>bne</td>
+<td>它和cmp通常一起使用，若R0!=ip 则执行bne指令</td>
+</tr>
+<tr class="even">
+<td>STR R0，[R1]，＃8</td>
+<td>将R0中的字数据写入以R1为地址的存储器中，并将新地址R1＋8写入R1。</td>
+</tr>
+<tr class="odd">
+<td>STR R0，[R1，＃8]</td>
+<td>将R0中的字数据写入以R1＋8为地址的存储器中。</td>
+</tr>
+<tr class="even">
+<td>str r1, [r0]</td>
+<td>将r1寄存器的值，传送到地址值为r0的（存储器）内存中</td>
+</tr>
+</tbody>
+</table>
+<h2 id="分支切换">分支切换</h2>
+<p>ARM中有两种跳转方式：第一种是分支指令，另一种是直接向PC寄存器写入目标值，它可以实现在任何4G的地址空间跳转；而使用分支指令时则受到限制，只可以完成从当前指令向前或者向后的32MB的地指空间跳转。</p>
+<table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 28%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>指令</th>
+<th>功能</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>B{cond} label</td>
+<td>分支指令</td>
+<td>PC=label</td>
+</tr>
+<tr class="even">
+<td>BL Rm | label</td>
+<td>带返回的分支指令</td>
+<td>PC=label<br>LR=BL的指令地址+1</td>
+</tr>
+<tr class="odd">
+<td>BX{cond} Rm</td>
+<td>带状态切换的的分支指令</td>
+<td>PC=Rm &amp;0xfffffffe,T=Rm[0]&amp;1</td>
+</tr>
+<tr class="even">
+<td>BLX{cond} label | Rm</td>
+<td>带返回和状态切换的分支指令</td>
+<td>PC=label,T=1<br>PC=Rm&amp;0xfffffffe,T=Rm[0]&amp;1<br>LR=BLX后面的指令</td>
+</tr>
+</tbody>
+</table>
+<h2 id="使用android-toolchain-编译c生成arm下的so文件和.s汇编">使用android toolchain 编译c++生成ARM下的so文件和.s汇编</h2>
+<ol type="1">
+<li>编写<code>cmakelixt.txt</code> 文件，如下:</li>
+</ol>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">project</span>(android_arm)</span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.4</span>.<span class="number">1</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_SYSTEM_NAME Android)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_SYSTEM_VERSION <span class="number">28</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION clang)<span class="comment">#设置toolchain</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_ANDROID_ARCH_ABI armeabi-v7a)<span class="comment">#设置编译的架构</span></span><br><span class="line"><span class="comment">#set(CMAKE_ANDROID_ARM_NEON ON)#是否使用neon指令</span></span><br><span class="line"><span class="comment">#set(CMAKE_ANDROID_NDK /opt/android-ndk-r14b)</span></span><br><span class="line"><span class="comment">#set(CMAKE_ANDROID_STL_TYPE gnustl_static)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(SRC_DIR ./)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_ASM_FLAGS <span class="keyword">ON</span>)<span class="comment">#编译.s汇编文件(好像不开启也能编译.s文件)</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_BUILD_TYPE MinSizeRel)<span class="comment">#编译能够发布的最小版本</span></span><br><span class="line"><span class="comment">#编译的so库</span></span><br><span class="line"><span class="keyword">add_library</span>(addlib SHARED</span><br><span class="line"><span class="variable">$&#123;SRC_DIR&#125;</span>/add.cpp</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#使用 -DCMAKE_TOOLCHAIN_FILE 指定android的 toolchain文件 </span></span><br><span class="line"><span class="comment">#-B 是输出路径</span></span><br><span class="line">cmake -DCMAKE_TOOLCHAIN_FILE=<span class="variable">$ANDROID_NDK</span>/build/cmake/android.toolchain.cmake  -B ./build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">make add.s<span class="comment">#编译出add.cpp.s汇编文件</span></span><br></pre></td></tr></table></figure>
+<h2 id="c内联汇编">c++内联汇编</h2>
+<p>​ 使用 <code>asm volatile()</code>内联汇编，具体语法如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">asm</span>(<span class="comment">//内部寄存器会被编译器优化</span></span><br><span class="line"> 汇编指令列表</span><br><span class="line"> :输出运算符列表</span><br><span class="line"> :输入运算符列表</span><br><span class="line"> :被更改的资源列表</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">asm</span> <span class="built_in">volatile</span>(<span class="comment">//内部寄存器不会被编译器优化</span></span><br><span class="line"> 汇编指令列表</span><br><span class="line"> :输出运算符列表</span><br><span class="line"> :输入运算符列表</span><br><span class="line"> :被更改的资源列表</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>一个例子，该例子使用了除了r12之外arm所有的通用寄存器。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">func2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span> b = <span class="number">5</span>;</span><br><span class="line">    <span class="function"><span class="keyword">asm</span> <span class="title">volatile</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="string">&quot;add r1, %1    \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="string">&quot;mov %1, r0    \n&quot;</span> </span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="string">&quot;mov r0, %0     \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="string">&quot;mov %0, %1     \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">        : <span class="string">&quot;+r&quot;</span>(a),</span></span></span><br><span class="line"><span class="params"><span class="function">          <span class="string">&quot;+r&quot;</span>(b)</span></span></span><br><span class="line"><span class="params"><span class="function">        : <span class="string">&quot;r&quot;</span>(b)</span></span></span><br><span class="line"><span class="params"><span class="function">        : <span class="string">&quot;r0&quot;</span>,<span class="string">&quot;r1&quot;</span>,<span class="string">&quot;r2&quot;</span>,<span class="string">&quot;r3&quot;</span>,<span class="string">&quot;r4&quot;</span>,<span class="string">&quot;r5&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">          <span class="string">&quot;r6&quot;</span>,<span class="string">&quot;r8&quot;</span>,<span class="string">&quot;r9&quot;</span>,<span class="string">&quot;r10&quot;</span>,<span class="string">&quot;r11&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">    )</span></span>;</span><br><span class="line">    <span class="comment">//print</span></span><br></pre></td></tr></table></figure>
+<p>编译之后的.s文件如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">_Z5func2v:</span><br><span class="line">.Lfunc_begin1:</span><br><span class="line">	.loc	<span class="number">3</span> <span class="number">8</span> <span class="number">0</span>                   @ add.cpp:<span class="number">8</span>:<span class="number">0</span></span><br><span class="line">	.fnstart</span><br><span class="line">	.cfi_startproc</span><br><span class="line">@ %bb<span class="number">.0</span>:</span><br><span class="line">	.save	&#123;r4, r5, r6, r7, lr&#125;</span><br><span class="line">	push	&#123;r4, r5, r6, r7, lr&#125;</span><br><span class="line">	.cfi_def_cfa_offset <span class="number">20</span></span><br><span class="line">	.cfi_offset lr, <span class="number">-4</span></span><br><span class="line">	.cfi_offset r7, <span class="number">-8</span></span><br><span class="line">	.cfi_offset r6, <span class="number">-12</span></span><br><span class="line">	.cfi_offset r5, <span class="number">-16</span></span><br><span class="line">	.cfi_offset r4, <span class="number">-20</span></span><br><span class="line">	.setfp	r7, sp, #<span class="number">12</span></span><br><span class="line">	add	r7, sp, #<span class="number">12</span></span><br><span class="line">	.cfi_def_cfa r7, <span class="number">8</span></span><br><span class="line">	.save	&#123;r8, r9, r10, r11&#125;</span><br><span class="line">	push.w	&#123;r8, r9, r10, r11&#125;</span><br><span class="line">	.cfi_offset r11, <span class="number">-24</span></span><br><span class="line">	.cfi_offset r10, <span class="number">-28</span></span><br><span class="line">	.cfi_offset r9, <span class="number">-32</span></span><br><span class="line">	.cfi_offset r8, <span class="number">-36</span></span><br><span class="line">.Ltmp4:</span><br><span class="line">	@DEBUG_VALUE: func2:a &lt;- <span class="number">10</span></span><br><span class="line">	@DEBUG_VALUE: func2:b &lt;- <span class="number">5</span></span><br><span class="line">	mov.w	r12, #<span class="number">10</span></span><br><span class="line">	mov.w	lr, #<span class="number">5</span></span><br><span class="line">.Ltmp5:</span><br><span class="line">	.loc	<span class="number">3</span> <span class="number">11</span> <span class="number">5</span> prologue_end     @ add.cpp:<span class="number">11</span>:<span class="number">5</span></span><br><span class="line">	@APP</span><br><span class="line">	add	r1, lr</span><br><span class="line">	mov	lr, r0</span><br><span class="line">	mov	r0, r12</span><br><span class="line">	mov	r12, lr</span><br><span class="line"></span><br><span class="line">	@NO_APP</span><br><span class="line">.Ltmp6:</span><br><span class="line">	@DEBUG_VALUE: func2:b &lt;- undef</span><br><span class="line">	@DEBUG_VALUE: func2:a &lt;- $r12</span><br><span class="line">	.loc	<span class="number">3</span> <span class="number">27</span> <span class="number">5</span>                  @ add.cpp:<span class="number">27</span>:<span class="number">5</span></span><br><span class="line">	mov	r0, r12</span><br><span class="line">	pop.w	&#123;r8, r9, r10, r11&#125;</span><br><span class="line">	pop	&#123;r4, r5, r6, r7, pc&#125;</span><br><span class="line">.Ltmp7:</span><br></pre></td></tr></table></figure>
+<p>可以看出来，加上volatile之后，只要是被内联汇编标记的寄存器，即使代码中没有使用也不会被编译器使用。并且必须最少空出来一个寄存器(例如本例中的R12)，不然会报编译错误，如下:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">error: inline assembly requires more registers than available</span></span><br></pre></td></tr></table></figure>
+<p>并且在使用特定寄存器的时候会弹出worning，当使用R7(reserved registers)的时候会报如下worning:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">warning: inline asm clobber list contains reserved registers: R7 [-Winline-asm]</span></span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr class="header">
+<th>修饰符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>无</td>
+<td>被修饰的操作符是只读的</td>
+</tr>
+<tr class="even">
+<td>=</td>
+<td>被修饰的操作符只写</td>
+</tr>
+<tr class="odd">
+<td>+</td>
+<td>被修饰的操作符具有可读写的属性</td>
+</tr>
+<tr class="even">
+<td>&amp;</td>
+<td>被修饰的操作符只能作为输出</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th>操作符</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>r</td>
+<td>通用寄存器R0～R15</td>
+</tr>
+<tr class="even">
+<td>m</td>
+<td>一个有效内存地址</td>
+</tr>
+<tr class="odd">
+<td>l</td>
+<td>数据处理指令中的立即数</td>
+</tr>
+<tr class="even">
+<td>X</td>
+<td>被修饰的操作符只能作为输出</td>
+</tr>
+</tbody>
+</table>
+<h1 id="arm64-v8a">arm64-v8a</h1>
+<ol type="1">
+<li>对于32位的整形参数，前8个使用<code>w0~w7</code>寄存器传递，超过8个使用堆栈传递。</li>
+<li>对于64位的整形参数，前8个使用<code>x0~x7</code>寄存器传递，超过8个使用堆栈。</li>
+<li>对于浮点参数，前8个使用<code>d0-d7</code>寄存器传递，其他使用堆栈传递。</li>
+<li>一些特殊的寄存器：
+<ul>
+<li>FP(X29)，栈基址寄存器</li>
+<li>LR(X30)，过程链接寄存器</li>
+<li>zr(X31), zero register，这个寄存器就是0，写进去代表丢弃结果，读出来是0</li>
+<li>CPSR,状态寄存器 # neon 可以使用<code>BLX,BX</code>在ARM和Thumb指令集切换，出现<code>.W</code>后缀的指令是Thumb-2特有的。·1111111·1</li>
+</ul></li>
+</ol>
+<h2 id="分支切换-1">分支切换</h2>
+<p>ARM中的BX指令只有当Tn中的地址最低位、为1的时候才进入Thunb状态，否则进入ARM状态。Thumb BX指令以同样方式工作，下表中的T是状态寄存器R16的一位，表示当前是ARM状态还是Thumb状态</p>
+<table>
+<colgroup>
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>指令</th>
+<th>功能</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BX Rm</td>
+<td>Thumb版本分支切换</td>
+<td>PC= Rm &amp; 0xFFFFFFFE,T=Rn[0]</td>
+</tr>
+<tr class="even">
+<td>BLX Rm |label</td>
+<td>Thumb版本分支切换 并将返回值地址写入LR寄存器</td>
+<td>LR=BLX指令后面的指令地址+1,PC=label,T=0;或者PC=Rm &amp; 0xFFFFFFFE,T=Rn0]</td>
+</tr>
+</tbody>
+</table>
+<p>使用BX的例子: <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">	  CODE32 <span class="comment">//ARM代码，字对齐 </span></span><br><span class="line">	  LDR r0, thumbCode+<span class="number">1</span> <span class="comment">//加1进入thumb状态</span></span><br><span class="line">	  MOV lr, pc <span class="comment">//设置返回地址</span></span><br><span class="line">	  BX r0 <span class="comment">//跳转到r0地址并转换为Thunmb</span></span><br><span class="line">···</span><br><span class="line">	  CODE16</span><br><span class="line">thumbCode ADD r1, #<span class="number">1</span> <span class="comment">//</span></span><br><span class="line">	  BX lr <span class="comment">//返回ARM状态</span></span><br></pre></td></tr></table></figure> 使用BX的例子: <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">	  CODE32 <span class="comment">//ARM代码，字对齐 </span></span><br><span class="line">	  LDR r0, thumbCode+<span class="number">1</span> <span class="comment">//加1进入thumb状态</span></span><br><span class="line">	  BXL r0 <span class="comment">//跳转到r0地址并转换为Thunmb，并将地址保存在lr中</span></span><br><span class="line">···</span><br><span class="line">	  CODE16 <span class="comment">//Thumb代码，半字对齐 </span></span><br><span class="line">thumbCode ADD r1, #<span class="number">1</span> <span class="comment">//</span></span><br><span class="line">	  BX lr <span class="comment">//返回ARM状态</span></span><br></pre></td></tr></table></figure></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/c/" rel="tag"># c++</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/03/13/Newton-s-method/" rel="prev" title="牛顿迭代法和拟牛顿法">
+                  <i class="fa fa-angle-left"></i> 牛顿迭代法和拟牛顿法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/07/21/java%E7%9A%84volatile%E5%92%8Csynchronized/" rel="next" title="java的volatile和synchronized">
+                  java的volatile和synchronized <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2014 – 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">GXG</span>
+  </div>
+  <div class="powered-by">由 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvaGV4by10aGVtZS1uZXh0" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.8/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/comments.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/motion.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/next-boot.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/pjax.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/search/local-search.min.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.3.0/mermaid.min.js","integrity":"sha256-9y71g5Lz/KLsHjB8uXwnkuWDtAMDSzD/HdIbqhJfTAI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/mermaid.min.js"></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/wavedrom.min.js","integrity":"sha256-IRMDzTC+wK5stMucZ/XSXkeS5VNtxZ+/Bm8Mcqfoxdo="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.3.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/tags/wavedrom.min.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","mhchem":true,"cdn2":"https://cdn.bootcss.com/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML","cdn3":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/math/mathjax.min.js"></script>
+
+
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"next-theme","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/third-party/comments/disqus.min.js"></script>
+
+</body>
+</html>
