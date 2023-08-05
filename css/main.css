@@ -1578,7 +1578,7 @@ pre code {
 }
 @media (min-width: 1600px) {
   .footer-inner {
-    width: 60%;
+    width: 50%;
   }
 }
 .use-motion .footer {
@@ -2597,7 +2597,7 @@ header.header {
 }
 @media (min-width: 1600px) {
   .main {
-    width: 60%;
+    width: 50%;
   }
 }
 @media (max-width: 991px) {
