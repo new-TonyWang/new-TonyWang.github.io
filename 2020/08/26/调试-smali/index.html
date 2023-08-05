@@ -21,12 +21,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":10,"offset":5},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
 
-    <meta name="description" content="Android smali 调试 apktool 拆app 首先，将任意一个app使用apktool逆向，如下： apktool d app.apk 然后就会得到一个新的目录: ​  为了能够debug smali文件，需要找到该app中的启动的Activity,并在对应的OnCreate()方法中加入如下语句: invoke-static &amp;#123;&amp;#125;, Landroid&#x2F;os&#x2F;De">
+    <meta name="description" content="Android smali 调试 apktool 拆app 首先，将任意一个app使用apktool逆向，如下： 1apktool d app.apk 然后就会得到一个新的目录: ​  为了能够debug smali文件，需要找到该app中的启动的Activity,并在对应的OnCreate()方法中加入如下语句: 1invoke-static &amp;#123;&amp;#125;, Landroid&#x2F;os&#x2F;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="调试smali">
 <meta property="og:url" content="http://example.com/2020/08/26/%E8%B0%83%E8%AF%95-smali/index.html">
 <meta property="og:site_name" content="Oh, Tony">
-<meta property="og:description" content="Android smali 调试 apktool 拆app 首先，将任意一个app使用apktool逆向，如下： apktool d app.apk 然后就会得到一个新的目录: ​  为了能够debug smali文件，需要找到该app中的启动的Activity,并在对应的OnCreate()方法中加入如下语句: invoke-static &amp;#123;&amp;#125;, Landroid&#x2F;os&#x2F;De">
+<meta property="og:description" content="Android smali 调试 apktool 拆app 首先，将任意一个app使用apktool逆向，如下： 1apktool d app.apk 然后就会得到一个新的目录: ​  为了能够debug smali文件，需要找到该app中的启动的Activity,并在对应的OnCreate()方法中加入如下语句: 1invoke-static &amp;#123;&amp;#125;, Landroid&#x2F;os&#x2F;">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2020/08/26/%E8%B0%83%E8%AF%95-smali/image-20201226150602472.png">
 <meta property="og:image" content="http://example.com/2020/08/26/%E8%B0%83%E8%AF%95-smali/image-20201226151003463.png">
@@ -284,20 +284,20 @@
     <div class="post-body" itemprop="articleBody"><h1 id="android-smali-调试">Android smali 调试</h1>
 <h2 id="apktool-拆app">apktool 拆app</h2>
 <p>首先，将任意一个app使用apktool逆向，如下：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">apktool d app.apk<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apktool d app.apk</span><br></pre></td></tr></table></figure>
 <p>然后就会得到一个新的目录:</p>
 <p>​ <img src="/2020/08/26/%E8%B0%83%E8%AF%95-smali/image-20201226150602472.png" alt="image-20201226150602472" style="zoom:33%;"></p>
 <p>为了能够debug smali文件，需要找到该app中的启动的Activity,并在对应的OnCreate()方法中加入如下语句:</p>
-<pre class="line-numbers language-smali" data-language="smali"><code class="language-smali">invoke-static <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token class-name"><span class="token builtin">L</span><span class="token namespace">android<span class="token punctuation">/</span>os<span class="token punctuation">/</span></span><span class="token class-name">Debug</span></span><span class="token punctuation">;</span><span class="token operator">-></span><span class="token function">waitForDebugger</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token builtin">V</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">invoke-static &#123;&#125;, <span class="class">Landroid/os/Debug;</span>-&gt;waitForDebugger()V</span><br></pre></td></tr></table></figure>
 <span id="more"></span>
 <p>大致如下:</p>
 <p><img src="/2020/08/26/%E8%B0%83%E8%AF%95-smali/image-20201226151003463.png" alt="image-20201226151003463" style="zoom:33%;"></p>
 <p>之后就可以回编译app</p>
 <h2 id="回编译">回编译</h2>
 <h3 id="通用方案">通用方案</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">apktool b  <span class="token parameter variable">-d</span>  indir <span class="token parameter variable">-o</span> debug.apk<span class="token comment">#indir 指的是第一张图的路径</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apktool b  -d  indir -o debug.apk<span class="comment">#indir 指的是第一张图的路径</span></span><br></pre></td></tr></table></figure>
 <p>但是debug.apk并没有签名，因此需要使用signapk.jar进行签名，如下:</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">java</span> <span class="token parameter variable">-jar</span> ./signapk.jar ./testkey.x509.pem ./testkey.pk8 debug.apk<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar ./signapk.jar ./testkey.x509.pem ./testkey.pk8 debug.apk</span><br></pre></td></tr></table></figure>
 <h3 id="vsc-方案">VSC 方案</h3>
 <p>但是这样还是麻烦，因此可以使用VSC的插件APKLab，然后右键apktool.yml即可回编译apk。回编译的apk在dist文件夹中。</p>
 <p><img src="/2020/08/26/%E8%B0%83%E8%AF%95-smali/Screenshot from 2020-12-26 15-17-51.png" style="zoom: 25%;"></p>
@@ -316,20 +316,17 @@
 <p>​ <img src="/2020/08/26/%E8%B0%83%E8%AF%95-smali/image-20201226153538847.png" alt="image-20201226153538847" style="zoom:33%;"></p>
 <h3 id="adb-可能出现的问题以及解决方案">ADB 可能出现的问题以及解决方案</h3>
 <p>​ 有的时候AS会无法连接到调试器，会报如下错误：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Warning: debug info can be unavailable.Please close other application using ADB: Monitor, DDMS, Eclipse<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Warning: debug info can be unavailable.Please close other application using ADB: Monitor, DDMS, Eclipse</span><br></pre></td></tr></table></figure>
 <p>​ 哪怕你手动关闭这些可能占用 adb 连接的程序，也还是解决不了问题，于是这些方案出现在脑海中：</p>
 <p>Plan A：拔掉 USB 数据线，再插上重试；</p>
 <p>Plan B：使用 adb 命令重启 server，</p>
-<pre class="line-numbers language-none"><code class="language-none">adb kill-server
-
-adb start-server<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adb kill-<span class="keyword">server</span></span><br><span class="line"></span><br><span class="line">adb <span class="keyword">start</span>-<span class="keyword">server</span></span><br></pre></td></tr></table></figure>
 <p>Plan C：重启手机开发者模式重的 USB 调试；</p>
 <p>Plan D：打卡电脑进程管理器，强制关闭 adb；</p>
 <p>Plan E：重启 Android Studio 开发工具；</p>
 <p>但是Adb Error 依旧出现，还是一样出现。</p>
 <p>解决办法 <span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMjA1NjMxNDcvY2Fubm90LWRlYnVnLWFuZHJvaWQtYXBwLWluLWludGVsbGlqLXdhcm5pbmctZGVidWctaW5mby1jYW4tYmUtdW5hdmFpbGFibGU=">stack overflow<i class="fa fa-external-link-alt"></i></span></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">adb usb
- usb restart adb server listening on USB<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb usb</span><br><span class="line"> usb restart adb server listening on USB</span><br></pre></td></tr></table></figure>
 <p>其实就是通过命令行的形式，告知 adb 使用 USB 连接方式重启服务。</p>
 <p>之后就可以debug smali了。</p>
 

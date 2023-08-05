@@ -299,137 +299,14 @@
 <li>android 10一下使用jdwp将so文件注入到app中，然后使用inline hook与PLThook组合进行hook</li>
 </ol>
 <p>renderdoc中实现了一套hook的接口（或者是类），使用者可以继承相关的类来实现对不同GPU相关的api的注册。具体的类如下面代码所示</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-renderdoc&#x2F;hooks&#x2F;hooks.h
-*&#x2F;
-typedef std::function&lt;void(void *)&gt; FunctionLoadCallback;
-&#x2F;&#x2F;
-struct FunctionHook
-&#123;
-  FunctionHook() : orig(NULL), hook(NULL) &#123;&#125;
- &#x2F;*
-   * f:函数名称
-   * *o:被hook的源函数
-   * d:hook函数
-   *&#x2F;
-  FunctionHook(const char *f, void **o, void *d) : function(f), orig(o), hook(d) &#123;
-  
-  &#125;
-  bool operator&lt;(const FunctionHook &amp;h) const &#123; return function &lt; h.function; &#125;
-  rdcstr function;
-  void **orig;
-  void *hook;
-&#125;;
-struct LibraryHook;
-
-&#x2F;&#x2F;这个类中的函数全部是通过LibraryHooks::xxxfunction()进行实现，并通过宏的方式指定平台所使用的函数
-class LibraryHooks
-&#123;
-public:
-  &#x2F;&#x2F; generic, implemented in hooks.cpp to iterate over all registered libraries
-  static void RegisterHooks();
-  static void OptionsUpdated();
-  static void RemoveHookCallbacks();
-
-  static void RemoveHooks();
-
-  static void Refresh();
-
-  static void IgnoreLibrary(const char *libraryName);
-  
-  &#x2F;&#x2F;注册library和完成注册之后的callback。
-  static void RegisterLibraryHook(const char *libraryName, FunctionLoadCallback loadedCallback);
-
-  static void RegisterFunctionHook(const char *libraryName, const FunctionHook &amp;hook);
-
-  static bool Detect(const char *identifier);
-
-private:
-  static void BeginHookRegistration();
-  static void EndHookRegistration();
-&#125;;
-
-&#x2F;&#x2F; 根据不同平台的Library具体实现，例如android就使用EGLHook继承这个类
-struct LibraryHook
-&#123;
-  LibraryHook();
-  virtual void RegisterHooks() &#x3D; 0;&#x2F;&#x2F;这个函数必须重写，所有GPU 的 api均通过该函数进行注册
-  virtual void OptionsUpdated() &#123;&#125;
-  virtual void RemoveHooks() &#123;&#125;
-private:
-  friend class LibraryHooks;
-
-  static rdcarray&lt;LibraryHook *&gt; m_Libraries;
-&#125;;
-
-&#x2F;&#x2F;android没有使用到
-template &lt;typename FuncType&gt;
-class HookedFunction
-&#123;
-public:
-  HookedFunction() &#123; orig_funcptr &#x3D; NULL; &#125;
-  ~HookedFunction() &#123;&#125;
-  FuncType operator()() &#123; return (FuncType)orig_funcptr; &#125;
-  void SetFuncPtr(void *ptr) &#123; orig_funcptr &#x3D; ptr; &#125;
-  void Register(const char *module_name, const char *function, void *destination_function_ptr)
-  &#123;
-    LibraryHooks::RegisterFunctionHook(
-        module_name, FunctionHook(function, &amp;orig_funcptr, destination_function_ptr));
-     
-  &#125;
-
-private:
-  void *orig_funcptr;
-&#125;;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">renderdoc/hooks/hooks.h</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">typedef</span> std::function&lt;<span class="type">void</span>(<span class="type">void</span> *)&gt; FunctionLoadCallback;</span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">FunctionHook</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">FunctionHook</span>() : <span class="built_in">orig</span>(<span class="literal">NULL</span>), <span class="built_in">hook</span>(<span class="literal">NULL</span>) &#123;&#125;</span><br><span class="line"> <span class="comment">/*</span></span><br><span class="line"><span class="comment">   * f:函数名称</span></span><br><span class="line"><span class="comment">   * *o:被hook的源函数</span></span><br><span class="line"><span class="comment">   * d:hook函数</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="built_in">FunctionHook</span>(<span class="type">const</span> <span class="type">char</span> *f, <span class="type">void</span> **o, <span class="type">void</span> *d) : <span class="built_in">function</span>(f), <span class="built_in">orig</span>(o), <span class="built_in">hook</span>(d) &#123;</span><br><span class="line">  </span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">bool</span> <span class="keyword">operator</span>&lt;(<span class="type">const</span> FunctionHook &amp;h) <span class="type">const</span> &#123; <span class="keyword">return</span> function &lt; h.function; &#125;</span><br><span class="line">  rdcstr function;</span><br><span class="line">  <span class="type">void</span> **orig;</span><br><span class="line">  <span class="type">void</span> *hook;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">LibraryHook</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//这个类中的函数全部是通过LibraryHooks::xxxfunction()进行实现，并通过宏的方式指定平台所使用的函数</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">LibraryHooks</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// generic, implemented in hooks.cpp to iterate over all registered libraries</span></span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">RegisterHooks</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">OptionsUpdated</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">RemoveHookCallbacks</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">RemoveHooks</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">Refresh</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">IgnoreLibrary</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *libraryName)</span></span>;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">//注册library和完成注册之后的callback。</span></span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">RegisterLibraryHook</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *libraryName, FunctionLoadCallback loadedCallback)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">RegisterFunctionHook</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *libraryName, <span class="type">const</span> FunctionHook &amp;hook)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">bool</span> <span class="title">Detect</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *identifier)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">BeginHookRegistration</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">EndHookRegistration</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 根据不同平台的Library具体实现，例如android就使用EGLHook继承这个类</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">LibraryHook</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">LibraryHook</span>();</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">RegisterHooks</span><span class="params">()</span> </span>= <span class="number">0</span>;<span class="comment">//这个函数必须重写，所有GPU 的 api均通过该函数进行注册</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">OptionsUpdated</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">RemoveHooks</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="keyword">friend</span> <span class="keyword">class</span> <span class="title class_">LibraryHooks</span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">static</span> rdcarray&lt;LibraryHook *&gt; m_Libraries;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//android没有使用到</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> FuncType&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">HookedFunction</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">HookedFunction</span>() &#123; orig_funcptr = <span class="literal">NULL</span>; &#125;</span><br><span class="line">  ~<span class="built_in">HookedFunction</span>() &#123;&#125;</span><br><span class="line">  <span class="function">FuncType <span class="title">operator</span><span class="params">()</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> (FuncType)orig_funcptr; &#125;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">SetFuncPtr</span><span class="params">(<span class="type">void</span> *ptr)</span> </span>&#123; orig_funcptr = ptr; &#125;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">Register</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *module_name, <span class="type">const</span> <span class="type">char</span> *function, <span class="type">void</span> *destination_function_ptr)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    LibraryHooks::<span class="built_in">RegisterFunctionHook</span>(</span><br><span class="line">        module_name, <span class="built_in">FunctionHook</span>(function, &amp;orig_funcptr, destination_function_ptr));</span><br><span class="line">     </span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="type">void</span> *orig_funcptr;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>renderdoc中一共支持如下的GPU api:</p>
 <figure>
 <img src="/2023/08/05/android-validation-layer%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/image-20210717171227483.png" alt><figcaption>image-20210717171227483</figcaption>
 </figure>
 <h3 id="opengl-gpu函数注册">opengl GPU函数注册</h3>
 <p>首先查看cmakelist.txt中为了hook EGL，renderdoc都使用了哪些源文件:</p>
-<pre class="line-numbers language-cmake" data-language="cmake"><code class="language-cmake"><span class="token keyword">set</span><span class="token punctuation">(</span>sources
-    gl_common.cpp
-  	...
-    gl_driver.cpp
-    gl_driver.h
-    gl_enum.h
-    gl_dispatch_table_defs.h<span class="token comment">#里面使用宏定义了所有gl的函数和名称</span>
-    gl_dispatch_table.h
-    ...
-    official/gl32.h
-    official/gl3platform.h
-    official/glcorearb.h
-    official/glext.h
-    official/khrplatform.h
-  	...
-  	<span class="token punctuation">)</span>
-
-<span class="token comment"># 注册gl所有的公共函数</span>
-<span class="token keyword">list</span><span class="token punctuation">(</span>APPEND sources gl_hooks.cpp<span class="token punctuation">)</span>
-
-<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token variable">APPLE</span><span class="token punctuation">)</span>
-   ...<span class="token comment">#android不会调用</span>
-<span class="token keyword">else</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-  ···
-    <span class="token keyword">endif</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>ENABLE_GLES<span class="token punctuation">)</span>
-        <span class="token keyword">list</span><span class="token punctuation">(</span>APPEND sources
-            official/glesext.h<span class="token punctuation">)</span><span class="token comment">#glesxt头文件</span>
-    <span class="token keyword">endif</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>ENABLE_EGL<span class="token punctuation">)</span>
-        <span class="token keyword">list</span><span class="token punctuation">(</span>APPEND sources
-            official/egl.h
-            official/eglext.h
-            official/eglplatform.h
-            egl_dispatch_table.h
-            egl_platform.cpp<span class="token comment">#里面使用宏定义了所有egl的函数和名称</span>
-            egl_hooks.cpp<span class="token comment">#注册所有egl的函数)</span>
-    <span class="token keyword">endif</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token keyword">endif</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-
-<span class="token keyword">add_library</span><span class="token punctuation">(</span>rdoc_gl OBJECT <span class="token punctuation">$&#123;</span>sources<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-...
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span>(sources</span><br><span class="line">    gl_common.cpp</span><br><span class="line">  	...</span><br><span class="line">    gl_driver.cpp</span><br><span class="line">    gl_driver.h</span><br><span class="line">    gl_enum.h</span><br><span class="line">    gl_dispatch_table_defs.h<span class="comment">#里面使用宏定义了所有gl的函数和名称</span></span><br><span class="line">    gl_dispatch_table.h</span><br><span class="line">    ...</span><br><span class="line">    official/gl32.h</span><br><span class="line">    official/gl3platform.h</span><br><span class="line">    official/glcorearb.h</span><br><span class="line">    official/glext.h</span><br><span class="line">    official/khrplatform.h</span><br><span class="line">  	...</span><br><span class="line">  	)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注册gl所有的公共函数</span></span><br><span class="line"><span class="keyword">list</span>(APPEND sources gl_hooks.cpp)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(APPLE)</span><br><span class="line">   ...<span class="comment">#android不会调用</span></span><br><span class="line"><span class="keyword">else</span>()</span><br><span class="line">  ···</span><br><span class="line">    <span class="keyword">endif</span>()</span><br><span class="line">    <span class="keyword">if</span>(ENABLE_GLES)</span><br><span class="line">        <span class="keyword">list</span>(APPEND sources</span><br><span class="line">            official/glesext.h)<span class="comment">#glesxt头文件</span></span><br><span class="line">    <span class="keyword">endif</span>()</span><br><span class="line">    <span class="keyword">if</span>(ENABLE_EGL)</span><br><span class="line">        <span class="keyword">list</span>(APPEND sources</span><br><span class="line">            official/egl.h</span><br><span class="line">            official/eglext.h</span><br><span class="line">            official/eglplatform.h</span><br><span class="line">            egl_dispatch_table.h</span><br><span class="line">            egl_platform.cpp<span class="comment">#里面使用宏定义了所有egl的函数和名称</span></span><br><span class="line">            egl_hooks.cpp<span class="comment">#注册所有egl的函数)</span></span><br><span class="line">    <span class="keyword">endif</span>()</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_library</span>(rdoc_gl OBJECT <span class="variable">$&#123;sources&#125;</span>)</span><br><span class="line">...</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>对于非windos来说，整个hook流程的入口是如下的函数</p>
 <p>整个流程如下：</p>
 <ol type="1">
@@ -437,147 +314,17 @@ private:
 <li>遍历每一个Hook类，注册每一个类中的需要hook的函数；</li>
 <li>执行hook；</li>
 </ol>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-os&#x2F;posix&#x2F;posix_libentry.cpp
-*&#x2F;
-
-&#x2F;&#x2F; DllMain equivalent
-void library_loaded()
-&#123;
-  if(LibraryHooks::Detect(&quot;renderdoc__replay__marker&quot;))
-  &#123;
- ...
-    return;
-  &#125;
-  else
-  &#123;
-   ...
-    LibraryHooks::RegisterHooks();&#x2F;&#x2F;注册hook
-
-    &#x2F;&#x2F; we have a short sleep here to allow target control to connect, since unlike windows we can&#39;t
-    &#x2F;&#x2F; suspend the process during startup.
-    Threading::Sleep(15);
-  &#125;
-&#125;
-
-struct init
-&#123;
-  &#x2F;&#x2F;该构造函数会在so链接的时候在其他的例如ELGSHook或者其他全局变量初始化之后最后调用(为了确保所有对象初始化完毕)  
-  init() &#123; library_loaded(); &#125;
-&#125; do_init;&#x2F;&#x2F;全局变量
-
-&#x2F;&#x2F; we want to be sure the constructor and library_loaded are included even when this is in a static
-&#x2F;&#x2F; library, so we have this global function that does nothing but takes the address.
-extern &quot;C&quot; __attribute__((visibility(&quot;default&quot;))) void *force_include_libentry()
-&#123;
-  return &amp;do_init;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">os/posix/posix_libentry.cpp</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// DllMain equivalent</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">library_loaded</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(LibraryHooks::<span class="built_in">Detect</span>(<span class="string">&quot;renderdoc__replay__marker&quot;</span>))</span><br><span class="line">  &#123;</span><br><span class="line"> ...</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">   ...</span><br><span class="line">    LibraryHooks::<span class="built_in">RegisterHooks</span>();<span class="comment">//注册hook</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// we have a short sleep here to allow target control to connect, since unlike windows we can&#x27;t</span></span><br><span class="line">    <span class="comment">// suspend the process during startup.</span></span><br><span class="line">    Threading::<span class="built_in">Sleep</span>(<span class="number">15</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">init</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">//该构造函数会在so链接的时候在其他的例如ELGSHook或者其他全局变量初始化之后最后调用(为了确保所有对象初始化完毕)  </span></span><br><span class="line">  <span class="built_in">init</span>() &#123; <span class="built_in">library_loaded</span>(); &#125;</span><br><span class="line">&#125; do_init;<span class="comment">//全局变量</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// we want to be sure the constructor and library_loaded are included even when this is in a static</span></span><br><span class="line"><span class="comment">// library, so we have this global function that does nothing but takes the address.</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> __attribute__((<span class="built_in">visibility</span>(<span class="string">&quot;default&quot;</span>))) <span class="function"><span class="type">void</span> *<span class="title">force_include_libentry</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> &amp;do_init;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>下面我们看一下<code>LibraryHooks::RegisterHooks()</code>如何运作：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-renderdoc&#x2F;hooks&#x2F;hooks.cpp
-*&#x2F;
-#include &quot;hooks.h&quot;
-#include &quot;common&#x2F;common.h&quot;
-
-static rdcarray&lt;LibraryHook *&gt; &amp;LibList()
-&#123;
-  static rdcarray&lt;LibraryHook *&gt; libs;&#x2F;&#x2F;保存需要进行注册的gpu lib
-  return libs;
-&#125;
-
-LibraryHook::LibraryHook()&#x2F;&#x2F;所有子函数的构造都会调用该函数（例如EGLHook）并将子类加入到Libs，并等待注册
-&#123;
-  LibList().push_back(this);
-&#125;
-
-void LibraryHooks::RegisterHooks()
-&#123;
-  BeginHookRegistration();&#x2F;&#x2F;平台相关
-
-  for(LibraryHook *lib : LibList())&#x2F;&#x2F;遍历libs并注册。android则会调用GLHook,EGLHook和VulkanHook
-    lib-&gt;RegisterHooks();
-
-  EndHookRegistration();&#x2F;&#x2F;平台相关，可以在这个函数执行hook
-&#125;
-
-void LibraryHooks::RemoveHookCallbacks()
-&#123;
-  for(LibraryHook *lib : LibList())
-    lib-&gt;RemoveHooks();
-&#125;
-
-void LibraryHooks::OptionsUpdated()
-&#123;
-  for(LibraryHook *lib : LibList())
-    lib-&gt;OptionsUpdated();
-&#125;
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">renderdoc/hooks/hooks.cpp</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;hooks.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;common/common.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">static</span> rdcarray&lt;LibraryHook *&gt; &amp;<span class="title">LibList</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">static</span> rdcarray&lt;LibraryHook *&gt; libs;<span class="comment">//保存需要进行注册的gpu lib</span></span><br><span class="line">  <span class="keyword">return</span> libs;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LibraryHook::<span class="built_in">LibraryHook</span>()<span class="comment">//所有子函数的构造都会调用该函数（例如EGLHook）并将子类加入到Libs，并等待注册</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">LibList</span>().<span class="built_in">push_back</span>(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">LibraryHooks::RegisterHooks</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="built_in">BeginHookRegistration</span>();<span class="comment">//平台相关</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(LibraryHook *lib : <span class="built_in">LibList</span>())<span class="comment">//遍历libs并注册。android则会调用GLHook,EGLHook和VulkanHook</span></span><br><span class="line">    lib-&gt;<span class="built_in">RegisterHooks</span>();</span><br><span class="line"></span><br><span class="line">  <span class="built_in">EndHookRegistration</span>();<span class="comment">//平台相关，可以在这个函数执行hook</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">LibraryHooks::RemoveHookCallbacks</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">for</span>(LibraryHook *lib : <span class="built_in">LibList</span>())</span><br><span class="line">    lib-&gt;<span class="built_in">RemoveHooks</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">LibraryHooks::OptionsUpdated</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">for</span>(LibraryHook *lib : <span class="built_in">LibList</span>())</span><br><span class="line">    lib-&gt;<span class="built_in">OptionsUpdated</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>对于android来说只需要使用到egl_hooks和VulkanHook。我们仅对egl_hooks和gl_hooks进行研究。</p>
 <p>gl_hooks.cpp在编译时和运行时起到的作用：</p>
 <ol type="1">
 <li>编译时，该文件使用宏定义的方式生成hook gl api的函数（简称Hook函数）；</li>
 <li>运行时，caller会调用GLHook::RegisterHooks()，并将gl api的名称，原函数（这里是函数指针，还未赋值），hook函数三者相关联起来并完成注册。</li>
 </ol>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-renderdoc&#x2F;driver&#x2F;gl&#x2F;gl_hooks.cpp
-*&#x2F;
-...
-DefineSupportedHooks();&#x2F;&#x2F;通过宏的方式，根据opengl的参数个数和类型定义待hook函数的wrapper
-...
-void GLHook::RegisterHooks()
-&#123;
-#if ENABLED(RDOC_ANDROID)
-  &#x2F;&#x2F; on android if EGL hooking is disabled we&#39;re using GLES layering, don&#39;t register any GL hooks
-  if(!ShouldHookEGL())
-  &#123;
-    RDCLOG(&quot;Not registering OpenGL hooks for Android&quot;);
-    return;
-  &#125;
-#endif
-
-  RDCLOG(&quot;Registering OpenGL hooks&quot;);
-
-&#x2F;&#x2F; pick the &#39;primary&#39; library we consider GL functions to come from. This is mostly important on
-&#x2F;&#x2F; windows, since hooks are library-specific, but on other platforms it&#39;s simply where we expect
-&#x2F;&#x2F; most to come from for fetching. The rest can be collected with the platform&#39;s GetProcAddress
-  const char *libraryName &#x3D; &quot;libEGL.so&quot;;&#x2F;&#x2F;首先设置需要注册的函数所在的动态链接库
-  LibraryHooks::RegisterLibraryHook(libraryName, &amp;GLHooked);&#x2F;&#x2F;GLHooked该函数会在所有hook执行完成之后调用
-&#x2F;&#x2F;使用宏的方式注册gl的函数，具体实现见下文
-#define RegisterFunc(func, name)      \
-  LibraryHooks::RegisterFunctionHook( \
-      libraryName,                    \
-      FunctionHook(STRINGIZE(name), (void **)&amp;GL.func, (void *)&amp;CONCAT(func, _renderdoc_hooked)));
-  ForEachSupported(RegisterFunc);
-
-&#125;
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>下面的宏定义十分复杂，大致的思路如下： 1. 通过ForEachSupported(FUNC)遍历所有的gl函数 2. 通过FuncWrapperXX()生成hook函数。FuncWrapperXX()函数中的XX表示有多个参数，并且按照下面的形式构建hook函数，并在最后调用原始的gpu的api。 <code>FuncWrapper(返回值,函数地址,第一个参数类型,第一个参数的形参,...)</code> <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-renderdoc&#x2F;driver&#x2F;gl&#x2F;gl_dispatch_table_defs.h
-*&#x2F;
-#define ForEachSupported(FUNC) \
-  FUNC(glBindTexture, glBindTexture); \
-  FUNC(glBlendFunc, glBlendFunc); \
-
-#define DefineSupportedHooks() \
-  FuncWrapper2(void, glBindTexture, GLenum, target, GLuint, texture); \
-  FuncWrapper2(void, glBlendFunc, GLenum, sfactor, GLenum, dfactor); \
- ...
-
-#define FuncWrapper0(ret, function) \
- &#x2F;&#x2F;两个参数
-#define FuncWrapper2(ret, function, t1, p1, t2, p2) \
-  ret HOOK_CC CONCAT(function, _renderdoc_hooked)(t1 p1, t2 p2) \
-  &#123; \
-    SCOPED_GLCALL(function); \
-    UNINIT_CALL(function, p1, p2); \
-    return glhook.driver-&gt;function(p1, p2); \
-  &#125; \
-  HOOK_EXPORT ret HOOK_CC GL_EXPORT_NAME(function)(t1 p1, t2 p2) \
-  &#123; \
-    return CONCAT(function, _renderdoc_hooked)(p1, p2); \
-  &#125; \
-  HOOK_EXPORT ret HOOK_CC function(t1 p1, t2 p2);
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre> 使用IDA pro展示一个编译后的函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">renderdoc/driver/gl/gl_hooks.cpp</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">...</span><br><span class="line"><span class="built_in">DefineSupportedHooks</span>();<span class="comment">//通过宏的方式，根据opengl的参数个数和类型定义待hook函数的wrapper</span></span><br><span class="line">...</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">GLHook::RegisterHooks</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> ENABLED(RDOC_ANDROID)</span></span><br><span class="line">  <span class="comment">// on android if EGL hooking is disabled we&#x27;re using GLES layering, don&#x27;t register any GL hooks</span></span><br><span class="line">  <span class="keyword">if</span>(!<span class="built_in">ShouldHookEGL</span>())</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">RDCLOG</span>(<span class="string">&quot;Not registering OpenGL hooks for Android&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">RDCLOG</span>(<span class="string">&quot;Registering OpenGL hooks&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// pick the &#x27;primary&#x27; library we consider GL functions to come from. This is mostly important on</span></span><br><span class="line"><span class="comment">// windows, since hooks are library-specific, but on other platforms it&#x27;s simply where we expect</span></span><br><span class="line"><span class="comment">// most to come from for fetching. The rest can be collected with the platform&#x27;s GetProcAddress</span></span><br><span class="line">  <span class="type">const</span> <span class="type">char</span> *libraryName = <span class="string">&quot;libEGL.so&quot;</span>;<span class="comment">//首先设置需要注册的函数所在的动态链接库</span></span><br><span class="line">  LibraryHooks::<span class="built_in">RegisterLibraryHook</span>(libraryName, &amp;GLHooked);<span class="comment">//GLHooked该函数会在所有hook执行完成之后调用</span></span><br><span class="line"><span class="comment">//使用宏的方式注册gl的函数，具体实现见下文</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RegisterFunc(func, name)      \</span></span><br><span class="line"><span class="meta">  LibraryHooks::RegisterFunctionHook( \</span></span><br><span class="line"><span class="meta">      libraryName,                    \</span></span><br><span class="line"><span class="meta">      FunctionHook(STRINGIZE(name), (void **)&amp;GL.func, (void *)&amp;CONCAT(func, _renderdoc_hooked)));</span></span><br><span class="line">  <span class="built_in">ForEachSupported</span>(RegisterFunc);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>下面的宏定义十分复杂，大致的思路如下： 1. 通过ForEachSupported(FUNC)遍历所有的gl函数 2. 通过FuncWrapperXX()生成hook函数。FuncWrapperXX()函数中的XX表示有多个参数，并且按照下面的形式构建hook函数，并在最后调用原始的gpu的api。 <code>FuncWrapper(返回值,函数地址,第一个参数类型,第一个参数的形参,...)</code> <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">renderdoc/driver/gl/gl_dispatch_table_defs.h</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ForEachSupported(FUNC) \</span></span><br><span class="line"><span class="meta">  FUNC(glBindTexture, glBindTexture); \</span></span><br><span class="line"><span class="meta">  FUNC(glBlendFunc, glBlendFunc); \</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DefineSupportedHooks() \</span></span><br><span class="line"><span class="meta">  FuncWrapper2(void, glBindTexture, GLenum, target, GLuint, texture); \</span></span><br><span class="line"><span class="meta">  FuncWrapper2(void, glBlendFunc, GLenum, sfactor, GLenum, dfactor); \</span></span><br><span class="line"><span class="meta"> ...</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FuncWrapper0(ret, function) \</span></span><br><span class="line"><span class="meta"> <span class="comment">//两个参数</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FuncWrapper2(ret, function, t1, p1, t2, p2) \</span></span><br><span class="line"><span class="meta">  ret HOOK_CC CONCAT(function, _renderdoc_hooked)(t1 p1, t2 p2) \</span></span><br><span class="line"><span class="meta">  &#123; \</span></span><br><span class="line"><span class="meta">    SCOPED_GLCALL(function); \</span></span><br><span class="line"><span class="meta">    UNINIT_CALL(function, p1, p2); \</span></span><br><span class="line"><span class="meta">    return glhook.driver-&gt;function(p1, p2); \</span></span><br><span class="line"><span class="meta">  &#125; \</span></span><br><span class="line"><span class="meta">  HOOK_EXPORT ret HOOK_CC GL_EXPORT_NAME(function)(t1 p1, t2 p2) \</span></span><br><span class="line"><span class="meta">  &#123; \</span></span><br><span class="line"><span class="meta">    return CONCAT(function, _renderdoc_hooked)(p1, p2); \</span></span><br><span class="line"><span class="meta">  &#125; \</span></span><br><span class="line"><span class="meta">  HOOK_EXPORT ret HOOK_CC function(t1 p1, t2 p2);</span></span><br><span class="line"></span><br></pre></td></tr></table></figure> 使用IDA pro展示一个编译后的函数</p>
 <p><img src="/2023/08/05/android-validation-layer%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/image-20210718213703250.png" alt="image-20210718213703250"></p>
 <figure>
 <img src="/2023/08/05/android-validation-layer%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/image-20210718213618290.png" alt><figcaption>image-20210718213618290</figcaption>
@@ -585,38 +332,7 @@ renderdoc&#x2F;driver&#x2F;gl&#x2F;gl_dispatch_table_defs.h
 <p>最后会在<code>WrappedOpenGl::glBindTexture</code>中调用原始的函数（第37行）</p>
 <p><img src="/2023/08/05/android-validation-layer%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/image-20210718215257357.png" alt="image-20210718215257357" style="zoom:80%;"></p>
 <p>EGL和gl的函数注册思路相同，但是由于EGL会占用多个动态链接库，因此需要多注册一些LibraryHooks</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-renderdoc&#x2F;driver&#x2F;gl&#x2F;egl_hooks.cpp
-*&#x2F;
-
-void EGLHook::RegisterHooks()
-&#123;
-  if(!ShouldHookEGL())
-    return;
-
-  RDCLOG(&quot;Registering EGL hooks&quot;);
-#define LIBSUFFIX &quot;.so&quot;
-  &#x2F;&#x2F; register library hooks
-  LibraryHooks::RegisterLibraryHook(&quot;libEGL&quot; LIBSUFFIX, &amp;EGLHooked);&#x2F;&#x2F;EGLHooked该函数会在所有hook执行完成之后调用
-  LibraryHooks::RegisterLibraryHook(&quot;libEGL&quot; LIBSUFFIX &quot;.1&quot;, &amp;EGLHooked);
-
-  &#x2F;&#x2F; we have to specify these with the most preferred library first. If the same function is
-  &#x2F;&#x2F; exported in multiple libraries, the function we call into will be the first one found
-  LibraryHooks::RegisterLibraryHook(&quot;libGLESv3&quot; LIBSUFFIX, NULL);
-  LibraryHooks::RegisterLibraryHook(&quot;libGLESv2&quot; LIBSUFFIX &quot;.2&quot;, NULL);
-  LibraryHooks::RegisterLibraryHook(&quot;libGLESv2&quot; LIBSUFFIX, NULL);
-  LibraryHooks::RegisterLibraryHook(&quot;libGLESv1_CM&quot; LIBSUFFIX, NULL);
-
-
-&#x2F;&#x2F; register EGL hooks
-#define EGL_REGISTER(func, isext, replayrequired)                                 \
-  LibraryHooks::RegisterFunctionHook(                                             \
-      &quot;libEGL&quot; LIBSUFFIX, FunctionHook(&quot;egl&quot; STRINGIZE(func), (void **)&amp;EGL.func, \
-                                       (void *)&amp;CONCAT(egl, CONCAT(func, _renderdoc_hooked))));
-  EGL_HOOKED_SYMBOLS(EGL_REGISTER)
-#undef EGL_REGISTER
-&#125;
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">renderdoc/driver/gl/egl_hooks.cpp</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">EGLHook::RegisterHooks</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(!<span class="built_in">ShouldHookEGL</span>())</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">RDCLOG</span>(<span class="string">&quot;Registering EGL hooks&quot;</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LIBSUFFIX <span class="string">&quot;.so&quot;</span></span></span><br><span class="line">  <span class="comment">// register library hooks</span></span><br><span class="line">  LibraryHooks::<span class="built_in">RegisterLibraryHook</span>(<span class="string">&quot;libEGL&quot;</span> LIBSUFFIX, &amp;EGLHooked);<span class="comment">//EGLHooked该函数会在所有hook执行完成之后调用</span></span><br><span class="line">  LibraryHooks::<span class="built_in">RegisterLibraryHook</span>(<span class="string">&quot;libEGL&quot;</span> LIBSUFFIX <span class="string">&quot;.1&quot;</span>, &amp;EGLHooked);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// we have to specify these with the most preferred library first. If the same function is</span></span><br><span class="line">  <span class="comment">// exported in multiple libraries, the function we call into will be the first one found</span></span><br><span class="line">  LibraryHooks::<span class="built_in">RegisterLibraryHook</span>(<span class="string">&quot;libGLESv3&quot;</span> LIBSUFFIX, <span class="literal">NULL</span>);</span><br><span class="line">  LibraryHooks::<span class="built_in">RegisterLibraryHook</span>(<span class="string">&quot;libGLESv2&quot;</span> LIBSUFFIX <span class="string">&quot;.2&quot;</span>, <span class="literal">NULL</span>);</span><br><span class="line">  LibraryHooks::<span class="built_in">RegisterLibraryHook</span>(<span class="string">&quot;libGLESv2&quot;</span> LIBSUFFIX, <span class="literal">NULL</span>);</span><br><span class="line">  LibraryHooks::<span class="built_in">RegisterLibraryHook</span>(<span class="string">&quot;libGLESv1_CM&quot;</span> LIBSUFFIX, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// register EGL hooks</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> EGL_REGISTER(func, isext, replayrequired)                                 \</span></span><br><span class="line"><span class="meta">  LibraryHooks::RegisterFunctionHook(                                             \</span></span><br><span class="line"><span class="meta">      <span class="string">&quot;libEGL&quot;</span> LIBSUFFIX, FunctionHook(<span class="string">&quot;egl&quot;</span> STRINGIZE(func), (void **)&amp;EGL.func, \</span></span><br><span class="line"><span class="meta">                                       (void *)&amp;CONCAT(egl, CONCAT(func, _renderdoc_hooked))));</span></span><br><span class="line">  <span class="built_in">EGL_HOOKED_SYMBOLS</span>(EGL_REGISTER)</span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> EGL_REGISTER</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>至此全部的api注册过程结束。</p>
 <h3 id="gpu-函数hook的过程">GPU 函数hook的过程</h3>
 <p>android平台中hook的流程全部都是在<code>LibraryHooks::EndHookRegistration()</code>中进行，流程如下：</p>
@@ -629,98 +345,7 @@ void EGLHook::RegisterHooks()
 <li>刷新函数链接，进行PLTHook；</li>
 <li>调用与库绑定的回调函数</li>
 </ol>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-renderdoc&#x2F;os&#x2F;posix&#x2F;android&#x2F;android_hook.cpp
-*&#x2F;
-void LibraryHooks::EndHookRegistration()
-&#123;
-  HOOK_DEBUG_PRINT(&quot;EndHookRegistration&quot;);
-
- 	&#x2F;&#x2F;确保所有的lib都已经加载到内存
-  rdcarray&lt;rdcstr&gt; libs &#x3D; GetHookInfo().GetLibHooks();
-  for(const rdcstr &amp;lib : libs)
-  &#123;
-    void *handle &#x3D; dlopen(lib.c_str(), RTLD_GLOBAL);
-    HOOK_DEBUG_PRINT(&quot;%s: %p&quot;, lib.c_str(), handle);
-  &#125;
-
- ...
-     
-  if(libs.empty())
-  &#123;
-    RDCLOG(&quot;No library hooks registered, not doing any hooking&quot;);
-    return;
-  &#125;
-	&#x2F;&#x2F;使用inlinehook 
-  PatchHookedFunctions();
-  
-  &#x2F;&#x2F;注册公共的库，例如dlopen和dlsym。这一步的目的是防止app使用这两个函数动态加载和gles相关的动态链接库。
-  InstallHooksCommon();
-
-  LibraryHooks::Refresh();
-
-
-  rdcarray&lt;rdcstr&gt; libraryHooks &#x3D; GetHookInfo().GetLibHooks();
-  rdcarray&lt;FunctionHook&gt; functionHooks &#x3D; GetHookInfo().GetFunctionHooks();
-
-  RDCLOG(&quot;Fetching %zu original function pointers over %zu libraries&quot;, functionHooks.size(),
-         libraryHooks.size());
-    
-&#x2F;&#x2F;为pltHook做准备
-  for(auto it &#x3D; libraryHooks.begin(); it !&#x3D; libraryHooks.end(); ++it)
-  &#123;
-    void *handle &#x3D; dlopen(it-&gt;c_str(), RTLD_NOLOAD | RTLD_GLOBAL);
-
-    if(handle)
-    &#123;
-      for(FunctionHook &amp;hook : functionHooks)
-      &#123;
-        if(hook.orig &amp;&amp; *hook.orig &#x3D;&#x3D; NULL)
-          *hook.orig &#x3D; dlsym(handle, hook.function.c_str());
-      &#125;
-    &#125;
-  &#125;
-
-  RDCLOG(&quot;Finished&quot;);
-
-&#x2F;&#x2F;执行回调函数
-  std::map&lt;rdcstr, rdcarray&lt;FunctionLoadCallback&gt;&gt; callbacks &#x3D; GetHookInfo().GetHookCallbacks();
-  for(auto it &#x3D; callbacks.begin(); it !&#x3D; callbacks.end(); ++it)
-  &#123;
-    void *handle &#x3D; dlopen(it-&gt;first.c_str(), RTLD_GLOBAL);
-    if(handle)
-    &#123;
-      HOOK_DEBUG_PRINT(&quot;Calling callbacks for %s&quot;, it-&gt;first.c_str());
-      for(FunctionLoadCallback callback : it-&gt;second)
-        if(callback)
-          callback(handle);
-    &#125;
-  &#125;
-
-  RDCLOG(&quot;Called library callbacks - hook registration complete&quot;);
-&#125;
-
-oid LibraryHooks::RegisterFunctionHook(const char *libraryName, const FunctionHook &amp;hook)
-&#123;
-  &#x2F;&#x2F; we don&#39;t use the library name on android
-  (void)libraryName;
-  HOOK_DEBUG_PRINT(&quot;Registering function hook for %s: %p&quot;, hook.function.c_str(), hook.hook);
-  &#x2F;&#x2F;注册函数
-  GetHookInfo().AddFunctionHook(hook);
-&#125;
-
-void LibraryHooks::RegisterLibraryHook(const char *name, FunctionLoadCallback cb)
-&#123;&#x2F;&#x2F;注册动态链接库
-  GetHookInfo().AddLibHook(name);
-
-  HOOK_DEBUG_PRINT(&quot;Registering library hook for %s %s&quot;, name, cb ? &quot;with callback&quot; : &quot;&quot;);
-
-  &#x2F;&#x2F; open the library immediately if we can
-  dlopen(name, RTLD_NOW);
-
-  if(cb)&#x2F;&#x2F;若设置了回调函数则注册回调函数
-    GetHookInfo().AddHookCallback(name, cb);
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">renderdoc/os/posix/android/android_hook.cpp</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">LibraryHooks::EndHookRegistration</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="built_in">HOOK_DEBUG_PRINT</span>(<span class="string">&quot;EndHookRegistration&quot;</span>);</span><br><span class="line"></span><br><span class="line"> 	<span class="comment">//确保所有的lib都已经加载到内存</span></span><br><span class="line">  rdcarray&lt;rdcstr&gt; libs = <span class="built_in">GetHookInfo</span>().<span class="built_in">GetLibHooks</span>();</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">const</span> rdcstr &amp;lib : libs)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="type">void</span> *handle = <span class="built_in">dlopen</span>(lib.<span class="built_in">c_str</span>(), RTLD_GLOBAL);</span><br><span class="line">    <span class="built_in">HOOK_DEBUG_PRINT</span>(<span class="string">&quot;%s: %p&quot;</span>, lib.<span class="built_in">c_str</span>(), handle);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> ...</span><br><span class="line">     </span><br><span class="line">  <span class="keyword">if</span>(libs.<span class="built_in">empty</span>())</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">RDCLOG</span>(<span class="string">&quot;No library hooks registered, not doing any hooking&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">	<span class="comment">//使用inlinehook </span></span><br><span class="line">  <span class="built_in">PatchHookedFunctions</span>();</span><br><span class="line">  </span><br><span class="line">  <span class="comment">//注册公共的库，例如dlopen和dlsym。这一步的目的是防止app使用这两个函数动态加载和gles相关的动态链接库。</span></span><br><span class="line">  <span class="built_in">InstallHooksCommon</span>();</span><br><span class="line"></span><br><span class="line">  LibraryHooks::<span class="built_in">Refresh</span>();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  rdcarray&lt;rdcstr&gt; libraryHooks = <span class="built_in">GetHookInfo</span>().<span class="built_in">GetLibHooks</span>();</span><br><span class="line">  rdcarray&lt;FunctionHook&gt; functionHooks = <span class="built_in">GetHookInfo</span>().<span class="built_in">GetFunctionHooks</span>();</span><br><span class="line"></span><br><span class="line">  <span class="built_in">RDCLOG</span>(<span class="string">&quot;Fetching %zu original function pointers over %zu libraries&quot;</span>, functionHooks.<span class="built_in">size</span>(),</span><br><span class="line">         libraryHooks.<span class="built_in">size</span>());</span><br><span class="line">    </span><br><span class="line"><span class="comment">//为pltHook做准备</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">auto</span> it = libraryHooks.<span class="built_in">begin</span>(); it != libraryHooks.<span class="built_in">end</span>(); ++it)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="type">void</span> *handle = <span class="built_in">dlopen</span>(it-&gt;<span class="built_in">c_str</span>(), RTLD_NOLOAD | RTLD_GLOBAL);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(handle)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">for</span>(FunctionHook &amp;hook : functionHooks)</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">if</span>(hook.orig &amp;&amp; *hook.orig == <span class="literal">NULL</span>)</span><br><span class="line">          *hook.orig = <span class="built_in">dlsym</span>(handle, hook.function.<span class="built_in">c_str</span>());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">RDCLOG</span>(<span class="string">&quot;Finished&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//执行回调函数</span></span><br><span class="line">  std::map&lt;rdcstr, rdcarray&lt;FunctionLoadCallback&gt;&gt; callbacks = <span class="built_in">GetHookInfo</span>().<span class="built_in">GetHookCallbacks</span>();</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">auto</span> it = callbacks.<span class="built_in">begin</span>(); it != callbacks.<span class="built_in">end</span>(); ++it)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="type">void</span> *handle = <span class="built_in">dlopen</span>(it-&gt;first.<span class="built_in">c_str</span>(), RTLD_GLOBAL);</span><br><span class="line">    <span class="keyword">if</span>(handle)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="built_in">HOOK_DEBUG_PRINT</span>(<span class="string">&quot;Calling callbacks for %s&quot;</span>, it-&gt;first.<span class="built_in">c_str</span>());</span><br><span class="line">      <span class="keyword">for</span>(FunctionLoadCallback callback : it-&gt;second)</span><br><span class="line">        <span class="keyword">if</span>(callback)</span><br><span class="line">          <span class="built_in">callback</span>(handle);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">RDCLOG</span>(<span class="string">&quot;Called library callbacks - hook registration complete&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">oid <span class="title">LibraryHooks::RegisterFunctionHook</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *libraryName, <span class="type">const</span> FunctionHook &amp;hook)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="comment">// we don&#x27;t use the library name on android</span></span><br><span class="line">  (<span class="type">void</span>)libraryName;</span><br><span class="line">  <span class="built_in">HOOK_DEBUG_PRINT</span>(<span class="string">&quot;Registering function hook for %s: %p&quot;</span>, hook.function.<span class="built_in">c_str</span>(), hook.hook);</span><br><span class="line">  <span class="comment">//注册函数</span></span><br><span class="line">  <span class="built_in">GetHookInfo</span>().<span class="built_in">AddFunctionHook</span>(hook);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">LibraryHooks::RegisterLibraryHook</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *name, FunctionLoadCallback cb)</span></span></span><br><span class="line"><span class="function"></span>&#123;<span class="comment">//注册动态链接库</span></span><br><span class="line">  <span class="built_in">GetHookInfo</span>().<span class="built_in">AddLibHook</span>(name);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">HOOK_DEBUG_PRINT</span>(<span class="string">&quot;Registering library hook for %s %s&quot;</span>, name, cb ? <span class="string">&quot;with callback&quot;</span> : <span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// open the library immediately if we can</span></span><br><span class="line">  <span class="built_in">dlopen</span>(name, RTLD_NOW);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(cb)<span class="comment">//若设置了回调函数则注册回调函数</span></span><br><span class="line">    <span class="built_in">GetHookInfo</span>().<span class="built_in">AddHookCallback</span>(name, cb);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="inlinehook">inlineHook</h4>
 <p>renderdoc中利用llvm的codegen实现inline hook。它是通过如下几步实现:</p>
 <ol type="1">
@@ -729,123 +354,7 @@ void LibraryHooks::RegisterLibraryHook(const char *name, FunctionLoadCallback cb
 <li>修改函数开头的两条汇编，引导caller调用hook函数；</li>
 <li>若inlinehook失败则将其加入fallbackhook，之后使用PLTHook</li>
 </ol>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-renderdoc&#x2F;os&#x2F;posix&#x2F;android&#x2F;android_hook.cpp
-
-*&#x2F;
-
-#include &quot;interceptor-lib&#x2F;include&#x2F;interceptor.h&quot;
-
-void PatchHookedFunctions()
-&#123;
-  RDCLOG(&quot;Applying hooks with interceptor-lib&quot;);
-
-&#x2F;&#x2F; see below - Huawei workaround
-#if defined(__LP64__)
-  LibraryHooks::RegisterLibraryHook(&quot;&#x2F;system&#x2F;lib64&#x2F;libhwgl.so&quot;, NULL);
-#else
-  LibraryHooks::RegisterLibraryHook(&quot;&#x2F;system&#x2F;lib&#x2F;libhwgl.so&quot;, NULL);
-#endif
-
-  rdcarray&lt;rdcstr&gt; libs &#x3D; GetHookInfo().GetLibHooks();
-  rdcarray&lt;FunctionHook&gt; funchooks &#x3D; GetHookInfo().GetFunctionHooks();
-
-  &#x2F;&#x2F;加载拦截器
-  void *intercept &#x3D; InitializeInterceptor();
-
-  std::set&lt;rdcstr&gt; fallbacklibs;
-  std::set&lt;FunctionHook&gt; fallbackhooks;
-
-  for(const rdcstr &amp;lib : libs)
-  &#123;
-    void *handle &#x3D; dlopen(lib.c_str(), RTLD_NOW);
-
-    bool huawei &#x3D; lib.contains(&quot;libhwgl.so&quot;);
-
-    if(!handle)
-    &#123;
-      HOOK_DEBUG_PRINT(&quot;Didn&#39;t get handle for %s&quot;, lib.c_str());
-      continue;
-    &#125;
-
-    HOOK_DEBUG_PRINT(&quot;Hooking %s &#x3D; %p&quot;, lib.c_str(), handle);
-
-    std::set&lt;void *&gt; foundfunctions;
-    &#x2F;**
-     * funchooks包含dlopen或者dlsym
-     *&#x2F;
-    for(const FunctionHook &amp;hook : funchooks)
-    &#123;
-      void *oldfunc &#x3D; dlsym(handle, hook.function.c_str());
-
-      &#x2F;&#x2F; UNTESTED workaround taken directly from GAPID, in installer.cpp. Quoted comment:
-      &#x2F;*
-            &#x2F;&#x2F; Huawei implements all functions in this library with prefix,
-            &#x2F;&#x2F; all GL functions in libGLES*.so are just trampolines to his.
-            &#x2F;&#x2F; However, we do not support trampoline interception for now,
-            &#x2F;&#x2F; so try to intercept the internal implementation instead.
-            &#x2F;&#x2F;华为的opengl接口只是它们自己的跳板，他们重新实现了一套HWOpengl
-      *&#x2F;
-      if(huawei &amp;&amp; oldfunc &#x3D;&#x3D; NULL)
-        oldfunc &#x3D; dlsym(handle, (&quot;hw_&quot; + hook.function).c_str());
-
-      if(GetHookInfo().IsHooked(oldfunc))
-        continue;
-
-      if(!oldfunc)
-      &#123;
-        HOOK_DEBUG_PRINT(&quot;%s didn&#39;t have %s&quot;, lib.c_str(), hook.function.c_str());
-        continue;
-      &#125;
-
-      HOOK_DEBUG_PRINT(&quot;Hooking %s::%s &#x3D; %p with %p&quot;, lib.c_str(), hook.function.c_str(), oldfunc,
-                       hook.hook);
-
-      void *trampoline &#x3D; NULL;
-
-      bool success &#x3D; InterceptFunction(intercept, oldfunc, hook.hook, &amp;trampoline, &amp;intercept_error);&#x2F;&#x2F;开始对函数进行hook，使用llvm来生成汇编代码
-
-      if(!hook.orig)
-        RDCWARN(&quot;No original pointer for hook of &#39;%s&#39; - trampoline will be lost!&quot;,
-                hook.function.c_str());
-
-      if(hook.orig &amp;&amp; *hook.orig &#x3D;&#x3D; NULL)
-        *hook.orig &#x3D; trampoline;
-
-      if(success)
-      &#123;
-        HOOK_DEBUG_PRINT(&quot;Hooked successfully, trampoline is %p&quot;, trampoline);
-      &#125;
-      else
-      &#123;&#x2F;&#x2F;inlineHook失败的话就加入fallbackhooks，后续的PLTHook会读取该列表
-        RDCERR(&quot;Failed to hook %s::%s!&quot;, lib.c_str(), hook.function.c_str());
-        fallbacklibs.insert(lib);
-        fallbackhooks.insert(hook);
-      &#125;
-
-      GetHookInfo().SetHooked(oldfunc);
-    &#125;
-  &#125;
-
-  &#x2F;&#x2F; we still need to hook android_dlopen_ext with interceptor-lib so that we can intercept the
-  &#x2F;&#x2F; vulkan loader&#39;s attempts to load our library and prevent it from loading a second copy (!!)
-  &#x2F;&#x2F; into the process.
-  &#x2F;&#x2F; Unfortunately, interceptor-lib can&#39;t hook this function so we need to set up the PLT hooking.
-  &#x2F;&#x2F; This is just a minimal setup to intercept that one function.
-  GetHookInfo().ClearHooks();
-&#x2F;&#x2F;注册PLTHook
-  for(const rdcstr &amp;l : fallbacklibs)
-  &#123;
-    RDCLOG(&quot;Falling back to PLT hooking for %s&quot;, l.c_str());
-    GetHookInfo().AddLibHook(l);
-  &#125;
-
-  for(const FunctionHook &amp;hook : fallbackhooks)
-  &#123;
-    RDCLOG(&quot;Falling back to PLT hooking for %s&quot;, hook.function.c_str());
-    GetHookInfo().AddFunctionHook(hook);
-  &#125;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">renderdoc/os/posix/android/android_hook.cpp</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;interceptor-lib/include/interceptor.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">PatchHookedFunctions</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="built_in">RDCLOG</span>(<span class="string">&quot;Applying hooks with interceptor-lib&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// see below - Huawei workaround</span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(__LP64__)</span></span><br><span class="line">  LibraryHooks::<span class="built_in">RegisterLibraryHook</span>(<span class="string">&quot;/system/lib64/libhwgl.so&quot;</span>, <span class="literal">NULL</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">  LibraryHooks::<span class="built_in">RegisterLibraryHook</span>(<span class="string">&quot;/system/lib/libhwgl.so&quot;</span>, <span class="literal">NULL</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">  rdcarray&lt;rdcstr&gt; libs = <span class="built_in">GetHookInfo</span>().<span class="built_in">GetLibHooks</span>();</span><br><span class="line">  rdcarray&lt;FunctionHook&gt; funchooks = <span class="built_in">GetHookInfo</span>().<span class="built_in">GetFunctionHooks</span>();</span><br><span class="line"></span><br><span class="line">  <span class="comment">//加载拦截器</span></span><br><span class="line">  <span class="type">void</span> *intercept = <span class="built_in">InitializeInterceptor</span>();</span><br><span class="line"></span><br><span class="line">  std::set&lt;rdcstr&gt; fallbacklibs;</span><br><span class="line">  std::set&lt;FunctionHook&gt; fallbackhooks;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">const</span> rdcstr &amp;lib : libs)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="type">void</span> *handle = <span class="built_in">dlopen</span>(lib.<span class="built_in">c_str</span>(), RTLD_NOW);</span><br><span class="line"></span><br><span class="line">    <span class="type">bool</span> huawei = lib.<span class="built_in">contains</span>(<span class="string">&quot;libhwgl.so&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(!handle)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="built_in">HOOK_DEBUG_PRINT</span>(<span class="string">&quot;Didn&#x27;t get handle for %s&quot;</span>, lib.<span class="built_in">c_str</span>());</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">HOOK_DEBUG_PRINT</span>(<span class="string">&quot;Hooking %s = %p&quot;</span>, lib.<span class="built_in">c_str</span>(), handle);</span><br><span class="line"></span><br><span class="line">    std::set&lt;<span class="type">void</span> *&gt; foundfunctions;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * funchooks包含dlopen或者dlsym</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">const</span> FunctionHook &amp;hook : funchooks)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="type">void</span> *oldfunc = <span class="built_in">dlsym</span>(handle, hook.function.<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">      <span class="comment">// UNTESTED workaround taken directly from GAPID, in installer.cpp. Quoted comment:</span></span><br><span class="line">      <span class="comment">/*</span></span><br><span class="line"><span class="comment">            // Huawei implements all functions in this library with prefix,</span></span><br><span class="line"><span class="comment">            // all GL functions in libGLES*.so are just trampolines to his.</span></span><br><span class="line"><span class="comment">            // However, we do not support trampoline interception for now,</span></span><br><span class="line"><span class="comment">            // so try to intercept the internal implementation instead.</span></span><br><span class="line"><span class="comment">            //华为的opengl接口只是它们自己的跳板，他们重新实现了一套HWOpengl</span></span><br><span class="line"><span class="comment">      */</span></span><br><span class="line">      <span class="keyword">if</span>(huawei &amp;&amp; oldfunc == <span class="literal">NULL</span>)</span><br><span class="line">        oldfunc = <span class="built_in">dlsym</span>(handle, (<span class="string">&quot;hw_&quot;</span> + hook.function).<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span>(<span class="built_in">GetHookInfo</span>().<span class="built_in">IsHooked</span>(oldfunc))</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span>(!oldfunc)</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="built_in">HOOK_DEBUG_PRINT</span>(<span class="string">&quot;%s didn&#x27;t have %s&quot;</span>, lib.<span class="built_in">c_str</span>(), hook.function.<span class="built_in">c_str</span>());</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="built_in">HOOK_DEBUG_PRINT</span>(<span class="string">&quot;Hooking %s::%s = %p with %p&quot;</span>, lib.<span class="built_in">c_str</span>(), hook.function.<span class="built_in">c_str</span>(), oldfunc,</span><br><span class="line">                       hook.hook);</span><br><span class="line"></span><br><span class="line">      <span class="type">void</span> *trampoline = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">      <span class="type">bool</span> success = <span class="built_in">InterceptFunction</span>(intercept, oldfunc, hook.hook, &amp;trampoline, &amp;intercept_error);<span class="comment">//开始对函数进行hook，使用llvm来生成汇编代码</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span>(!hook.orig)</span><br><span class="line">        <span class="built_in">RDCWARN</span>(<span class="string">&quot;No original pointer for hook of &#x27;%s&#x27; - trampoline will be lost!&quot;</span>,</span><br><span class="line">                hook.function.<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span>(hook.orig &amp;&amp; *hook.orig == <span class="literal">NULL</span>)</span><br><span class="line">        *hook.orig = trampoline;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span>(success)</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="built_in">HOOK_DEBUG_PRINT</span>(<span class="string">&quot;Hooked successfully, trampoline is %p&quot;</span>, trampoline);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">      &#123;<span class="comment">//inlineHook失败的话就加入fallbackhooks，后续的PLTHook会读取该列表</span></span><br><span class="line">        <span class="built_in">RDCERR</span>(<span class="string">&quot;Failed to hook %s::%s!&quot;</span>, lib.<span class="built_in">c_str</span>(), hook.function.<span class="built_in">c_str</span>());</span><br><span class="line">        fallbacklibs.<span class="built_in">insert</span>(lib);</span><br><span class="line">        fallbackhooks.<span class="built_in">insert</span>(hook);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="built_in">GetHookInfo</span>().<span class="built_in">SetHooked</span>(oldfunc);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// we still need to hook android_dlopen_ext with interceptor-lib so that we can intercept the</span></span><br><span class="line">  <span class="comment">// vulkan loader&#x27;s attempts to load our library and prevent it from loading a second copy (!!)</span></span><br><span class="line">  <span class="comment">// into the process.</span></span><br><span class="line">  <span class="comment">// Unfortunately, interceptor-lib can&#x27;t hook this function so we need to set up the PLT hooking.</span></span><br><span class="line">  <span class="comment">// This is just a minimal setup to intercept that one function.</span></span><br><span class="line">  <span class="built_in">GetHookInfo</span>().<span class="built_in">ClearHooks</span>();</span><br><span class="line"><span class="comment">//注册PLTHook</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">const</span> rdcstr &amp;l : fallbacklibs)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">RDCLOG</span>(<span class="string">&quot;Falling back to PLT hooking for %s&quot;</span>, l.<span class="built_in">c_str</span>());</span><br><span class="line">    <span class="built_in">GetHookInfo</span>().<span class="built_in">AddLibHook</span>(l);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">const</span> FunctionHook &amp;hook : fallbackhooks)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">RDCLOG</span>(<span class="string">&quot;Falling back to PLT hooking for %s&quot;</span>, hook.function.<span class="built_in">c_str</span>());</span><br><span class="line">    <span class="built_in">GetHookInfo</span>().<span class="built_in">AddFunctionHook</span>(hook);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="plthook">PLTHook</h4>
 <p>PLTHook的实现是通过编写dl_iterate_phdr()的回调函数实现的，回调函数大致思路如下：</p>
 <ol type="1">
@@ -856,28 +365,17 @@ void PatchHookedFunctions()
 <h3 id="gles-layer">GLES layer</h3>
 <p>android 10推出了GLES的分层功能用于调试GPU程序。官方介绍见<a href="%5BGLES%20图层%20%7C%20Android%20NDK%20%7C%20Android%20Developers%20(google.cn)%5D(https://developer.android.google.cn/ndk/guides/rootless-debug-gles?hl=zh-cn)">GLES 分层功能</a>。对于每个图层，<code>LayerLoader</code> 会跟踪 <code>AndroidGLESLayer_Initialize</code> 和 <code>AndroidGLESLayer_GetProcAddress</code> 入口点。因此只要实现这两个函数即可。</p>
 <p>gles layer的这两个函数的完整定义如下：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">void AndroidGLESLayer_Initialize(FunctionTable layer_id, EGLFuncPointer next_gpa);
-void *AndroidGLESLayer_GetProcAddress(const char *funcName, EGLFuncPointer next);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">AndroidGLESLayer_Initialize</span><span class="params">(FunctionTable layer_id, EGLFuncPointer next_gpa)</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> *<span class="title">AndroidGLESLayer_GetProcAddress</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *funcName, EGLFuncPointer next)</span></span>;</span><br></pre></td></tr></table></figure>
 <p>运行调试层之前需要使用如下几个命令来启动调试层</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 开启gles 分层功能</span>
-adb shell settings put global enable_gpu_debug_layers <span class="token number">1</span>
-
-<span class="token comment"># 设置需要调试的app</span>
-adb shell settings put global gpu_debug_app <span class="token operator">&lt;</span>package_name<span class="token operator">></span>
-
-<span class="token comment">#输入gles layer所在的so文件的路径，例如"libGLLayer.so"</span>
-adb shell settings put global gpu_debug_layers_gles <span class="token operator">&lt;</span>layer1:layer2:layerN<span class="token operator">></span>
-
-<span class="token comment"># 指定gles layer所在的包的名称</span>
-adb shell settings put global gpu_debug_layer_app <span class="token operator">&lt;</span>package1:package2:packageN<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">开启gles 分层功能</span></span><br><span class="line">adb shell settings put global enable_gpu_debug_layers 1</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置需要调试的app</span></span><br><span class="line">adb shell settings put global gpu_debug_app &lt;package_name&gt;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">输入gles layer所在的so文件的路径，例如<span class="string">&quot;libGLLayer.so&quot;</span></span></span><br><span class="line">adb shell settings put global gpu_debug_layers_gles &lt;layer1:layer2:layerN&gt;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">指定gles layer所在的包的名称</span></span><br><span class="line">adb shell settings put global gpu_debug_layer_app &lt;package1:package2:packageN&gt;</span><br></pre></td></tr></table></figure>
 <p>在完成上述过程之后，app就能够在启动之前通过<code>包名+so文件路径</code>找到gles layer的路径并完成加载。</p>
 <p>接下来，我们看一下上述两个函数应该如何正确的使用：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">AndroidGLESLayer_Initialize</span><span class="token punctuation">(</span>FunctionTable layer_id<span class="token punctuation">,</span>EGLFuncPointer next_gpa<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">AndroidGLESLayer_Initialize</span><span class="params">(FunctionTable layer_id,EGLFuncPointer next_gpa)</span></span><br></pre></td></tr></table></figure>
 <p>该函数又两个参数：</p>
 <ul>
 <li><p><strong>layer_id：</strong> 不要以为这只是一个layer 的标识符，它其实是一个函数列表。列表中的每一项都表示该层能够调用到的下一层函数或者原函数的地址。它的作用是让本层的的hook函数数跳转到下一层函数或者原函数；</p></li>
 <li><p><strong>next_gpa：</strong> 这是一个函数指针，它的完整定义如下：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">void *next_gpa(FunctionTable layer_id,const char* func_name)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> *<span class="title">next_gpa</span><span class="params">(FunctionTable layer_id,<span class="type">const</span> <span class="type">char</span>* func_name)</span></span></span><br></pre></td></tr></table></figure>
 <p>它有如下两个功能：</p>
 <ol type="1">
 <li>通过layer_id和func_name定位到下一层原函数或者原函数；</li>
@@ -885,63 +383,13 @@ adb shell settings put global gpu_debug_layer_app <span class="token operator">&
 </ol></li>
 </ul>
 <p>我们简化一下renderdoc中相关的代码：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-renderdoc&#x2F;driver&#x2F;gl&#x2F;egl_hooks.cpp
-*&#x2F;
-EGLDispatchTable EGL &#x3D; &#123;&#125;;&#x2F;&#x2F;这里面保存了所有下一层的函数地址
-
-&#x2F;**
-renderdoc&#x2F;driver&#x2F;gl&#x2F;egl_hooks.cpp
-*&#x2F;
-&#x2F;&#x2F;用于hook eglBindAPI的函数
-HOOK_EXPORT EGLBoolean EGLAPIENTRY eglBindAPI_renderdoc_hooked(EGLenum api)
-&#123;
-  if(RenderDoc::Inst().IsReplayApp())
-  &#123;
-    if(!EGL.GetDisplay)
-      EGL.PopulateForReplay();
-
-    return EGL.BindAPI(api);&#x2F;&#x2F;调用下一层的BindAPI
-  &#125;
-
-  EnsureRealLibraryLoaded();
-
-  EGLBoolean ret &#x3D; EGL.BindAPI(api);&#x2F;&#x2F;调用下一层的BindAPI
-
-  if(ret)
-    eglhook.activeAPI &#x3D; api &#x3D;&#x3D; EGL_OPENGL_API ? RDCDriver::OpenGL : RDCDriver::OpenGLES;
-
-  return ret;
-&#125;
-
-HOOK_EXPORT void AndroidGLESLayer_Initialize(void *layer_id,
-                                             PFNEGLGETNEXTLAYERPROCADDRESSPROC next_gpa)
-&#123;
-  RDCLOG(&quot;Initialising Android GLES layer with ID %p&quot;, layer_id);
-
-  &#x2F;&#x2F; as a hook callback this is only called while capturing
-  RDCASSERT(!RenderDoc::Inst().IsReplayApp());
-
-&#x2F;&#x2F; EGL.func保存的就是下一层func函数地址
-#define EGL_FETCH(func, isext, replayrequired)                                 \
-  EGL.func &#x3D; (CONCAT(PFN_egl, func))next_gpa(layer_id, &quot;egl&quot; STRINGIZE(func)); \ 
-  if(!EGL.func)                                                                \
-    RDCWARN(&quot;Couldn&#39;t fetch function pointer for egl&quot; STRINGIZE(func));
-  EGL_HOOKED_SYMBOLS(EGL_FETCH)
-  EGL_NONHOOKED_SYMBOLS(EGL_FETCH)
-#undef EGL_FETCH
-
-  &#x2F;&#x2F; 使用相同方法设置gl相关的函数
-  GL.PopulateWithCallback(
-      [layer_id, next_gpa](const char *f) &#123; return (void *)next_gpa(layer_id, f); &#125;);
-&#125;
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">renderdoc/driver/gl/egl_hooks.cpp</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">EGLDispatchTable EGL = &#123;&#125;;<span class="comment">//这里面保存了所有下一层的函数地址</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">renderdoc/driver/gl/egl_hooks.cpp</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">//用于hook eglBindAPI的函数</span></span><br><span class="line"><span class="function">HOOK_EXPORT EGLBoolean EGLAPIENTRY <span class="title">eglBindAPI_renderdoc_hooked</span><span class="params">(EGLenum api)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(RenderDoc::<span class="built_in">Inst</span>().<span class="built_in">IsReplayApp</span>())</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span>(!EGL.GetDisplay)</span><br><span class="line">      EGL.<span class="built_in">PopulateForReplay</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> EGL.<span class="built_in">BindAPI</span>(api);<span class="comment">//调用下一层的BindAPI</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">EnsureRealLibraryLoaded</span>();</span><br><span class="line"></span><br><span class="line">  EGLBoolean ret = EGL.<span class="built_in">BindAPI</span>(api);<span class="comment">//调用下一层的BindAPI</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(ret)</span><br><span class="line">    eglhook.activeAPI = api == EGL_OPENGL_API ? RDCDriver::OpenGL : RDCDriver::OpenGLES;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">HOOK_EXPORT <span class="type">void</span> <span class="title">AndroidGLESLayer_Initialize</span><span class="params">(<span class="type">void</span> *layer_id,</span></span></span><br><span class="line"><span class="params"><span class="function">                                             PFNEGLGETNEXTLAYERPROCADDRESSPROC next_gpa)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="built_in">RDCLOG</span>(<span class="string">&quot;Initialising Android GLES layer with ID %p&quot;</span>, layer_id);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// as a hook callback this is only called while capturing</span></span><br><span class="line">  <span class="built_in">RDCASSERT</span>(!RenderDoc::<span class="built_in">Inst</span>().<span class="built_in">IsReplayApp</span>());</span><br><span class="line"></span><br><span class="line"><span class="comment">// EGL.func保存的就是下一层func函数地址</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> EGL_FETCH(func, isext, replayrequired)                                 \</span></span><br><span class="line"><span class="meta">  EGL.func = (CONCAT(PFN_egl, func))next_gpa(layer_id, <span class="string">&quot;egl&quot;</span> STRINGIZE(func)); \ </span></span><br><span class="line">  <span class="keyword">if</span>(!EGL.func)                                                                \</span><br><span class="line">    <span class="built_in">RDCWARN</span>(<span class="string">&quot;Couldn&#x27;t fetch function pointer for egl&quot;</span> <span class="built_in">STRINGIZE</span>(func));</span><br><span class="line">  <span class="built_in">EGL_HOOKED_SYMBOLS</span>(EGL_FETCH)</span><br><span class="line">  <span class="built_in">EGL_NONHOOKED_SYMBOLS</span>(EGL_FETCH)</span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> EGL_FETCH</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 使用相同方法设置gl相关的函数</span></span><br><span class="line">  GL.<span class="built_in">PopulateWithCallback</span>(</span><br><span class="line">      [layer_id, next_gpa](<span class="type">const</span> <span class="type">char</span> *f) &#123; <span class="built_in">return</span> (<span class="type">void</span> *)<span class="built_in">next_gpa</span>(layer_id, f); &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>反编译如下。</p>
 <figure>
 <img src="/2023/08/05/android-validation-layer%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/image-20210720170212919.png" alt><figcaption>image-20210720170212919</figcaption>
 </figure>
 <p>然后我们看一下另一个函数:</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">void *AndroidGLESLayer_GetProcAddress(const char *funcName, EGLFuncPointer next_func);<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> *<span class="title">AndroidGLESLayer_GetProcAddress</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *funcName, EGLFuncPointer next_func)</span></span>;</span><br></pre></td></tr></table></figure>
 <p>它是起到一个承上启下的作用，用于更新函数指针信息。</p>
 <p>当有多个gles layer的时候每一层都需要知道本层layer的函数应该调用到下一层或者驱动层函数的地址，因此该函数就是用于更新暴露给下一层layer的函数地址。使用该函数时只需要根据函数名称给出判断：</p>
 <ol type="1">
@@ -949,21 +397,7 @@ HOOK_EXPORT void AndroidGLESLayer_Initialize(void *layer_id,
 <li>若未截获函数则直接返回上一层的地址即可；</li>
 </ol>
 <p>结合renderdoc的代码，我们分析一下：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-renderdoc&#x2F;driver&#x2F;gl&#x2F;egl_hooks.cpp
-*&#x2F;
-HOOK_EXPORT void *AndroidGLESLayer_GetProcAddress(const char *funcName,
-                                                  __eglMustCastToProperFunctionPointerType next)
-&#123;
-&#x2F;&#x2F; 寻找egl的函数
-#define GPA_FUNCTION(name, isext, replayrequired) \
-  if(!strcmp(funcName, &quot;egl&quot; STRINGIZE(name)))    \
-    return (void *)&amp;CONCAT(egl, CONCAT(name, _renderdoc_hooked));
-  EGL_HOOKED_SYMBOLS(GPA_FUNCTION)
-#undef GPA_FUNCTION
- &#x2F;&#x2F;寻找gl的函数
-  return HookedGetProcAddress(funcName, (void *)next);
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">renderdoc/driver/gl/egl_hooks.cpp</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function">HOOK_EXPORT <span class="type">void</span> *<span class="title">AndroidGLESLayer_GetProcAddress</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *funcName,</span></span></span><br><span class="line"><span class="params"><span class="function">                                                  __eglMustCastToProperFunctionPointerType next)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="comment">// 寻找egl的函数</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GPA_FUNCTION(name, isext, replayrequired) \</span></span><br><span class="line"><span class="meta">  <span class="keyword">if</span>(!strcmp(funcName, <span class="string">&quot;egl&quot;</span> STRINGIZE(name)))    \</span></span><br><span class="line"><span class="meta">    return (void *)&amp;CONCAT(egl, CONCAT(name, _renderdoc_hooked));</span></span><br><span class="line">  <span class="built_in">EGL_HOOKED_SYMBOLS</span>(GPA_FUNCTION)</span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> GPA_FUNCTION</span></span><br><span class="line"> <span class="comment">//寻找gl的函数</span></span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">HookedGetProcAddress</span>(funcName, (<span class="type">void</span> *)next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>部分的反编译函数如下。只需要根据传进来的funcName进行判断并返回函数地址即可。</p>
 <figure>
 <img src="/2023/08/05/android-validation-layer%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/Users\ttongyuwang\AppData\Roaming\Typora\typora-user-images\image-20210720165934935.png" alt><figcaption>image-20210720165934935</figcaption>

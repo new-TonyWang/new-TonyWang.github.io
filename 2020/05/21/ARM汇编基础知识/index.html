@@ -287,23 +287,13 @@
 <li><p>R13(SP指针)栈顶指针，该指针一个主要的用处是函数刚开始执行的时候分配内存空间pop和push指令一定伴随着SP指针的移动。</p></li>
 <li><p>R14(LR, link register)，存放函数返回地址,保证函数能够正常返回。</p></li>
 <li><p>R15(PC)，指向当前下一条。 <span id="more"></span></p></li>
-<li><p>一般使用FD（FullDescending）类型的数据栈！所以经常使用的指令就有STMFD和LDMFD。这两个指令一般用于进行程序搬移等大规模操作前的cpu现场保护和操作结束后的现场恢复，属于非单一连续的压栈和出栈。 <pre class="line-numbers language-c" data-language="c"><code class="language-c">STMFD SP<span class="token operator">!</span> <span class="token punctuation">,</span><span class="token punctuation">&#123;</span>R0<span class="token operator">-</span>R7，LR<span class="token punctuation">&#125;</span>#将 R1<span class="token operator">~</span>R7he LR压栈<span class="token punctuation">(</span>相当于push<span class="token punctuation">&#123;</span>R0<span class="token operator">-</span>R7，LR<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-LDMFD SP<span class="token operator">!</span> <span class="token punctuation">,</span><span class="token punctuation">&#123;</span>R0<span class="token operator">-</span>R7，LR<span class="token punctuation">&#125;</span>#出栈<span class="token punctuation">(</span>相当于pop<span class="token punctuation">&#123;</span>R0<span class="token operator">-</span>R7，LR<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></p></li>
+<li><p>一般使用FD（FullDescending）类型的数据栈！所以经常使用的指令就有STMFD和LDMFD。这两个指令一般用于进行程序搬移等大规模操作前的cpu现场保护和操作结束后的现场恢复，属于非单一连续的压栈和出栈。 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">STMFD SP! ,&#123;R0-R7，LR&#125;#将 R1~R7he LR压栈(相当于push&#123;R0-R7，LR&#125;)</span><br><span class="line">LDMFD SP! ,&#123;R0-R7，LR&#125;#出栈(相当于pop&#123;R0-R7，LR&#125;)</span><br></pre></td></tr></table></figure></p></li>
 <li><p>多寄存器寻址，一次可以完成多个寄存器值的传送</p></li>
 </ol>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">LDMIA R0,&#123;R1,R2,R3,R4&#125; #R1&lt;-[R0],R2&lt;-[R0+4],R3&lt;-[R0+8],R0&lt;-[R0+12]<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LDMIA R0,&#123;R1,R2,R3,R4&#125; #R1&lt;-[R0],R2&lt;-[R0+<span class="number">4</span>],R3&lt;-[R0+<span class="number">8</span>],R0&lt;-[R0+<span class="number">12</span>]</span><br></pre></td></tr></table></figure>
 <p>一个SP指针开辟空间的操作的例子(压栈和出栈)：</p>
 <p>伪代码如下:</p>
-<p><pre class="line-numbers language-c" data-language="c"><code class="language-c">@压栈
-memory<span class="token punctuation">[</span>sp<span class="token punctuation">]</span> <span class="token operator">=</span> lr
-<span class="token keyword">for</span> i <span class="token operator">=</span> <span class="token number">7</span> to <span class="token number">0</span>
-    sp <span class="token operator">=</span> sp <span class="token operator">-</span> <span class="token number">4</span>
-    memory<span class="token punctuation">[</span>sp<span class="token punctuation">]</span> <span class="token operator">=</span> ri
-@出栈
-<span class="token keyword">for</span> i <span class="token operator">=</span> <span class="token number">0</span> to <span class="token number">7</span>
-    ri <span class="token operator">=</span> memory<span class="token punctuation">[</span>sp<span class="token punctuation">]</span>
-    sp <span class="token operator">=</span> sp <span class="token operator">+</span> <span class="token number">4</span>
-lr <span class="token operator">=</span> memory<span class="token punctuation">[</span>sp<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></p>
+<p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@压栈</span><br><span class="line">memory[sp] = lr</span><br><span class="line"><span class="keyword">for</span> i = <span class="number">7</span> to <span class="number">0</span></span><br><span class="line">    sp = sp - <span class="number">4</span></span><br><span class="line">    memory[sp] = ri</span><br><span class="line">@出栈</span><br><span class="line"><span class="keyword">for</span> i = <span class="number">0</span> to <span class="number">7</span></span><br><span class="line">    ri = memory[sp]</span><br><span class="line">    sp = sp + <span class="number">4</span></span><br><span class="line">lr = memory[sp]</span><br></pre></td></tr></table></figure></p>
 <p>压栈:</p>
 <p><img src="/2020/05/21/ARM%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/push.jpg" style="zoom: 50%;"></p>
 <p>出栈</p>
@@ -425,109 +415,19 @@ lr <span class="token operator">=</span> memory<span class="token punctuation">[
 <ol type="1">
 <li>编写<code>cmakelixt.txt</code> 文件，如下:</li>
 </ol>
-<pre class="line-numbers language-cmake" data-language="cmake"><code class="language-cmake"><span class="token keyword">project</span><span class="token punctuation">(</span>android_arm<span class="token punctuation">)</span>
-<span class="token keyword">cmake_minimum_required</span><span class="token punctuation">(</span><span class="token property">VERSION</span> <span class="token number">3.4.1</span><span class="token punctuation">)</span>
-<span class="token keyword">set</span><span class="token punctuation">(</span><span class="token variable">CMAKE_SYSTEM_NAME</span> Android<span class="token punctuation">)</span>
-<span class="token keyword">set</span><span class="token punctuation">(</span><span class="token variable">CMAKE_SYSTEM_VERSION</span> <span class="token number">28</span><span class="token punctuation">)</span>
-<span class="token keyword">set</span><span class="token punctuation">(</span><span class="token variable">CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION</span> clang<span class="token punctuation">)</span><span class="token comment">#设置toolchain</span>
-<span class="token keyword">set</span><span class="token punctuation">(</span><span class="token variable">CMAKE_ANDROID_ARCH_ABI</span> armeabi-v7a<span class="token punctuation">)</span><span class="token comment">#设置编译的架构</span>
-<span class="token comment">#set(CMAKE_ANDROID_ARM_NEON ON)#是否使用neon指令</span>
-<span class="token comment">#set(CMAKE_ANDROID_NDK /opt/android-ndk-r14b)</span>
-<span class="token comment">#set(CMAKE_ANDROID_STL_TYPE gnustl_static)</span>
-
-<span class="token keyword">set</span><span class="token punctuation">(</span>SRC_DIR ./<span class="token punctuation">)</span>
-<span class="token keyword">set</span><span class="token punctuation">(</span><span class="token variable">CMAKE_ASM_FLAGS</span> <span class="token boolean">ON</span><span class="token punctuation">)</span><span class="token comment">#编译.s汇编文件(好像不开启也能编译.s文件)</span>
-<span class="token keyword">set</span><span class="token punctuation">(</span><span class="token variable">CMAKE_BUILD_TYPE</span> MinSizeRel<span class="token punctuation">)</span><span class="token comment">#编译能够发布的最小版本</span>
-<span class="token comment">#编译的so库</span>
-<span class="token keyword">add_library</span><span class="token punctuation">(</span>addlib <span class="token namespace">SHARED</span>
-<span class="token punctuation">$&#123;</span>SRC_DIR<span class="token punctuation">&#125;</span>/add.cpp
-<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#使用 -DCMAKE_TOOLCHAIN_FILE 指定android的 toolchain文件 </span>
-<span class="token comment">#-B 是输出路径</span>
-cmake <span class="token parameter variable">-DCMAKE_TOOLCHAIN_FILE</span><span class="token operator">=</span><span class="token variable">$ANDROID_NDK</span>/build/cmake/android.toolchain.cmake  <span class="token parameter variable">-B</span> ./build
-<span class="token builtin class-name">cd</span> build
-<span class="token function">make</span> add.s<span class="token comment">#编译出add.cpp.s汇编文件</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">project</span>(android_arm)</span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.4</span>.<span class="number">1</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_SYSTEM_NAME Android)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_SYSTEM_VERSION <span class="number">28</span>)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION clang)<span class="comment">#设置toolchain</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_ANDROID_ARCH_ABI armeabi-v7a)<span class="comment">#设置编译的架构</span></span><br><span class="line"><span class="comment">#set(CMAKE_ANDROID_ARM_NEON ON)#是否使用neon指令</span></span><br><span class="line"><span class="comment">#set(CMAKE_ANDROID_NDK /opt/android-ndk-r14b)</span></span><br><span class="line"><span class="comment">#set(CMAKE_ANDROID_STL_TYPE gnustl_static)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(SRC_DIR ./)</span><br><span class="line"><span class="keyword">set</span>(CMAKE_ASM_FLAGS <span class="keyword">ON</span>)<span class="comment">#编译.s汇编文件(好像不开启也能编译.s文件)</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_BUILD_TYPE MinSizeRel)<span class="comment">#编译能够发布的最小版本</span></span><br><span class="line"><span class="comment">#编译的so库</span></span><br><span class="line"><span class="keyword">add_library</span>(addlib SHARED</span><br><span class="line"><span class="variable">$&#123;SRC_DIR&#125;</span>/add.cpp</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#使用 -DCMAKE_TOOLCHAIN_FILE 指定android的 toolchain文件 </span></span><br><span class="line"><span class="comment">#-B 是输出路径</span></span><br><span class="line">cmake -DCMAKE_TOOLCHAIN_FILE=<span class="variable">$ANDROID_NDK</span>/build/cmake/android.toolchain.cmake  -B ./build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">make add.s<span class="comment">#编译出add.cpp.s汇编文件</span></span><br></pre></td></tr></table></figure>
 <h2 id="c内联汇编">c++内联汇编</h2>
 <p>​ 使用 <code>asm volatile()</code>内联汇编，具体语法如下:</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">asm(&#x2F;&#x2F;内部寄存器会被编译器优化
- 汇编指令列表
- :输出运算符列表
- :输入运算符列表
- :被更改的资源列表
-&#125;;
-
-asm volatile(&#x2F;&#x2F;内部寄存器不会被编译器优化
- 汇编指令列表
- :输出运算符列表
- :输入运算符列表
- :被更改的资源列表
-&#125;;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">asm</span>(<span class="comment">//内部寄存器会被编译器优化</span></span><br><span class="line"> 汇编指令列表</span><br><span class="line"> :输出运算符列表</span><br><span class="line"> :输入运算符列表</span><br><span class="line"> :被更改的资源列表</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">asm</span> <span class="built_in">volatile</span>(<span class="comment">//内部寄存器不会被编译器优化</span></span><br><span class="line"> 汇编指令列表</span><br><span class="line"> :输出运算符列表</span><br><span class="line"> :输入运算符列表</span><br><span class="line"> :被更改的资源列表</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>一个例子，该例子使用了除了r12之外arm所有的通用寄存器。</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int func2()&#123;
-    int a &#x3D; 10;
-    int b &#x3D; 5;
-    asm volatile(
-        &quot;add r1, %1    \n&quot;
-        &quot;mov %1, r0    \n&quot; 
-        &quot;mov r0, %0     \n&quot;
-        &quot;mov %0, %1     \n&quot;
-        : &quot;+r&quot;(a),
-          &quot;+r&quot;(b)
-        : &quot;r&quot;(b)
-        : &quot;r0&quot;,&quot;r1&quot;,&quot;r2&quot;,&quot;r3&quot;,&quot;r4&quot;,&quot;r5&quot;,
-          &quot;r6&quot;,&quot;r8&quot;,&quot;r9&quot;,&quot;r10&quot;,&quot;r11&quot;
-    );
-    &#x2F;&#x2F;print<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">func2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span> b = <span class="number">5</span>;</span><br><span class="line">    <span class="function"><span class="keyword">asm</span> <span class="title">volatile</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="string">&quot;add r1, %1    \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="string">&quot;mov %1, r0    \n&quot;</span> </span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="string">&quot;mov r0, %0     \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="string">&quot;mov %0, %1     \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">        : <span class="string">&quot;+r&quot;</span>(a),</span></span></span><br><span class="line"><span class="params"><span class="function">          <span class="string">&quot;+r&quot;</span>(b)</span></span></span><br><span class="line"><span class="params"><span class="function">        : <span class="string">&quot;r&quot;</span>(b)</span></span></span><br><span class="line"><span class="params"><span class="function">        : <span class="string">&quot;r0&quot;</span>,<span class="string">&quot;r1&quot;</span>,<span class="string">&quot;r2&quot;</span>,<span class="string">&quot;r3&quot;</span>,<span class="string">&quot;r4&quot;</span>,<span class="string">&quot;r5&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">          <span class="string">&quot;r6&quot;</span>,<span class="string">&quot;r8&quot;</span>,<span class="string">&quot;r9&quot;</span>,<span class="string">&quot;r10&quot;</span>,<span class="string">&quot;r11&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">    )</span></span>;</span><br><span class="line">    <span class="comment">//print</span></span><br></pre></td></tr></table></figure>
 <p>编译之后的.s文件如下:</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">_Z5func2v:
-.Lfunc_begin1:
-	.loc	3 8 0                   @ add.cpp:8:0
-	.fnstart
-	.cfi_startproc
-@ %bb.0:
-	.save	&#123;r4, r5, r6, r7, lr&#125;
-	push	&#123;r4, r5, r6, r7, lr&#125;
-	.cfi_def_cfa_offset 20
-	.cfi_offset lr, -4
-	.cfi_offset r7, -8
-	.cfi_offset r6, -12
-	.cfi_offset r5, -16
-	.cfi_offset r4, -20
-	.setfp	r7, sp, #12
-	add	r7, sp, #12
-	.cfi_def_cfa r7, 8
-	.save	&#123;r8, r9, r10, r11&#125;
-	push.w	&#123;r8, r9, r10, r11&#125;
-	.cfi_offset r11, -24
-	.cfi_offset r10, -28
-	.cfi_offset r9, -32
-	.cfi_offset r8, -36
-.Ltmp4:
-	@DEBUG_VALUE: func2:a &lt;- 10
-	@DEBUG_VALUE: func2:b &lt;- 5
-	mov.w	r12, #10
-	mov.w	lr, #5
-.Ltmp5:
-	.loc	3 11 5 prologue_end     @ add.cpp:11:5
-	@APP
-	add	r1, lr
-	mov	lr, r0
-	mov	r0, r12
-	mov	r12, lr
-
-	@NO_APP
-.Ltmp6:
-	@DEBUG_VALUE: func2:b &lt;- undef
-	@DEBUG_VALUE: func2:a &lt;- $r12
-	.loc	3 27 5                  @ add.cpp:27:5
-	mov	r0, r12
-	pop.w	&#123;r8, r9, r10, r11&#125;
-	pop	&#123;r4, r5, r6, r7, pc&#125;
-.Ltmp7:<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">_Z5func2v:</span><br><span class="line">.Lfunc_begin1:</span><br><span class="line">	.loc	<span class="number">3</span> <span class="number">8</span> <span class="number">0</span>                   @ add.cpp:<span class="number">8</span>:<span class="number">0</span></span><br><span class="line">	.fnstart</span><br><span class="line">	.cfi_startproc</span><br><span class="line">@ %bb<span class="number">.0</span>:</span><br><span class="line">	.save	&#123;r4, r5, r6, r7, lr&#125;</span><br><span class="line">	push	&#123;r4, r5, r6, r7, lr&#125;</span><br><span class="line">	.cfi_def_cfa_offset <span class="number">20</span></span><br><span class="line">	.cfi_offset lr, <span class="number">-4</span></span><br><span class="line">	.cfi_offset r7, <span class="number">-8</span></span><br><span class="line">	.cfi_offset r6, <span class="number">-12</span></span><br><span class="line">	.cfi_offset r5, <span class="number">-16</span></span><br><span class="line">	.cfi_offset r4, <span class="number">-20</span></span><br><span class="line">	.setfp	r7, sp, #<span class="number">12</span></span><br><span class="line">	add	r7, sp, #<span class="number">12</span></span><br><span class="line">	.cfi_def_cfa r7, <span class="number">8</span></span><br><span class="line">	.save	&#123;r8, r9, r10, r11&#125;</span><br><span class="line">	push.w	&#123;r8, r9, r10, r11&#125;</span><br><span class="line">	.cfi_offset r11, <span class="number">-24</span></span><br><span class="line">	.cfi_offset r10, <span class="number">-28</span></span><br><span class="line">	.cfi_offset r9, <span class="number">-32</span></span><br><span class="line">	.cfi_offset r8, <span class="number">-36</span></span><br><span class="line">.Ltmp4:</span><br><span class="line">	@DEBUG_VALUE: func2:a &lt;- <span class="number">10</span></span><br><span class="line">	@DEBUG_VALUE: func2:b &lt;- <span class="number">5</span></span><br><span class="line">	mov.w	r12, #<span class="number">10</span></span><br><span class="line">	mov.w	lr, #<span class="number">5</span></span><br><span class="line">.Ltmp5:</span><br><span class="line">	.loc	<span class="number">3</span> <span class="number">11</span> <span class="number">5</span> prologue_end     @ add.cpp:<span class="number">11</span>:<span class="number">5</span></span><br><span class="line">	@APP</span><br><span class="line">	add	r1, lr</span><br><span class="line">	mov	lr, r0</span><br><span class="line">	mov	r0, r12</span><br><span class="line">	mov	r12, lr</span><br><span class="line"></span><br><span class="line">	@NO_APP</span><br><span class="line">.Ltmp6:</span><br><span class="line">	@DEBUG_VALUE: func2:b &lt;- undef</span><br><span class="line">	@DEBUG_VALUE: func2:a &lt;- $r12</span><br><span class="line">	.loc	<span class="number">3</span> <span class="number">27</span> <span class="number">5</span>                  @ add.cpp:<span class="number">27</span>:<span class="number">5</span></span><br><span class="line">	mov	r0, r12</span><br><span class="line">	pop.w	&#123;r8, r9, r10, r11&#125;</span><br><span class="line">	pop	&#123;r4, r5, r6, r7, pc&#125;</span><br><span class="line">.Ltmp7:</span><br></pre></td></tr></table></figure>
 <p>可以看出来，加上volatile之后，只要是被内联汇编标记的寄存器，即使代码中没有使用也不会被编译器使用。并且必须最少空出来一个寄存器(例如本例中的R12)，不然会报编译错误，如下:</p>
-<pre class="line-numbers language-makefile" data-language="makefile"><code class="language-makefile"><span class="token target symbol">error</span><span class="token punctuation">:</span> inline assembly requires more registers than available<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">error: inline assembly requires more registers than available</span></span><br></pre></td></tr></table></figure>
 <p>并且在使用特定寄存器的时候会弹出worning，当使用R7(reserved registers)的时候会报如下worning:</p>
-<pre class="line-numbers language-makefile" data-language="makefile"><code class="language-makefile"><span class="token target symbol">warning</span><span class="token punctuation">:</span> inline asm clobber list contains reserved registers<span class="token punctuation">:</span> R7 [-Winline-asm]<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">warning: inline asm clobber list contains reserved registers: R7 [-Winline-asm]</span></span><br></pre></td></tr></table></figure>
 <table>
 <thead>
 <tr class="header">
@@ -621,20 +521,7 @@ asm volatile(&#x2F;&#x2F;内部寄存器不会被编译器优化
 </tr>
 </tbody>
 </table>
-<p>使用BX的例子: <pre class="line-numbers language-c" data-language="c"><code class="language-c">	  CODE32 <span class="token comment">//ARM代码，字对齐 </span>
-	  LDR r0<span class="token punctuation">,</span> thumbCode<span class="token operator">+</span><span class="token number">1</span> <span class="token comment">//加1进入thumb状态</span>
-	  MOV lr<span class="token punctuation">,</span> pc <span class="token comment">//设置返回地址</span>
-	  BX r0 <span class="token comment">//跳转到r0地址并转换为Thunmb</span>
-···
-	  CODE16
-thumbCode ADD r1<span class="token punctuation">,</span> #<span class="token number">1</span> <span class="token comment">//</span>
-	  BX lr <span class="token comment">//返回ARM状态</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre> 使用BX的例子: <pre class="line-numbers language-c" data-language="c"><code class="language-c">	  CODE32 <span class="token comment">//ARM代码，字对齐 </span>
-	  LDR r0<span class="token punctuation">,</span> thumbCode<span class="token operator">+</span><span class="token number">1</span> <span class="token comment">//加1进入thumb状态</span>
-	  BXL r0 <span class="token comment">//跳转到r0地址并转换为Thunmb，并将地址保存在lr中</span>
-···
-	  CODE16 <span class="token comment">//Thumb代码，半字对齐 </span>
-thumbCode ADD r1<span class="token punctuation">,</span> #<span class="token number">1</span> <span class="token comment">//</span>
-	  BX lr <span class="token comment">//返回ARM状态</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></p>
+<p>使用BX的例子: <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">	  CODE32 <span class="comment">//ARM代码，字对齐 </span></span><br><span class="line">	  LDR r0, thumbCode+<span class="number">1</span> <span class="comment">//加1进入thumb状态</span></span><br><span class="line">	  MOV lr, pc <span class="comment">//设置返回地址</span></span><br><span class="line">	  BX r0 <span class="comment">//跳转到r0地址并转换为Thunmb</span></span><br><span class="line">···</span><br><span class="line">	  CODE16</span><br><span class="line">thumbCode ADD r1, #<span class="number">1</span> <span class="comment">//</span></span><br><span class="line">	  BX lr <span class="comment">//返回ARM状态</span></span><br></pre></td></tr></table></figure> 使用BX的例子: <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">	  CODE32 <span class="comment">//ARM代码，字对齐 </span></span><br><span class="line">	  LDR r0, thumbCode+<span class="number">1</span> <span class="comment">//加1进入thumb状态</span></span><br><span class="line">	  BXL r0 <span class="comment">//跳转到r0地址并转换为Thunmb，并将地址保存在lr中</span></span><br><span class="line">···</span><br><span class="line">	  CODE16 <span class="comment">//Thumb代码，半字对齐 </span></span><br><span class="line">thumbCode ADD r1, #<span class="number">1</span> <span class="comment">//</span></span><br><span class="line">	  BX lr <span class="comment">//返回ARM状态</span></span><br></pre></td></tr></table></figure></p>
 
     </div>
 

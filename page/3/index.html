@@ -471,12 +471,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="介绍">介绍</h1>
-<p>在C99标准中，程序员可以使用变长参数的宏定义。变长参数的宏定义是指在宏定义中参数列表的最后一个参数为省略号，比如<code>c++</code>中最常见的<code>printf()</code>，如下: <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">__fortify_function int
-printf (const char *__restrict __fmt, ...)&#x2F;&#x2F;...表示可变长
-&#123;
-  return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
-&#125;
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></p>
+<p>在C99标准中，程序员可以使用变长参数的宏定义。变长参数的宏定义是指在宏定义中参数列表的最后一个参数为省略号，比如<code>c++</code>中最常见的<code>printf()</code>，如下: <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">__fortify_function <span class="type">int</span></span></span><br><span class="line"><span class="function"><span class="title">printf</span> <span class="params">(<span class="type">const</span> <span class="type">char</span> *__restrict __fmt, ...)</span><span class="comment">//...表示可变长</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> __printf_chk (__USE_FORTIFY_LEVEL - <span class="number">1</span>, __fmt, __va_arg_pack ());</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/04/16/c-%E5%8F%AF%E5%8F%98%E9%95%BF%E5%8F%82%E6%95%B0%E7%9A%84%E5%8E%9F%E7%90%86/#more" rel="contents">

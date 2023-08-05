@@ -21,12 +21,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":10,"offset":5},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
 
-    <meta name="description" content="首先使用readelf 和objdump获取信息: readelf -a &lt;filename&gt; #查看elf文件全部内容 readelf -S &lt;filename&gt; #查看所有节头 objdump -h &lt;filename&gt; #查看elf头 objdump -s &lt;filename&gt; #查看所有节的详细信息">
+    <meta name="description" content="首先使用readelf 和objdump获取信息: 1234readelf -a &lt;filename&gt; #查看elf文件全部内容readelf -S &lt;filename&gt; #查看所有节头objdump -h &lt;filename&gt; #查看elf头objdump -s &lt;filename&gt; #查看所有节的详细信息">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ELF文件分析">
 <meta property="og:url" content="http://example.com/2021/03/01/ELF%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="Oh, Tony">
-<meta property="og:description" content="首先使用readelf 和objdump获取信息: readelf -a &lt;filename&gt; #查看elf文件全部内容 readelf -S &lt;filename&gt; #查看所有节头 objdump -h &lt;filename&gt; #查看elf头 objdump -s &lt;filename&gt; #查看所有节的详细信息">
+<meta property="og:description" content="首先使用readelf 和objdump获取信息: 1234readelf -a &lt;filename&gt; #查看elf文件全部内容readelf -S &lt;filename&gt; #查看所有节头objdump -h &lt;filename&gt; #查看elf头objdump -s &lt;filename&gt; #查看所有节的详细信息">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2021/03/01/ELF%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/3118b12fce4ce337d31409898c4b84d3.png">
 <meta property="og:image" content="http://example.com/2021/03/01/ELF%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/20170602024034097.png">
@@ -277,65 +277,15 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>首先使用<code>readelf</code> 和<code>objdump</code>获取信息: <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">readelf <span class="token parameter variable">-a</span> <span class="token operator">&lt;</span>filename<span class="token operator">></span> <span class="token comment">#查看elf文件全部内容</span>
-readelf <span class="token parameter variable">-S</span> <span class="token operator">&lt;</span>filename<span class="token operator">></span> <span class="token comment">#查看所有节头</span>
-objdump <span class="token parameter variable">-h</span> <span class="token operator">&lt;</span>filename<span class="token operator">></span> <span class="token comment">#查看elf头</span>
-objdump <span class="token parameter variable">-s</span> <span class="token operator">&lt;</span>filename<span class="token operator">></span> <span class="token comment">#查看所有节的详细信息</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre> <span id="more"></span> # ELF 文件中的section 和 segment</p>
+    <div class="post-body" itemprop="articleBody"><p>首先使用<code>readelf</code> 和<code>objdump</code>获取信息: <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">readelf -a &lt;filename&gt; #查看elf文件全部内容</span><br><span class="line">readelf -S &lt;filename&gt; #查看所有节头</span><br><span class="line">objdump -h &lt;filename&gt; #查看elf头</span><br><span class="line">objdump -s &lt;filename&gt; #查看所有节的详细信息</span><br></pre></td></tr></table></figure> <span id="more"></span> # ELF 文件中的section 和 segment</p>
 <p>段是程序执行的必要组成部分，在每一个段中，会有着代码或者数据被划分为不同的节。节头表是对这些节的位置和大小的描述，主要用于链接和调试。节头对于程序的执行来说不是必需的，没有节头表，程序仍可以正常执行，因为节头表没有对程序的内存布局进行描述，对程序内存布局的描述是程序头表的任务。节头是对程序头的补充。 如果二进制文件中缺少节头，并不意味着节不存在，只是没有办法通过节头来引用节，对于调试器或者反编译器程序来说，只是可以参考的信息变少了而已。 <img src="/2021/03/01/ELF%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/3118b12fce4ce337d31409898c4b84d3.png" alt="段和节"></p>
 <p>两者的作用是什么，这和程序的编译链接和加载有关系了，一个正常的程序进行的编译链接过程如下图 <img src="/2021/03/01/ELF%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90/20170602024034097.png" alt="程序编译"> 1.一个c源程序f1.c经过c预处理器(cpp)进行预处理后，变成f1.i(上图省略此步)</p>
 <p>2.c编译器(ccl)将f1.i文件翻译成一个ASCII汇编语言文件f1.s</p>
 <p>3.汇编器(as)将f1.s翻译成一个可重定位目标文件f1.o</p>
 <p>4.链接器(ld)将所有文件链接，最终生成一个可执行文件p</p>
 <p>从上图可以看出，一个源程序最终是要转成汇编程序最后才能生成一个可执行目标文件，汇编每一部分开头都有不同的声明，表示接下来这一部分的内容是什么，这就是节，也就是说节本身的作用就是来自于汇编中声明。多个可重定向文件最终要整合成一个可执行的文件的时候，链接器吧目标文件中相同的 节整合成一个段，在程序运行的时候，方便加载器的加载 # android ELF android ELF格式需要在<span class="exturl" data-url="aHR0cHM6Ly9jcy5hbmRyb2lkLmNvbS9hbmRyb2lkL3BsYXRmb3JtL3N1cGVycHJvamVjdC8rL21hc3RlcjpleHRlcm5hbC9rZXJuZWwtaGVhZGVycy9vcmlnaW5hbC91YXBpL2xpbnV4L2VsZi5oO2w9MT9xPWVsZiZzcz1hbmRyb2lkJTJGcGxhdGZvcm0lMkZzdXBlcnByb2plY3Q6ZXh0ZXJuYWwlMkZrZXJuZWwtaGVhZGVycyUyRm9yaWdpbmFsJTJGdWFwaSUyRg==">android_elf<i class="fa fa-external-link-alt"></i></span>中查看，它在AOSP中的目录是: <code>external/kernel-headers/original/uapi/linux/elf.h</code>，__u64等定义是在<code>asm/type.h</code>中。 使用arm64文件为例，ELF文件头部结构如下：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">    &#x2F;* 64-bit ELF base types. *&#x2F;
-typedef __u64	Elf64_Addr;
-typedef __u16	Elf64_Half;
-typedef __s16	Elf64_SHalf;
-typedef __u64	Elf64_Off;
-typedef __s32	Elf64_Sword;
-typedef __u32	Elf64_Word;
-typedef __u64	Elf64_Xword;
-typedef __s64	Elf64_Sxword;
-#define EI_NIDENT	16
-typedef struct elf64_hdr &#123;
-  unsigned char	e_ident[EI_NIDENT];	&#x2F;* ELF &quot;magic number&quot; 第5byte的信息若为01 则为32位，若为02则为64*&#x2F;
-  Elf64_Half e_type;
-  Elf64_Half e_machine;
-  Elf64_Word e_version;
-  Elf64_Addr e_entry;		&#x2F;* Entry point virtual address *&#x2F;
-  Elf64_Off e_phoff;		&#x2F;* Program header table file offset 
-                        程序头在文件的偏移地址，可以用该偏移定位程序头的开始位置*&#x2F;
-  Elf64_Off e_shoff;		&#x2F;* Section header table file offset 段头内容在这个文件的偏移值*&#x2F;
-  Elf64_Word e_flags;
-  Elf64_Half e_ehsize;
-  Elf64_Half e_phentsize;
-  Elf64_Half e_phnum;      &#x2F;*程序头的个数*&#x2F;
-  Elf64_Half e_shentsize;
-  Elf64_Half e_shnum;       &#x2F;*段头的个数*&#x2F;
-  Elf64_Half e_shstrndx;    &#x2F;*String在整个段表中的索引值*&#x2F;
-&#125; Elf64_Ehdr;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>节的结构如下： <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">每个节头可以用如下数据结构表示。
-typedef struct elf64_shdr &#123;
-  Elf64_Word sh_name;		&#x2F;* Section name, index in string tbl *&#x2F;
-  Elf64_Word sh_type;		&#x2F;* Type of section *&#x2F;
-  Elf64_Xword sh_flags;		&#x2F;* Miscellaneous section attributes *&#x2F;
-  Elf64_Addr sh_addr;		&#x2F;* Section virtual addr at execution *&#x2F;
-  Elf64_Off sh_offset;		&#x2F;* Section file offset *&#x2F;
-  Elf64_Xword sh_size;		&#x2F;* Size of section in bytes *&#x2F;
-  Elf64_Word sh_link;		&#x2F;* Index of another section *&#x2F;
-  Elf64_Word sh_info;		&#x2F;* Additional section information *&#x2F;
-  Elf64_Xword sh_addralign;	&#x2F;* Section alignment *&#x2F;
-  Elf64_Xword sh_entsize;	&#x2F;* Entry size if section holds table *&#x2F;
-&#125; Elf64_Shdr;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre> 程序头结构如下： <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">typedef struct elf64_phdr &#123;
-  Elf64_Word p_type;
-  Elf64_Word p_flags;
-  Elf64_Off p_offset;		&#x2F;* Segment file offset *&#x2F;
-  Elf64_Addr p_vaddr;		&#x2F;* Segment virtual address *&#x2F;
-  Elf64_Addr p_paddr;		&#x2F;* Segment physical address *&#x2F;
-  Elf64_Xword p_filesz;		&#x2F;* Segment size in file *&#x2F;
-  Elf64_Xword p_memsz;		&#x2F;* Segment size in memory *&#x2F;
-  Elf64_Xword p_align;		&#x2F;* Segment alignment, file &amp; memory *&#x2F;
-&#125; Elf64_Phdr;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre> 通常情况下一个ELF会有多个节或者段，因此在读的时候需要使用列表来存储。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">/* 64-bit ELF base types. */</span></span><br><span class="line"><span class="keyword">typedef</span> __u64	Elf64_Addr;</span><br><span class="line"><span class="keyword">typedef</span> __u16	Elf64_Half;</span><br><span class="line"><span class="keyword">typedef</span> __s16	Elf64_SHalf;</span><br><span class="line"><span class="keyword">typedef</span> __u64	Elf64_Off;</span><br><span class="line"><span class="keyword">typedef</span> __s32	Elf64_Sword;</span><br><span class="line"><span class="keyword">typedef</span> __u32	Elf64_Word;</span><br><span class="line"><span class="keyword">typedef</span> __u64	Elf64_Xword;</span><br><span class="line"><span class="keyword">typedef</span> __s64	Elf64_Sxword;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> EI_NIDENT	16</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">elf64_hdr</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">char</span>	e_ident[EI_NIDENT];	<span class="comment">/* ELF &quot;magic number&quot; 第5byte的信息若为01 则为32位，若为02则为64*/</span></span><br><span class="line">  Elf64_Half e_type;</span><br><span class="line">  Elf64_Half e_machine;</span><br><span class="line">  Elf64_Word e_version;</span><br><span class="line">  Elf64_Addr e_entry;		<span class="comment">/* Entry point virtual address */</span></span><br><span class="line">  Elf64_Off e_phoff;		<span class="comment">/* Program header table file offset </span></span><br><span class="line"><span class="comment">                        程序头在文件的偏移地址，可以用该偏移定位程序头的开始位置*/</span></span><br><span class="line">  Elf64_Off e_shoff;		<span class="comment">/* Section header table file offset 段头内容在这个文件的偏移值*/</span></span><br><span class="line">  Elf64_Word e_flags;</span><br><span class="line">  Elf64_Half e_ehsize;</span><br><span class="line">  Elf64_Half e_phentsize;</span><br><span class="line">  Elf64_Half e_phnum;      <span class="comment">/*程序头的个数*/</span></span><br><span class="line">  Elf64_Half e_shentsize;</span><br><span class="line">  Elf64_Half e_shnum;       <span class="comment">/*段头的个数*/</span></span><br><span class="line">  Elf64_Half e_shstrndx;    <span class="comment">/*String在整个段表中的索引值*/</span></span><br><span class="line">&#125; Elf64_Ehdr;</span><br></pre></td></tr></table></figure>
+<p>节的结构如下： <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">每个节头可以用如下数据结构表示。</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">elf64_shdr</span> &#123;</span><br><span class="line">  Elf64_Word sh_name;		<span class="comment">/* Section name, index in string tbl */</span></span><br><span class="line">  Elf64_Word sh_type;		<span class="comment">/* Type of section */</span></span><br><span class="line">  Elf64_Xword sh_flags;		<span class="comment">/* Miscellaneous section attributes */</span></span><br><span class="line">  Elf64_Addr sh_addr;		<span class="comment">/* Section virtual addr at execution */</span></span><br><span class="line">  Elf64_Off sh_offset;		<span class="comment">/* Section file offset */</span></span><br><span class="line">  Elf64_Xword sh_size;		<span class="comment">/* Size of section in bytes */</span></span><br><span class="line">  Elf64_Word sh_link;		<span class="comment">/* Index of another section */</span></span><br><span class="line">  Elf64_Word sh_info;		<span class="comment">/* Additional section information */</span></span><br><span class="line">  Elf64_Xword sh_addralign;	<span class="comment">/* Section alignment */</span></span><br><span class="line">  Elf64_Xword sh_entsize;	<span class="comment">/* Entry size if section holds table */</span></span><br><span class="line">&#125; Elf64_Shdr;</span><br></pre></td></tr></table></figure> 程序头结构如下： <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">elf64_phdr</span> &#123;</span><br><span class="line">  Elf64_Word p_type;</span><br><span class="line">  Elf64_Word p_flags;</span><br><span class="line">  Elf64_Off p_offset;		<span class="comment">/* Segment file offset */</span></span><br><span class="line">  Elf64_Addr p_vaddr;		<span class="comment">/* Segment virtual address */</span></span><br><span class="line">  Elf64_Addr p_paddr;		<span class="comment">/* Segment physical address */</span></span><br><span class="line">  Elf64_Xword p_filesz;		<span class="comment">/* Segment size in file */</span></span><br><span class="line">  Elf64_Xword p_memsz;		<span class="comment">/* Segment size in memory */</span></span><br><span class="line">  Elf64_Xword p_align;		<span class="comment">/* Segment alignment, file &amp; memory */</span></span><br><span class="line">&#125; Elf64_Phdr;</span><br></pre></td></tr></table></figure> 通常情况下一个ELF会有多个节或者段，因此在读的时候需要使用列表来存储。</p>
 <h1 id="plt和got表">PLT和GOT表</h1>
 <p>. GOT表可写不可执行, PLT可执行不可写,他们相互作用来实现函数符号的延时绑定。</p>
 <h1 id="对so文件加固">对so文件加固</h1>

@@ -295,53 +295,7 @@
 <p>CUDA 采用单指令多线程SIMT架构管理执行线程，不同设备有不同的线程束大小，但是到目前为止基本所有设备都是维持在32，也就是说每个SM上有多个block，一个block有多个线程（可以是几百个，但不会超过某个最大值），但是从机器的角度，在某时刻T，SM上只执行一个线程束，也就是32个线程在同时同步执行，线程束中的每个线程执行同一条指令，包括有分支的部分。</p>
 <span id="more"></span>
 <p>下面我们看一个线程束优化的例子：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &lt;iostream&gt;
-#include &quot;stdlib.h&quot;
-#include &quot;time.h&quot;
-__global__ void mathKernel1(float *c) 
-&#123;
-    &#x2F;&#x2F;分支未适配warp
-    int tid &#x3D; blockIdx.x * blockDim.x + threadIdx.x;
-    float a, b;
-    a &#x3D; b &#x3D; 0.0f;
-    if (tid % 2 &#x3D;&#x3D; 0)
-        a &#x3D; 100.0f;
-    else
-        b &#x3D; 200.0f;
-    c[tid] &#x3D; a + b;
-&#125;
-
-constexpr int warpSize &#x3D; 32;
-__global__ void mathKernelWarp(float *c) 
-&#123;
-    &#x2F;&#x2F;分支适配warp,warp size&#x3D;32
-    int tid &#x3D; blockIdx.x * blockDim.x + threadIdx.x;
-    float a, b;
-    a &#x3D; b &#x3D; 0.0f;
-    if ((tid &#x2F; warpSize) % 2 &#x3D;&#x3D; 0)&#x2F;&#x2F;保证每一个分支中都可以有连续的32个线程运行
-        a &#x3D; 100.0f;
-    else
-        b &#x3D; 200.0f;
-    c[tid] &#x3D; a + b;
-&#125;
-
-int main()&#123;
-    dim3 dimGrid &#x3D; (64);
-    dim3 dimBlock &#x3D; (128);
-    auto* C &#x3D; (float*)malloc(64*128*sizeof(float));
-    auto start &#x3D; clock();
-        mathKernel1&lt;&lt;&lt;dimGrid, dimBlock&gt;&gt;&gt;(C);
-    auto finish &#x3D; clock();
-    auto duration &#x3D; (double)(finish - start) &#x2F; (CLOCKS_PER_SEC &#x2F; 100);
-    printf(&quot;mathKernel1 %f ms\n&quot;, duration);
-    start &#x3D; clock();
-    mathKernelWarp&lt;&lt;&lt;dimGrid, dimBlock&gt;&gt;&gt;(C);
-    finish &#x3D; clock();
-    duration &#x3D; (double)(finish - start) &#x2F; (CLOCKS_PER_SEC &#x2F; 100);
-    printf(&quot;mathKernel2 %f ms\n&quot;, duration);
-    return 1;
-&#125;
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stdlib.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;time.h&quot;</span></span></span><br><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">mathKernel1</span><span class="params">(<span class="type">float</span> *c)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//分支未适配warp</span></span><br><span class="line">    <span class="type">int</span> tid = blockIdx.x * blockDim.x + threadIdx.x;</span><br><span class="line">    <span class="type">float</span> a, b;</span><br><span class="line">    a = b = <span class="number">0.0f</span>;</span><br><span class="line">    <span class="keyword">if</span> (tid % <span class="number">2</span> == <span class="number">0</span>)</span><br><span class="line">        a = <span class="number">100.0f</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b = <span class="number">200.0f</span>;</span><br><span class="line">    c[tid] = a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">int</span> warpSize = <span class="number">32</span>;</span><br><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">mathKernelWarp</span><span class="params">(<span class="type">float</span> *c)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//分支适配warp,warp size=32</span></span><br><span class="line">    <span class="type">int</span> tid = blockIdx.x * blockDim.x + threadIdx.x;</span><br><span class="line">    <span class="type">float</span> a, b;</span><br><span class="line">    a = b = <span class="number">0.0f</span>;</span><br><span class="line">    <span class="keyword">if</span> ((tid / warpSize) % <span class="number">2</span> == <span class="number">0</span>)<span class="comment">//保证每一个分支中都可以有连续的32个线程运行</span></span><br><span class="line">        a = <span class="number">100.0f</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b = <span class="number">200.0f</span>;</span><br><span class="line">    c[tid] = a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    dim3 dimGrid = (<span class="number">64</span>);</span><br><span class="line">    dim3 dimBlock = (<span class="number">128</span>);</span><br><span class="line">    <span class="keyword">auto</span>* C = (<span class="type">float</span>*)<span class="built_in">malloc</span>(<span class="number">64</span>*<span class="number">128</span>*<span class="built_in">sizeof</span>(<span class="type">float</span>));</span><br><span class="line">    <span class="keyword">auto</span> start = <span class="built_in">clock</span>();</span><br><span class="line">        mathKernel1&lt;&lt;&lt;dimGrid, dimBlock&gt;&gt;&gt;(C);</span><br><span class="line">    <span class="keyword">auto</span> finish = <span class="built_in">clock</span>();</span><br><span class="line">    <span class="keyword">auto</span> duration = (<span class="type">double</span>)(finish - start) / (CLOCKS_PER_SEC / <span class="number">100</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;mathKernel1 %f ms\n&quot;</span>, duration);</span><br><span class="line">    start = <span class="built_in">clock</span>();</span><br><span class="line">    mathKernelWarp&lt;&lt;&lt;dimGrid, dimBlock&gt;&gt;&gt;(C);</span><br><span class="line">    finish = <span class="built_in">clock</span>();</span><br><span class="line">    duration = (<span class="type">double</span>)(finish - start) / (CLOCKS_PER_SEC / <span class="number">100</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;mathKernel2 %f ms\n&quot;</span>, duration);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>执行结果如下：</p>
 <figure>
 <img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/image-20230729223723083.png" alt><figcaption>image-20230729223723083</figcaption>
@@ -366,56 +320,12 @@ int main()&#123;
 <li>交错配对：元素与一定距离的元素配对<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/jiaocuo.png" alt="jiaocuo"></li>
 </ul>
 <p>我们先写一个CPU的交错Reduce的base line</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;c++ 递归一维reduce
-int CpuReduce(int * data, int const size)&#123;
-    if(size &#x3D;&#x3D; 1)&#123;
-        return data[0];
-    &#125;
-    int const stride &#x3D; size&#x2F;2;
-    if(size % 2 &#x3D;&#x3D;1)&#123;
-        data[0] +&#x3D;data[size-1];
-    &#125;
-    for(int i &#x3D; 0;i&lt;stride;i++)&#123;
-        data[i] +&#x3D;data[i+stride];
-    &#125;
-    return CpuReduce(data,stride);
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//c++ 递归一维reduce</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">CpuReduce</span><span class="params">(<span class="type">int</span> * data, <span class="type">int</span> <span class="type">const</span> size)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(size == <span class="number">1</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> data[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> <span class="type">const</span> stride = size/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">if</span>(size % <span class="number">2</span> ==<span class="number">1</span>)&#123;</span><br><span class="line">        data[<span class="number">0</span>] +=data[size<span class="number">-1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>;i&lt;stride;i++)&#123;</span><br><span class="line">        data[i] +=data[i+stride];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CpuReduce</span>(data,stride);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后用CUDA实现相邻配对的reduce</p>
 <figure>
 <img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_22.png" alt><figcaption>3_22</figcaption>
 </figure>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">__global__ void GpuReduce(int* data_in,int * data_out, int const size)&#123;
-	&#x2F;&#x2F;set thread ID
-	unsigned int tid &#x3D; threadIdx.x;
-	&#x2F;&#x2F;boundary check
-	if (tid &gt;&#x3D; size) return;
-	&#x2F;&#x2F;convert global data pointer to the
-	int *idata &#x3D; data_in + blockIdx.x*blockDim.x;
-	&#x2F;&#x2F;in-place reduction in global memory
-	for (int stride &#x3D; 1; stride &lt; blockDim.x; stride *&#x3D; 2)
-	&#123;
-		if ((tid % (2 * stride)) &#x3D;&#x3D; 0)
-		&#123;
-			idata[tid] +&#x3D; idata[tid + stride];
-		&#125;
-		&#x2F;&#x2F;synchronize within block，对应下图得不同stage
-		__syncthreads();
-	&#125;
-	&#x2F;&#x2F;write result for this block to global mem
-	if (tid &#x3D;&#x3D; 0)
-		data_out[blockIdx.x] &#x3D; idata[0];
-&#125;
-void reduce(int* data_in,int * data_out, int const size)&#123;
-   dim3 thread_per_block(1024,1);
-   dim3 block_per_grid((size - 1) &#x2F; thread_per_block.x + 1, 1);
-          int* cpu_reduce_data &#x3D;  (int*)malloc(block_per_grid.x*sizeof(int));
-      GpuReduce&lt;&lt;&lt;block_per_grid,thread_per_block&gt;&gt;&gt;(vec_gpu,gpu_reduce_data,size);
-    cudaMemcpy(cpu_reduce_data, gpu_reduce_data, block_per_grid.x * sizeof(int), cudaMemcpyDeviceToHost);
-    int result &#x3D; 0;
-   for(int i &#x3D; 0;i&lt;block_per_grid.x;i++)&#123;
-    result+&#x3D;cpu_reduce_data[i];
-   &#125;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">GpuReduce</span><span class="params">(<span class="type">int</span>* data_in,<span class="type">int</span> * data_out, <span class="type">int</span> <span class="type">const</span> size)</span></span>&#123;</span><br><span class="line">	<span class="comment">//set thread ID</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> tid = threadIdx.x;</span><br><span class="line">	<span class="comment">//boundary check</span></span><br><span class="line">	<span class="keyword">if</span> (tid &gt;= size) <span class="keyword">return</span>;</span><br><span class="line">	<span class="comment">//convert global data pointer to the</span></span><br><span class="line">	<span class="type">int</span> *idata = data_in + blockIdx.x*blockDim.x;</span><br><span class="line">	<span class="comment">//in-place reduction in global memory</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> stride = <span class="number">1</span>; stride &lt; blockDim.x; stride *= <span class="number">2</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> ((tid % (<span class="number">2</span> * stride)) == <span class="number">0</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			idata[tid] += idata[tid + stride];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//synchronize within block，对应下图得不同stage</span></span><br><span class="line">		__syncthreads();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//write result for this block to global mem</span></span><br><span class="line">	<span class="keyword">if</span> (tid == <span class="number">0</span>)</span><br><span class="line">		data_out[blockIdx.x] = idata[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">reduce</span><span class="params">(<span class="type">int</span>* data_in,<span class="type">int</span> * data_out, <span class="type">int</span> <span class="type">const</span> size)</span></span>&#123;</span><br><span class="line">   <span class="function">dim3 <span class="title">thread_per_block</span><span class="params">(<span class="number">1024</span>,<span class="number">1</span>)</span></span>;</span><br><span class="line">   <span class="function">dim3 <span class="title">block_per_grid</span><span class="params">((size - <span class="number">1</span>) / thread_per_block.x + <span class="number">1</span>, <span class="number">1</span>)</span></span>;</span><br><span class="line">          <span class="type">int</span>* cpu_reduce_data =  (<span class="type">int</span>*)<span class="built_in">malloc</span>(block_per_grid.x*<span class="built_in">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">      GpuReduce&lt;&lt;&lt;block_per_grid,thread_per_block&gt;&gt;&gt;(vec_gpu,gpu_reduce_data,size);</span><br><span class="line">    <span class="built_in">cudaMemcpy</span>(cpu_reduce_data, gpu_reduce_data, block_per_grid.x * <span class="built_in">sizeof</span>(<span class="type">int</span>), cudaMemcpyDeviceToHost);</span><br><span class="line">    <span class="type">int</span> result = <span class="number">0</span>;</span><br><span class="line">   <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>;i&lt;block_per_grid.x;i++)&#123;</span><br><span class="line">    result+=cpu_reduce_data[i];</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这种思路，是将多个block映射到data的不同区域，并且使用每一个block中偶数位的线程进行运算，然后在host侧进行最终得运算具体示例如下：<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_22.png" alt="3_22"></p>
 <figure>
 <img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/cuda_reduce0.webp" alt><figcaption>cuda_reduce0</figcaption>
@@ -423,29 +333,7 @@ void reduce(int* data_in,int * data_out, int const size)&#123;
 <p>这种方法是最容易想到的，但是线程的利用率非常低，在step1的时候只有一半线程在工作，step2时有4个线程工作，最后一个step只有一个线程在工作，这样极大得浪费了线程资源。并且同一个half warp中（16个线程），线程间有分歧，这种情况是不高效的。</p>
 <p>接下来，我们对线程使用率进行优化，让连续的线程进行运算。<img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_23.png" alt="3_23"></p>
 <p>cuda代码如下：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">__global__ void reduceNeighboredLess(int* data_in,int * data_out, int const size)&#123;
-	&#x2F;&#x2F;set thread ID
-	unsigned int tid &#x3D; threadIdx.x;
-	unsigned int idx &#x3D; blockIdx.x*blockDim.x+threadIdx.x;
-    if(idx &gt; size) return;
-    
-	&#x2F;&#x2F;convert global data pointer to the
-	int *idata &#x3D; data_in + blockIdx.x*blockDim.x;
-	&#x2F;&#x2F;in-place reduction in global memory
-	for (int stride &#x3D; 1; stride &lt; blockDim.x; stride *&#x3D; 2)
-	&#123;
-        int index &#x3D; 2*stride*tid;
-		if (index &lt; blockDim.x)
-		&#123;
-			idata[index] +&#x3D; idata[index + stride];
-		&#125;
-		&#x2F;&#x2F;synchronize within block
-		__syncthreads();
-	&#125;
-	&#x2F;&#x2F;write result for this block to global mem
-	if (tid &#x3D;&#x3D; 0)
-		data_out[blockIdx.x] &#x3D; idata[0];
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">reduceNeighboredLess</span><span class="params">(<span class="type">int</span>* data_in,<span class="type">int</span> * data_out, <span class="type">int</span> <span class="type">const</span> size)</span></span>&#123;</span><br><span class="line">	<span class="comment">//set thread ID</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> tid = threadIdx.x;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> idx = blockIdx.x*blockDim.x+threadIdx.x;</span><br><span class="line">    <span class="keyword">if</span>(idx &gt; size) <span class="keyword">return</span>;</span><br><span class="line">    </span><br><span class="line">	<span class="comment">//convert global data pointer to the</span></span><br><span class="line">	<span class="type">int</span> *idata = data_in + blockIdx.x*blockDim.x;</span><br><span class="line">	<span class="comment">//in-place reduction in global memory</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> stride = <span class="number">1</span>; stride &lt; blockDim.x; stride *= <span class="number">2</span>)</span><br><span class="line">	&#123;</span><br><span class="line">        <span class="type">int</span> index = <span class="number">2</span>*stride*tid;</span><br><span class="line">		<span class="keyword">if</span> (index &lt; blockDim.x)</span><br><span class="line">		&#123;</span><br><span class="line">			idata[index] += idata[index + stride];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//synchronize within block</span></span><br><span class="line">		__syncthreads();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//write result for this block to global mem</span></span><br><span class="line">	<span class="keyword">if</span> (tid == <span class="number">0</span>)</span><br><span class="line">		data_out[blockIdx.x] = idata[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这一步保证index能够向后移动到有数据要处理的内存位置，而不是简单的用tid对应内存地址，导致大量线程空闲。我们保证在一个块中前几个执行的线程束是在接近满跑的，而后半部分线程束基本是不需要执行的，当一个线程束内存在分支，而分支都不需要执行的时候，硬件会停止他们调用别人，这样就节省了资源。</p>
 <p>但是此时又面临一个问题。因为GPU的内存中是以bank作为划分的，一个bank的大小是4字节，一共有16个bank，这样就导致data[0]和data[16]会使用相同的bank，data[0]和data[17]会使用相同的bank，如果同一个half-warp中同时访问了相同的bank，则会产生bank冲突，这样对访存性能不利。</p>
 <p>回到本例当中，同一个half-warp中，0-15号线程负责的share memory的位置分别为0、2、4、6、8、... 12、14、... 28、30。其中0号线程和8号线程会访问data_in[0]和data_in[16]，其他线程也类似，这样会导致<span class="exturl" data-url="aHR0cHM6Ly9saW5rLnpoaWh1LmNvbS8/dGFyZ2V0PWh0dHBzJTNBLy9ibG9nLmNzZG4ubmV0L0JydWNlXzA3MTIvYXJ0aWNsZS9kZXRhaWxzLzY1NDQ3NjA4">share memory bank conflict<i class="fa fa-external-link-alt"></i></span>。</p>
@@ -454,32 +342,9 @@ void reduce(int* data_in,int * data_out, int const size)&#123;
 <img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_24.png" alt><figcaption>3_24</figcaption>
 </figure>
 <p>代码如下：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">__global__ void reduceInterleaved(int * data_in, int *data_out, unsigned int size)
-&#123;
-	&#x2F;&#x2F;set thread ID
-	unsigned int tid &#x3D; threadIdx.x;
-	unsigned int idx &#x3D; blockIdx.x*blockDim.x+threadIdx.x;
-    if(idx &gt;&#x3D; size) return;
-    
-	&#x2F;&#x2F;convert global data pointer to the
-	int *idata &#x3D; data_in + blockIdx.x*blockDim.x;
-	&#x2F;&#x2F;in-place reduction in global memory
-	for (int stride &#x3D; blockDim.x&#x2F;2; stride &gt;&#x3D; 1; stride &gt;&gt;&#x3D; 1)&#x2F;&#x2F;改变stride，避免bank冲突
-	&#123;
-		if (tid &lt; stride)
-		&#123;
-			idata[tid] +&#x3D; idata[tid + stride];
-		&#125;
-		&#x2F;&#x2F;synchronize within block
-		__syncthreads();
-	&#125;
-	&#x2F;&#x2F;write result for this block to global mem
-	if (tid &#x3D;&#x3D; 0)
-		data_out[blockIdx.x] &#x3D; idata[0];
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">__global__ <span class="type">void</span> <span class="title">reduceInterleaved</span><span class="params">(<span class="type">int</span> * data_in, <span class="type">int</span> *data_out, <span class="type">unsigned</span> <span class="type">int</span> size)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//set thread ID</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> tid = threadIdx.x;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> idx = blockIdx.x*blockDim.x+threadIdx.x;</span><br><span class="line">    <span class="keyword">if</span>(idx &gt;= size) <span class="keyword">return</span>;</span><br><span class="line">    </span><br><span class="line">	<span class="comment">//convert global data pointer to the</span></span><br><span class="line">	<span class="type">int</span> *idata = data_in + blockIdx.x*blockDim.x;</span><br><span class="line">	<span class="comment">//in-place reduction in global memory</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> stride = blockDim.x/<span class="number">2</span>; stride &gt;= <span class="number">1</span>; stride &gt;&gt;= <span class="number">1</span>)<span class="comment">//改变stride，避免bank冲突</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (tid &lt; stride)</span><br><span class="line">		&#123;</span><br><span class="line">			idata[tid] += idata[tid + stride];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//synchronize within block</span></span><br><span class="line">		__syncthreads();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//write result for this block to global mem</span></span><br><span class="line">	<span class="keyword">if</span> (tid == <span class="number">0</span>)</span><br><span class="line">		data_out[blockIdx.x] = idata[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>最后我们对比一下性能，我们设置block和thread的数量如下，这个数值也是跑了多次之后找到的最优值。</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">dim3 thread_per_block(64,1);
-dim3 block_per_grid((size - 1) &#x2F; thread_per_block.x + 1, 1);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">dim3 <span class="title">thread_per_block</span><span class="params">(<span class="number">64</span>,<span class="number">1</span>)</span></span>;</span><br><span class="line"><span class="function">dim3 <span class="title">block_per_grid</span><span class="params">((size - <span class="number">1</span>) / thread_per_block.x + <span class="number">1</span>, <span class="number">1</span>)</span></span>;</span><br></pre></td></tr></table></figure>
 <figure>
 <img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/image-20230729234323225.png" alt><figcaption>image-20230729234323225</figcaption>
 </figure>

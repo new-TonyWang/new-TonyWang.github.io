@@ -327,12 +327,7 @@ f(1)g(3)+f(2)g(2)+f(3)g(1)
 <img src="/2020/02/27/What-is-convolution/v2-8dd14775ab8c91a09507f52e44f347f3_1440w.jpg" alt><figcaption>img</figcaption>
 </figure>
 <p>使用python 生成正态分矩阵:</p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> numpy <span class="token keyword">import</span> <span class="token operator">*</span><span class="token punctuation">;</span>
-<span class="token keyword">def</span> <span class="token function">rand_Matrix</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-	randArr<span class="token operator">=</span>random<span class="token punctuation">.</span>randn<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	randMat<span class="token operator">=</span>mat<span class="token punctuation">(</span>randArr<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token keyword">return</span> randMat<span class="token punctuation">;</span>
-g <span class="token operator">=</span> rand_Matrix<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> numpy <span class="keyword">import</span> *;</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rand_Matrix</span>():</span><br><span class="line">	randArr=random.randn(<span class="number">3</span>,<span class="number">3</span>);</span><br><span class="line">	randMat=mat(randArr);</span><br><span class="line">	<span class="keyword">return</span> randMat;</span><br><span class="line">g = rand_Matrix()</span><br></pre></td></tr></table></figure>
 <p><span class="math display">\[
 g = \left[
 \begin{matrix}

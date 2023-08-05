@@ -282,92 +282,13 @@
 <p>​<br>
 <span id="more"></span> # 一个例子</p>
 <p>​ 环境:ubuntu20,Calng11,编译一个64位的可执行文件和一个64位的动态链接库，主要实现如下需求: 1. 包含待调用方法的so被运行时动态链接进来 2. 在动态链接库中调用C++的虚函数</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-*polymorphismCC.h头文件，供主函数调用动态链接库的时候使用
-*&#x2F;
-#include &lt;iostream&gt;
-class base
-&#123;
-public:
-    base()&#123;&#125;;
-    virtual ~base()&#123;&#125;;
-    virtual int add()&#123;&#125;;
-&#125;;
-class polymorphismCC : public base
-&#123;
-protected:
-    int num;
-    char *str;
-public:
-    polymorphismCC(int num, char *str) : num(num), str(str) &#123;&#125;
-    virtual ~polymorphismCC()
-    &#123;
-        num &#x3D; 0;
-        free(str);
-    &#125;
-    virtual int add();
-&#125;;
-class polymorphismCC_child : public polymorphismCC
-&#123;
-protected:
-    long longNumber;
-public:
-    polymorphismCC_child(int num, char *str, long l) : polymorphismCC(num, str), longNumber(l) &#123;&#125;
-    virtual ~polymorphismCC_child()
-    &#123;
-        longNumber &#x3D; 0;
-    &#125;
-    virtual int add();
-&#125;;
-int calc(int a, int b, int c, int d);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;**
-*polymorphismCC.cc实现了polymorphismCC.h的虚函数和calc函数
-**&#x2F;
-#include &quot;polymorphismCC.h&quot;
-int polymorphismCC::add()&#123;
-      return polymorphismCC::num+1;
-&#125;
-
-int polymorphismCC_child::add()&#123;
-      return polymorphismCC_child::num+2;
-&#125;
-int calc(int a,int b,int c,int d)&#123;
-    return a*b+c+d;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">clang++ polymorphismCC.cc <span class="token parameter variable">-o</span> polymorphismCC.x86so <span class="token parameter variable">-shared</span> <span class="token parameter variable">-fPIC</span> <span class="token comment">#编译使用位置无关代码的动态链接库</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">
-&#x2F;**
-*invoker.cc实现了多态性，并调用动态链接库的clac函数
-**&#x2F;
-#include &quot;.&#x2F;polymorphismCC.h&quot;
-int main()&#123;
-    char* str &#x3D; &quot;abc&quot;;
-    int num &#x3D; 1;
-    long l &#x3D; 2;
-    base * child &#x3D; new polymorphismCC_child(num,str,l);&#x2F;&#x2F;多态
-    printf(&quot;%d&quot;,child-&gt;add());
-    int b &#x3D; calc(num,2,3,4);
-    printf(&quot;%d&quot;,b);&#x2F;&#x2F;首次加载并调用calc函数
-    int c &#x3D; calc(num,1,3,4);
-    printf(&quot;%d&quot;,c);&#x2F;&#x2F;第二次调用calc函数
-    free(child);
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">clang++ <span class="token parameter variable">-o</span> invoker.so  ./polymorphismCC.x86so ./invoker.cc<span class="token comment">#编译可执行文件</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*polymorphismCC.h头文件，供主函数调用动态链接库的时候使用</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">base</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">base</span>()&#123;&#125;;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">base</span>()&#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">int</span> <span class="title">add</span><span class="params">()</span></span>&#123;&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">polymorphismCC</span> : <span class="keyword">public</span> base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="type">int</span> num;</span><br><span class="line">    <span class="type">char</span> *str;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">polymorphismCC</span>(<span class="type">int</span> num, <span class="type">char</span> *str) : <span class="built_in">num</span>(num), <span class="built_in">str</span>(str) &#123;&#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">polymorphismCC</span>()</span><br><span class="line">    &#123;</span><br><span class="line">        num = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">free</span>(str);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">int</span> <span class="title">add</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">polymorphismCC_child</span> : <span class="keyword">public</span> polymorphismCC</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="type">long</span> longNumber;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">polymorphismCC_child</span>(<span class="type">int</span> num, <span class="type">char</span> *str, <span class="type">long</span> l) : <span class="built_in">polymorphismCC</span>(num, str), <span class="built_in">longNumber</span>(l) &#123;&#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">polymorphismCC_child</span>()</span><br><span class="line">    &#123;</span><br><span class="line">        longNumber = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">int</span> <span class="title">add</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">calc</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b, <span class="type">int</span> c, <span class="type">int</span> d)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*polymorphismCC.cc实现了polymorphismCC.h的虚函数和calc函数</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;polymorphismCC.h&quot;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">polymorphismCC::add</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> polymorphismCC::num+<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">polymorphismCC_child::add</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> polymorphismCC_child::num+<span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">calc</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b,<span class="type">int</span> c,<span class="type">int</span> d)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a*b+c+d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clang++ polymorphismCC.cc -o polymorphismCC.x86so -shared -fPIC #编译使用位置无关代码的动态链接库</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*invoker.cc实现了多态性，并调用动态链接库的clac函数</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;./polymorphismCC.h&quot;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">char</span>* str = <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">    <span class="type">int</span> num = <span class="number">1</span>;</span><br><span class="line">    <span class="type">long</span> l = <span class="number">2</span>;</span><br><span class="line">    base * child = <span class="keyword">new</span> <span class="built_in">polymorphismCC_child</span>(num,str,l);<span class="comment">//多态</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>,child-&gt;<span class="built_in">add</span>());</span><br><span class="line">    <span class="type">int</span> b = <span class="built_in">calc</span>(num,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>,b);<span class="comment">//首次加载并调用calc函数</span></span><br><span class="line">    <span class="type">int</span> c = <span class="built_in">calc</span>(num,<span class="number">1</span>,<span class="number">3</span>,<span class="number">4</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>,c);<span class="comment">//第二次调用calc函数</span></span><br><span class="line">    <span class="built_in">free</span>(child);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clang++ -o invoker.so  ./polymorphismCC.x86so ./invoker.cc#编译可执行文件</span><br></pre></td></tr></table></figure>
 <p>直接运行可执行文件，得到如下结果<code>398</code></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">s3lab-1@s3lab:~/workspace/VSC/$ ./invoker.so
-<span class="token number">398</span>
-<span class="token comment">#查看使用到的动态链接库</span>
- ldd ./invoker.so
-        linux-vdso.so.1 <span class="token punctuation">(</span>0x00007ffddcb79000<span class="token punctuation">)</span>
-        /usr/lib/x86_64-linux-gnu/libfreetype.so.6 <span class="token punctuation">(</span>0x00007f796f760000<span class="token punctuation">)</span>
-        ./polymorphismCC.x86so <span class="token punctuation">(</span>0x00007f796f75b000<span class="token punctuation">)</span><span class="token comment">#就是这个库</span>
-        libstdc++.so.6 <span class="token operator">=</span><span class="token operator">></span> /lib/x86_64-linux-gnu/libstdc++.so.6 <span class="token punctuation">(</span>0x00007f796f54d000<span class="token punctuation">)</span>
-        libm.so.6 <span class="token operator">=</span><span class="token operator">></span> /lib/x86_64-linux-gnu/libm.so.6 <span class="token punctuation">(</span>0x00007f796f3fe000<span class="token punctuation">)</span>
-        libgcc_s.so.1 <span class="token operator">=</span><span class="token operator">></span> /lib/x86_64-linux-gnu/libgcc_s.so.1 <span class="token punctuation">(</span>0x00007f796f3e3000<span class="token punctuation">)</span>
-        libc.so.6 <span class="token operator">=</span><span class="token operator">></span> /lib/x86_64-linux-gnu/libc.so.6 <span class="token punctuation">(</span>0x00007f796f1f1000<span class="token punctuation">)</span>
-        libpng16.so.16 <span class="token operator">=</span><span class="token operator">></span> /lib/x86_64-linux-gnu/libpng16.so.16 <span class="token punctuation">(</span>0x00007f796f1b7000<span class="token punctuation">)</span>
-        libz.so.1 <span class="token operator">=</span><span class="token operator">></span> /lib/x86_64-linux-gnu/libz.so.1 <span class="token punctuation">(</span>0x00007f796f19b000<span class="token punctuation">)</span>
-        /lib64/ld-linux-x86-64.so.2 <span class="token punctuation">(</span>0x00007f796f821000<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">s3lab-1@s3lab:~/workspace/VSC/$ ./invoker.so</span><br><span class="line">398</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">查看使用到的动态链接库</span></span><br><span class="line"> ldd ./invoker.so</span><br><span class="line">        linux-vdso.so.1 (0x00007ffddcb79000)</span><br><span class="line">        /usr/lib/x86_64-linux-gnu/libfreetype.so.6 (0x00007f796f760000)</span><br><span class="line">        ./polymorphismCC.x86so (0x00007f796f75b000)#就是这个库</span><br><span class="line">        libstdc++.so.6 =&gt; /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f796f54d000)</span><br><span class="line">        libm.so.6 =&gt; /lib/x86_64-linux-gnu/libm.so.6 (0x00007f796f3fe000)</span><br><span class="line">        libgcc_s.so.1 =&gt; /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f796f3e3000)</span><br><span class="line">        libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f796f1f1000)</span><br><span class="line">        libpng16.so.16 =&gt; /lib/x86_64-linux-gnu/libpng16.so.16 (0x00007f796f1b7000)</span><br><span class="line">        libz.so.1 =&gt; /lib/x86_64-linux-gnu/libz.so.1 (0x00007f796f19b000)</span><br><span class="line">        /lib64/ld-linux-x86-64.so.2 (0x00007f796f821000)</span><br></pre></td></tr></table></figure>
 <h2 id="动态链接相关的节">动态链接相关的节</h2>
 <h3 id="got">.got</h3>
 <p>Global Offset Table, 全局偏移表. 这是链接器在执行链接时实际上要填充的部分, 保存了所有外部符号的地址信息. 在i386架构下, 除了每个函数占用一个GOT表项外，GOT表项还保留了3个公共表项, 每项32位(4字节), 保存在前三个位置, 分别是:</p>
@@ -392,64 +313,20 @@ int main()&#123;
 <p>还未验证是干什么的，先贴一下逆向出的代码</p>
 <p><img src="/2021/04/18/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93%E7%9A%84%E7%90%86%E8%A7%A3--%E5%BB%B6%E8%BF%9F%E5%8A%A0%E8%BD%BD/image-20210419220113531.png" alt="image-20210419220113531" style="zoom:33%;"></p>
 <p>使用<code>readelf 查看一下待链接的 polymorphismCC.x86so文件</code></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Section Headers:
-  <span class="token punctuation">[</span>Nr<span class="token punctuation">]</span> Name              Type            Address          Off    Size   ES Flg Lk Inf Al
-  <span class="token punctuation">[</span> <span class="token number">9</span><span class="token punctuation">]</span> .plt              PROGBITS        0000000000001020 001020 0000c0 <span class="token number">10</span>  AX  <span class="token number">0</span>   <span class="token number">0</span> <span class="token number">16</span>
-  <span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span> .plt.got          PROGBITS        00000000000010e0 0010e0 000008 08  AX  <span class="token number">0</span>   <span class="token number">0</span>  <span class="token number">8</span>
- <span class="token punctuation">..</span>.
-  <span class="token punctuation">[</span><span class="token number">21</span><span class="token punctuation">]</span> .got              PROGBITS        0000000000003fc8 002fc8 000038 08  WA  <span class="token number">0</span>   <span class="token number">0</span>  <span class="token number">8</span>
-  <span class="token punctuation">[</span><span class="token number">22</span><span class="token punctuation">]</span> .got.plt          PROGBITS        0000000000004000 003000 000070 08  WA  <span class="token number">0</span>   <span class="token number">0</span>  <span class="token number">8</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [ 9] .plt              PROGBITS        0000000000001020 001020 0000c0 10  AX  0   0 16</span><br><span class="line">  [10] .plt.got          PROGBITS        00000000000010e0 0010e0 000008 08  AX  0   0  8</span><br><span class="line"> ...</span><br><span class="line">  [21] .got              PROGBITS        0000000000003fc8 002fc8 000038 08  WA  0   0  8</span><br><span class="line">  [22] .got.plt          PROGBITS        0000000000004000 003000 000070 08  WA  0   0  8</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>和待分析的invoker.so文件。发现该文件没有.plt.got。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Section Headers:
-  <span class="token punctuation">[</span>Nr<span class="token punctuation">]</span> Name              Type            Address          Off    Size   ES Flg Lk Inf Al
-  <span class="token punctuation">[</span><span class="token number">11</span><span class="token punctuation">]</span> .plt              PROGBITS        0000000000401020 001020 0000b0 <span class="token number">10</span>  AX  <span class="token number">0</span>   <span class="token number">0</span> <span class="token number">16</span>
-<span class="token punctuation">..</span>.
-  <span class="token punctuation">[</span><span class="token number">22</span><span class="token punctuation">]</span> .got              PROGBITS        0000000000403ff0 002ff0 000010 08  WA  <span class="token number">0</span>   <span class="token number">0</span>  <span class="token number">8</span>
-  <span class="token punctuation">[</span><span class="token number">23</span><span class="token punctuation">]</span> .got.plt          PROGBITS        0000000000404000 003000 000068 08  WA  <span class="token number">0</span>   <span class="token number">0</span>  <span class="token number">8</span>
- <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [11] .plt              PROGBITS        0000000000401020 001020 0000b0 10  AX  0   0 16</span><br><span class="line">...</span><br><span class="line">  [22] .got              PROGBITS        0000000000403ff0 002ff0 000010 08  WA  0   0  8</span><br><span class="line">  [23] .got.plt          PROGBITS        0000000000404000 003000 000068 08  WA  0   0  8</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
 <h2 id="函数动态链接过程">函数动态链接过程</h2>
 <p>首先分析一下main函数是如何调用<code>calc</code>.我们使用带有pwndbg的gdb来调试invoker.so</p>
-<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">disassemble main
-Dump of assembler code for function main:
-   0x0000000000401230 &lt;+0&gt;:	push   rbp
-   0x0000000000401231 &lt;+1&gt;:	mov    rbp,rsp
-...
-   0x00000000004012b5 &lt;+133&gt;:	mov    edi,DWORD PTR [rbp-0xc]
-   0x00000000004012b8 &lt;+136&gt;:	mov    esi,0x2
-   0x00000000004012bd &lt;+141&gt;:	mov    edx,0x3
-   0x00000000004012c2 &lt;+146&gt;:	mov    ecx,0x4
-   0x00000000004012c7 &lt;+151&gt;:	mov    DWORD PTR [rbp-0x54],eax
-&#x3D;&gt; 0x00000000004012ca &lt;+154&gt;:	call   0x401090 &lt;_Z4calciiii@plt&gt;#第一次调用calc函数
-  ...
-   0x00000000004012e9 &lt;+185&gt;:	mov    esi,0x1
-   0x00000000004012ee &lt;+190&gt;:	mov    edx,0x3
-   0x00000000004012f3 &lt;+195&gt;:	mov    ecx,0x4
-   0x00000000004012f8 &lt;+200&gt;:	mov    DWORD PTR [rbp-0x58],eax
-   0x00000000004012fb &lt;+203&gt;:	call   0x401090 &lt;_Z4calciiii@plt&gt;#第二次调用calc函数
-  ...
- <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">disassemble main</span><br><span class="line">Dump of assembler code for function main:</span><br><span class="line">   0x0000000000401230 &lt;+0&gt;:	push   rbp</span><br><span class="line">   0x0000000000401231 &lt;+1&gt;:	mov    rbp,rsp</span><br><span class="line">...</span><br><span class="line">   0x00000000004012b5 &lt;+133&gt;:	mov    edi,DWORD PTR [rbp-0xc]</span><br><span class="line">   0x00000000004012b8 &lt;+136&gt;:	mov    esi,0x2</span><br><span class="line">   0x00000000004012bd &lt;+141&gt;:	mov    edx,0x3</span><br><span class="line">   0x00000000004012c2 &lt;+146&gt;:	mov    ecx,0x4</span><br><span class="line">   0x00000000004012c7 &lt;+151&gt;:	mov    DWORD PTR [rbp-0x54],eax</span><br><span class="line">=&gt; 0x00000000004012ca &lt;+154&gt;:	call   0x401090 &lt;_Z4calciiii@plt&gt;#第一次调用calc函数</span><br><span class="line">  ...</span><br><span class="line">   0x00000000004012e9 &lt;+185&gt;:	mov    esi,0x1</span><br><span class="line">   0x00000000004012ee &lt;+190&gt;:	mov    edx,0x3</span><br><span class="line">   0x00000000004012f3 &lt;+195&gt;:	mov    ecx,0x4</span><br><span class="line">   0x00000000004012f8 &lt;+200&gt;:	mov    DWORD PTR [rbp-0x58],eax</span><br><span class="line">   0x00000000004012fb &lt;+203&gt;:	call   0x401090 &lt;_Z4calciiii@plt&gt;#第二次调用calc函数</span><br><span class="line">  ...</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
 <p>调用地址是0x401090,位于.plt节中,继续查看:</p>
-<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">pwndbg&gt; x&#x2F;10i 0x401090
-   0x401090 &lt;_Z4calciiii@plt&gt;:	jmp    QWORD PTR [rip+0x2fb2]        # 0x404048 &lt;_Z4calciiii@got.plt&gt;
-   0x401096 &lt;_Z4calciiii@plt+6&gt;:	push   0x6#代表是plt表中的第7个(从0开始)
-   0x40109b &lt;_Z4calciiii@plt+11&gt;:	jmp    0x401020
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; x/10i 0x401090</span><br><span class="line">   0x401090 &lt;_Z4calciiii@plt&gt;:	jmp    QWORD PTR [rip+0x2fb2]        # 0x404048 &lt;_Z4calciiii@got.plt&gt;</span><br><span class="line">   0x401096 &lt;_Z4calciiii@plt+6&gt;:	push   0x6#代表是plt表中的第7个(从0开始)</span><br><span class="line">   0x40109b &lt;_Z4calciiii@plt+11&gt;:	jmp    0x401020</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>在地址是 0x401090处它跳到了0x404048地址所存放的地址上（有点绕，理解为指向指针的指针）,因此需要看0x404048地址存放的地址</p>
-<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">pwndbg&gt; x&#x2F;4xw 0x404048
-0x404048 &lt;_Z4calciiii@got.plt&gt;:	0x00401096	0x00000000 0x004010a6	0x00000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; x/4xw 0x404048</span><br><span class="line">0x404048 &lt;_Z4calciiii@got.plt&gt;:	0x00401096	0x00000000 0x004010a6	0x00000000</span><br></pre></td></tr></table></figure>
 <p>发现这个地址为0x0000000000401096，正好就是.plt节中的 0x401096，相当于绕了一圈绕回来了,最后会执行 <code>jmp    0x401020</code>。</p>
-<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">pwndbg&gt; x&#x2F;5i 0x401020
-&#x3D;&gt; 0x401020:	push   QWORD PTR [rip+0x2fe2]        # 0x404008
-   0x401026:	jmp    QWORD PTR [rip+0x2fe4]        # 0x404010
-   0x40102c:	nop    DWORD PTR [rax+0x0]
-   0x401030 &lt;printf@plt&gt;:	jmp    QWORD PTR [rip+0x2fe2]        # 0x404018 &lt;printf@got.plt&gt;
-   0x401036 &lt;printf@plt+6&gt;:	push   0x0
-&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;分隔符&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
-*RIP  0x401020<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; x/5i 0x401020</span><br><span class="line">=&gt; 0x401020:	push   QWORD PTR [rip+0x2fe2]        # 0x404008</span><br><span class="line">   0x401026:	jmp    QWORD PTR [rip+0x2fe4]        # 0x404010</span><br><span class="line">   0x40102c:	nop    DWORD PTR [rax+0x0]</span><br><span class="line">   0x401030 &lt;printf@plt&gt;:	jmp    QWORD PTR [rip+0x2fe2]        # 0x404018 &lt;printf@got.plt&gt;</span><br><span class="line">   0x401036 &lt;printf@plt+6&gt;:	push   0x0</span><br><span class="line">========分隔符=======</span><br><span class="line">*RIP  0x401020</span><br></pre></td></tr></table></figure>
 <p>可以看出来0x401020这个地址位于.plt段的头部，并且最终会jmp 到0x404010地址中存的地址，我们看一下:</p>
-<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">pwndbg&gt; x&#x2F;4xw 0x404008
-0x404008:	0xf7ffe190	0x00007fff	0xf7fe7bb0	0x00007fff<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; x/4xw 0x404008</span><br><span class="line">0x404008:	0xf7ffe190	0x00007fff	0xf7fe7bb0	0x00007fff</span><br></pre></td></tr></table></figure>
 <p>最后将会jmp到0x00007ffff7fe7bb0这个地址，并且此时栈中有两个参数，放置如下:</p>
 <table>
 <thead>
@@ -470,79 +347,19 @@ Dump of assembler code for function main:
 </tbody>
 </table>
 <p>0x00007ffff7fe7bb0地址对应的文件是<code>/lib64/ld-linux-x86-64.so.2</code>,就是在执行运行时延迟加载的流程，加载的地址理论上为<code>.got.plt</code>中的<code>calc</code>函数所对应的地址。当从这个函数跳出的时候<code>0x404048</code>的内容更新为<code>0xf7f04250  0x00007fff</code>:</p>
-<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">pwndbg&gt; x&#x2F;4xw 0x404048
-0x404048 &lt;_Z4calciiii@got.plt&gt;:	0xf7f04250	0x00007fff	0x004010a6	0x00000000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; x/4xw 0x404048</span><br><span class="line">0x404048 &lt;_Z4calciiii@got.plt&gt;:	0xf7f04250	0x00007fff	0x004010a6	0x00000000</span><br></pre></td></tr></table></figure>
 <p>至此，延迟加载就结束了。我们也看一下第二次调用<code>calc</code>的逻辑</p>
-<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">0x4012e6 &lt;main+182&gt;    mov    edi, dword ptr [rbp - 0xc]
-  0x4012e9 &lt;main+185&gt;    mov    esi, 1
-  0x4012ee &lt;main+190&gt;    mov    edx, 3
-  0x4012f3 &lt;main+195&gt;    mov    ecx, 4
-  0x4012f8 &lt;main+200&gt;    mov    dword ptr [rbp - 0x58], eax
-► 0x4012fb &lt;main+203&gt;    call   0x401090 &lt;0x401090&gt;#calc函数的plt表地址
-&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;分割线&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
-
-0x401090          jmp    qword ptr [rip + 0x2fb2] &lt;0x7ffff7f04250&gt;#跳转之后进入plt表，此时的表项已经变成了calc的地址
-   ↓#直接运行calc的代码
-  0x7ffff7f04251    mov    rbp, rsp
-  0x7ffff7f04254    mov    dword ptr [rbp - 4], edi
-  0x7ffff7f04257    mov    dword ptr [rbp - 8], esi
-  0x7ffff7f0425a    mov    dword ptr [rbp - 0xc], edx
-  0x7ffff7f0425d    mov    dword ptr [rbp - 0x10], ecx
-  0x7ffff7f04260    mov    eax, dword ptr [rbp - 4]
-  0x7ffff7f04263    imul   eax, dword ptr [rbp - 8]
-  0x7ffff7f04267    add    eax, dword ptr [rbp - 0xc]
-  0x7ffff7f0426a    add    eax, dword ptr [rbp - 0x10]
-  0x7ffff7f0426d    pop    rbp
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">0x4012e6 &lt;main+182&gt;    mov    edi, dword ptr [rbp - 0xc]</span><br><span class="line">  0x4012e9 &lt;main+185&gt;    mov    esi, 1</span><br><span class="line">  0x4012ee &lt;main+190&gt;    mov    edx, 3</span><br><span class="line">  0x4012f3 &lt;main+195&gt;    mov    ecx, 4</span><br><span class="line">  0x4012f8 &lt;main+200&gt;    mov    dword ptr [rbp - 0x58], eax</span><br><span class="line">► 0x4012fb &lt;main+203&gt;    call   0x401090 &lt;0x401090&gt;#calc函数的plt表地址</span><br><span class="line">=========分割线==========</span><br><span class="line"></span><br><span class="line">0x401090          jmp    qword ptr [rip + 0x2fb2] &lt;0x7ffff7f04250&gt;#跳转之后进入plt表，此时的表项已经变成了calc的地址</span><br><span class="line">   ↓#直接运行calc的代码</span><br><span class="line">  0x7ffff7f04251    mov    rbp, rsp</span><br><span class="line">  0x7ffff7f04254    mov    dword ptr [rbp - 4], edi</span><br><span class="line">  0x7ffff7f04257    mov    dword ptr [rbp - 8], esi</span><br><span class="line">  0x7ffff7f0425a    mov    dword ptr [rbp - 0xc], edx</span><br><span class="line">  0x7ffff7f0425d    mov    dword ptr [rbp - 0x10], ecx</span><br><span class="line">  0x7ffff7f04260    mov    eax, dword ptr [rbp - 4]</span><br><span class="line">  0x7ffff7f04263    imul   eax, dword ptr [rbp - 8]</span><br><span class="line">  0x7ffff7f04267    add    eax, dword ptr [rbp - 0xc]</span><br><span class="line">  0x7ffff7f0426a    add    eax, dword ptr [rbp - 0x10]</span><br><span class="line">  0x7ffff7f0426d    pop    rbp</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>为了验证正确性，我们将calc反编译如下，发现和上面的结果一模一样，证明已经成功完成了加载</p>
-<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">pwndbg&gt; disassemble calc
-Dump of assembler code for function _Z4calciiii:
-   0x00007ffff7f04250 &lt;+0&gt;:	push   rbp
-   0x00007ffff7f04251 &lt;+1&gt;:	mov    rbp,rsp
-   0x00007ffff7f04254 &lt;+4&gt;:	mov    DWORD PTR [rbp-0x4],edi
-   0x00007ffff7f04257 &lt;+7&gt;:	mov    DWORD PTR [rbp-0x8],esi
-   0x00007ffff7f0425a &lt;+10&gt;:	mov    DWORD PTR [rbp-0xc],edx
-   0x00007ffff7f0425d &lt;+13&gt;:	mov    DWORD PTR [rbp-0x10],ecx
-   0x00007ffff7f04260 &lt;+16&gt;:	mov    eax,DWORD PTR [rbp-0x4]
-   0x00007ffff7f04263 &lt;+19&gt;:	imul   eax,DWORD PTR [rbp-0x8]
-   0x00007ffff7f04267 &lt;+23&gt;:	add    eax,DWORD PTR [rbp-0xc]
-   0x00007ffff7f0426a &lt;+26&gt;:	add    eax,DWORD PTR [rbp-0x10]
-   0x00007ffff7f0426d &lt;+29&gt;:	pop    rbp
-   0x00007ffff7f0426e &lt;+30&gt;:	ret    
-End of assembler dump.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; disassemble calc</span><br><span class="line">Dump of assembler code for function _Z4calciiii:</span><br><span class="line">   0x00007ffff7f04250 &lt;+0&gt;:	push   rbp</span><br><span class="line">   0x00007ffff7f04251 &lt;+1&gt;:	mov    rbp,rsp</span><br><span class="line">   0x00007ffff7f04254 &lt;+4&gt;:	mov    DWORD PTR [rbp-0x4],edi</span><br><span class="line">   0x00007ffff7f04257 &lt;+7&gt;:	mov    DWORD PTR [rbp-0x8],esi</span><br><span class="line">   0x00007ffff7f0425a &lt;+10&gt;:	mov    DWORD PTR [rbp-0xc],edx</span><br><span class="line">   0x00007ffff7f0425d &lt;+13&gt;:	mov    DWORD PTR [rbp-0x10],ecx</span><br><span class="line">   0x00007ffff7f04260 &lt;+16&gt;:	mov    eax,DWORD PTR [rbp-0x4]</span><br><span class="line">   0x00007ffff7f04263 &lt;+19&gt;:	imul   eax,DWORD PTR [rbp-0x8]</span><br><span class="line">   0x00007ffff7f04267 &lt;+23&gt;:	add    eax,DWORD PTR [rbp-0xc]</span><br><span class="line">   0x00007ffff7f0426a &lt;+26&gt;:	add    eax,DWORD PTR [rbp-0x10]</span><br><span class="line">   0x00007ffff7f0426d &lt;+29&gt;:	pop    rbp</span><br><span class="line">   0x00007ffff7f0426e &lt;+30&gt;:	ret    </span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
 <p>再查看一下got表,发现<code>_Z4calciiii</code>的表项已经完成修改，相反，我们还未调用free函数，因此free的表项依旧是其plt的地址。</p>
-<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">pwndbg&gt; got
-
-GOT protection: Partial RELRO | GOT functions: 10
- 
-[0x404018] printf@GLIBC_2.2.5 -&gt; 0x7ffff79fde10 (printf) ◂— endbr64 
-[0x404020] __cxa_atexit@GLIBC_2.2.5 -&gt; 0x7ffff79e2f60 (__cxa_atexit) ◂— endbr64 
-[0x404028] _ZdlPv@GLIBCXX_3.4 -&gt; 0x401056 ◂— push   2
-[0x404030] _Znwm@GLIBCXX_3.4 -&gt; 0x7ffff7d9fc10 ◂— endbr64 
-[0x404038] free@GLIBC_2.2.5 -&gt; 0x401076 (free@plt+6) ◂— push   4
-[0x404040] _ZNSt8ios_base4InitC1E@GLIBCXX_3.4 -&gt; 0x7ffff7db0190 (std::ios_base::Init::Init()) ◂— endbr64 
-[0x404048] _Z4calciiii -&gt; 0x7ffff7f04250 ◂— push   rbp
-[0x404050] __gxx_personality_v0@CXXABI_1.3 -&gt; 0x4010a6 (__gxx_personality_v0@plt+6) ◂— push   7
-[0x404058] _Unwind_Resume@GCC_3.0 -&gt; 0x4010b6 (_Unwind_Resume@plt+6) ◂— push   8
-[0x404060] _ZNSt8ios_base4InitD1E@GLIBCXX_3.4 -&gt; 0x4010c6 (std::ios_base::Init::~Init()@plt+6) ◂— push   9 &#x2F;* &#39;h\t&#39; *&#x2F;
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; got</span><br><span class="line"></span><br><span class="line">GOT protection: Partial RELRO | GOT functions: 10</span><br><span class="line"> </span><br><span class="line">[0x404018] printf@GLIBC_2.2.5 -&gt; 0x7ffff79fde10 (printf) ◂— endbr64 </span><br><span class="line">[0x404020] __cxa_atexit@GLIBC_2.2.5 -&gt; 0x7ffff79e2f60 (__cxa_atexit) ◂— endbr64 </span><br><span class="line">[0x404028] _ZdlPv@GLIBCXX_3.4 -&gt; 0x401056 ◂— push   2</span><br><span class="line">[0x404030] _Znwm@GLIBCXX_3.4 -&gt; 0x7ffff7d9fc10 ◂— endbr64 </span><br><span class="line">[0x404038] free@GLIBC_2.2.5 -&gt; 0x401076 (free@plt+6) ◂— push   4</span><br><span class="line">[0x404040] _ZNSt8ios_base4InitC1E@GLIBCXX_3.4 -&gt; 0x7ffff7db0190 (std::ios_base::Init::Init()) ◂— endbr64 </span><br><span class="line">[0x404048] _Z4calciiii -&gt; 0x7ffff7f04250 ◂— push   rbp</span><br><span class="line">[0x404050] __gxx_personality_v0@CXXABI_1.3 -&gt; 0x4010a6 (__gxx_personality_v0@plt+6) ◂— push   7</span><br><span class="line">[0x404058] _Unwind_Resume@GCC_3.0 -&gt; 0x4010b6 (_Unwind_Resume@plt+6) ◂— push   8</span><br><span class="line">[0x404060] _ZNSt8ios_base4InitD1E@GLIBCXX_3.4 -&gt; 0x4010c6 (std::ios_base::Init::~Init()@plt+6) ◂— push   9 /* &#x27;h\t&#x27; */</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <h1 id="总结">总结</h1>
 <p>为了灵活利用虚拟内存空间, 所以编译器可以产生位置无关的代码. 可执行文件可以是位置无关的, 也可以是位置相关的, 动态链接库 绝大多数都是位置无关的. GOT表可写不可执行, PLT可执行不可写, 他们相互作用来实现函数符号的延时绑定.</p>
 <h1 id="相关攻击转载">相关攻击(转载)</h1>
 <p><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vcGFubmVuZ3poaS9wLzIwMTgtMDQtMDktYWJvdXQtZ290LXBsdC5odG1s">原博客<i class="fa fa-external-link-alt"></i></span></p>
 <p>上节的分析忽略了一个重要的地方, 那就是各个段的权限, 再重温一下各个section:</p>
-<pre class="line-numbers language-none"><code class="language-none">$ readelf -S main
-Section Headers:
-  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
-  [12] .plt              PROGBITS        080483a0 0003a0 000030 04  AX  0   0 16
-  [13] .plt.got          PROGBITS        080483d0 0003d0 000008 00  AX  0   0  8
-  [14] .text             PROGBITS        080483e0 0003e0 0001a2 00  AX  0   0 16
-  [23] .got              PROGBITS        08049ffc 000ffc 000004 04  WA  0   0  4
-  [24] .got.plt          PROGBITS        0804a000 001000 000014 04  WA  0   0  4
-  [25] .data             PROGBITS        0804a014 001014 00000c 00  WA  0   0  4
-  [26] .bss              NOBITS          0804a020 001020 000008 00  WA  0   0  4
-Key to Flags:
-  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -S main</span><br><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [12] .plt              PROGBITS        080483a0 0003a0<span class="number"> 000030 </span>04  AX <span class="number"> 0 </span> <span class="number"> 0 </span>16</span><br><span class="line">  [13] .plt.got          PROGBITS        080483d0 0003d0<span class="number"> 000008 </span>00  AX <span class="number"> 0 </span> <span class="number"> 0 </span> 8</span><br><span class="line">  [14] .text             PROGBITS        080483e0 0003e0 0001a2<span class="number"> 00 </span> AX <span class="number"> 0 </span> <span class="number"> 0 </span>16</span><br><span class="line">  [23] .got              PROGBITS        08049ffc 000ffc<span class="number"> 000004 </span>04  WA <span class="number"> 0 </span> <span class="number"> 0 </span> 4</span><br><span class="line">  [24] .got.plt          PROGBITS        0804a000<span class="number"> 001000 </span>000014<span class="number"> 04 </span> WA <span class="number"> 0 </span> <span class="number"> 0 </span> 4</span><br><span class="line">  [25] .data             PROGBITS        0804a014<span class="number"> 001014 </span>00000c<span class="number"> 00 </span> WA <span class="number"> 0 </span> <span class="number"> 0 </span> 4</span><br><span class="line">  [26] .bss              NOBITS          0804a020<span class="number"> 001020 </span>000008<span class="number"> 00 </span> WA <span class="number"> 0 </span> <span class="number"> 0 </span> 4</span><br><span class="line">Key to Flags:</span><br><span class="line">  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),</span><br></pre></td></tr></table></figure>
 <p>为了使得结果更清晰, 我删除了一些无关的输出. 从上表的Flg行可以看到, 前三个段都有可执行权限(X), 却没有写(W)权限; 而后几个都有写权限, 却不可执行.现代的操作系统一般都支持NX特性, 所以这样的结果是很常见的.</p>
 <p>同时, 这也是为什么要将PLT和GOT分开的原因. 链接器运行时填充的区域, 必须是可写的,但可写的区域一般不可执行, 对外部变量没有影响, 但对于外部函数来说就需要引入一个可执行的区域作为引导, 这就是PLT的作用.</p>
 <h2 id="ret2libc">ret2libc</h2>

