@@ -90,7 +90,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">10</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">33</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">39</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">11</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">34</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">41</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -155,18 +155,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-count">41</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -194,6 +194,325 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/01/18/learm-rope/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
+      <meta itemprop="name" content="Tony">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Oh, Tony">
+      <meta itemprop="description" content="GXG">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Oh, Tony">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/01/18/learm-rope/" class="post-title-link" itemprop="url">RoPE 学习总结</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-01-18 01:27:27" itemprop="dateCreated datePublished" datetime="2024-01-18T01:27:27+08:00">2024-01-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2024/01/18/learm-rope/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2024/01/18/learm-rope/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="简介">简介</h2>
+<p>Rotary Position Embedding (RoPE)是一种用于为序列模型引入位置信息的技术。它使用旋转编码来表示序列中的中绝对位置信息，并且这种表示方式也蕴含了序列中相对位置的依赖关系。这种方法常在llm在注意力机制中使用，用于标识注意力机制中Query和Key的位置信息。</p>
+<p>Rotary Position Embedding 的主要优势在于能够更好地处理序列中元素之间的关系，也可以灵活地扩展到任何序列长度，有助于提升模型的表示能力。</p>
+<h2 id="hf的llama如何使用rope">HF的llama如何使用RoPE</h2>
+<p>在进行原理分析之前，我们先基于一下hugging face的transformer库的<strong>v4.36.2</strong> tag了解一下 llama是如何使用RoPE的。</p>
+<p>llama中，和RoPE相关的代码有如下几个：</p>
+<ol type="1">
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2h1Z2dpbmdmYWNlL3RyYW5zZm9ybWVycy9ibG9iL3Y0LjM2LjIvc3JjL3RyYW5zZm9ybWVycy9tb2RlbHMvbGxhbWEvbW9kZWxpbmdfbGxhbWEucHkjTDEyMw==">LlamaRotaryEmbedding<i class="fa fa-external-link-alt"></i></span>: llama RoPE的核心类，承载了所有RoPE的功能和优化。</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2h1Z2dpbmdmYWNlL3RyYW5zZm9ybWVycy9ibG9iL3Y0LjM2LjIvc3JjL3RyYW5zZm9ybWVycy9tb2RlbHMvbGxhbWEvbW9kZWxpbmdfbGxhbWEucHkjTDI4NQ==">LlamaAttention<i class="fa fa-external-link-alt"></i></span>：llama的attention类，在该类中初始化LlamaRotaryEmbedding ，并进调用RoPE</li>
+<li>功能函数：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2h1Z2dpbmdmYWNlL3RyYW5zZm9ybWVycy9ibG9iL3Y0LjM2LjIvc3JjL3RyYW5zZm9ybWVycy9tb2RlbHMvbGxhbWEvbW9kZWxpbmdfbGxhbWEucHkjTDIxMQ==">apply_rotary_pos_emb<i class="fa fa-external-link-alt"></i></span>和<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2h1Z2dpbmdmYWNlL3RyYW5zZm9ybWVycy9ibG9iL3Y0LjM2LjIvc3JjL3RyYW5zZm9ybWVycy9tb2RlbHMvbGxhbWEvbW9kZWxpbmdfbGxhbWEucHkjTDIwNA==">rotate_half<i class="fa fa-external-link-alt"></i></span>，具体功能见函数注释。</li>
+</ol>
+<p>我们简单梳理一下llama调用RoPE的流程图</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">T1(初始化LlamaAttention类)--&gt;T2</span><br><span class="line">T2(初始化LlamaRotaryEmbedding类并对sin和cos进行缓存)--&gt;T3</span><br><span class="line">T3(用户执行模型前向推理)--&gt;T4</span><br><span class="line">T4(LlamaAttention对Query和Key使用RoPE进行编码)--&gt;T5</span><br><span class="line">T5(执行Attention操作)</span><br></pre></td></tr></table></figure>
+<p>结合源代码，看一下都具体做了什么。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">LlamaRotaryEmbedding</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, dim, max_position_embeddings=<span class="number">2048</span>, base=<span class="number">10000</span>, device=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line"></span><br><span class="line">        self.dim = dim <span class="comment">#128</span></span><br><span class="line">        self.max_position_embeddings = max_position_embeddings <span class="comment">#2048</span></span><br><span class="line">        self.base = base <span class="comment">#10000</span></span><br><span class="line">        inv_freq = <span class="number">1.0</span> / (self.base ** (torch.arange(<span class="number">0</span>, self.dim, <span class="number">2</span>).<span class="built_in">float</span>().to(device) / self.dim)) <span class="comment">#该参数和论文中的Long-term decay(长期衰减)相关，它记录了所有成分的旋转角度。shape是[1,64]</span></span><br><span class="line">        self.register_buffer(<span class="string">&quot;inv_freq&quot;</span>, inv_freq, persistent=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Build here to make `torch.jit.trace` work.</span></span><br><span class="line">        self._set_cos_sin_cache(</span><br><span class="line">            seq_len=max_position_embeddings, device=self.inv_freq.device, dtype=torch.get_default_dtype()</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_set_cos_sin_cache</span>(<span class="params">self, seq_len, device, dtype</span>):</span><br><span class="line">       <span class="comment"># 这里的代码是优化RoPE的关键点，它改变了论文中旋转矩阵的格式，但是却简化了处理逻辑，提高了运算速度。</span></span><br><span class="line">        self.max_seq_len_cached = seq_len</span><br><span class="line">        <span class="comment"># 在第一次调用该函数的时候，t=[0,1,2,...,2048]</span></span><br><span class="line">        t = torch.arange(self.max_seq_len_cached, device=device, dtype=self.inv_freq.dtype)</span><br><span class="line">		<span class="comment">#计算t和inv_freq的外积,freqs的shape是[2048,64]，freq中存储了所有的旋转角度，但是64仅是它仅head_size的一半</span></span><br><span class="line">        freqs = torch.outer(t, self.inv_freq)</span><br><span class="line">        <span class="comment"># Different from paper, but it uses a different permutation in order to obtain the same calculation</span></span><br><span class="line">        <span class="comment">#将freqs重复一遍，并拼接，shape是[2048,64]</span></span><br><span class="line">        emb = torch.cat((freqs, freqs), dim=-<span class="number">1</span>)</span><br><span class="line">        <span class="comment"># 缓存cos和sin值，只要序列长度小于2048,均可以之间从中取值。</span></span><br><span class="line">        self.register_buffer(<span class="string">&quot;cos_cached&quot;</span>, emb.cos().to(dtype), persistent=<span class="literal">False</span>)</span><br><span class="line">        self.register_buffer(<span class="string">&quot;sin_cached&quot;</span>, emb.sin().to(dtype), persistent=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x, seq_len=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="comment"># x: [bs, num_attention_heads, seq_len, head_size]</span></span><br><span class="line">        <span class="keyword">if</span> seq_len &gt; self.max_seq_len_cached: </span><br><span class="line">           	<span class="comment"># 如果序列长度大于缓存的长度，则重新计算</span></span><br><span class="line">            self._set_cos_sin_cache(seq_len=seq_len, device=x.device, dtype=x.dtype)</span><br><span class="line">		<span class="comment"># 获取cache的cos和sin</span></span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            self.cos_cached[:seq_len].to(dtype=x.dtype),</span><br><span class="line">            self.sin_cached[:seq_len].to(dtype=x.dtype),</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rotate_half</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;将x最后一维的后一半变为负数，并和前一半交换位置.&quot;&quot;&quot;</span></span><br><span class="line">    x1 = x[..., : x.shape[-<span class="number">1</span>] // <span class="number">2</span>]</span><br><span class="line">    x2 = x[..., x.shape[-<span class="number">1</span>] // <span class="number">2</span> :]</span><br><span class="line">    <span class="keyword">return</span> torch.cat((-x2, x1), dim=-<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">apply_rotary_pos_emb</span>(<span class="params">q, k, cos, sin, position_ids, unsqueeze_dim=<span class="number">1</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;对Query和Key应用RoPE</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        q (`torch.Tensor`): The query tensor.</span></span><br><span class="line"><span class="string">        k (`torch.Tensor`): The key tensor.</span></span><br><span class="line"><span class="string">        cos (`torch.Tensor`): The cosine part of the rotary embedding.</span></span><br><span class="line"><span class="string">        sin (`torch.Tensor`): The sine part of the rotary embedding.</span></span><br><span class="line"><span class="string">        position_ids (`torch.Tensor`):</span></span><br><span class="line"><span class="string">            The position indices of the tokens corresponding to the query and key tensors. For example, this can be</span></span><br><span class="line"><span class="string">            used to pass offsetted position ids when working with a KV-cache.</span></span><br><span class="line"><span class="string">        unsqueeze_dim (`int`, *optional*, defaults to 1):</span></span><br><span class="line"><span class="string">            The &#x27;unsqueeze_dim&#x27; argument specifies the dimension along which to unsqueeze cos[position_ids] and</span></span><br><span class="line"><span class="string">            sin[position_ids] so that they can be properly broadcasted to the dimensions of q and k. For example, note</span></span><br><span class="line"><span class="string">            that cos[position_ids] and sin[position_ids] have the shape [batch_size, seq_len, head_dim]. Then, if q and</span></span><br><span class="line"><span class="string">            k have the shape [batch_size, heads, seq_len, head_dim], then setting unsqueeze_dim=1 makes</span></span><br><span class="line"><span class="string">            cos[position_ids] and sin[position_ids] broadcastable to the shapes of q and k. Similarly, if q and k have</span></span><br><span class="line"><span class="string">            the shape [batch_size, seq_len, heads, head_dim], then set unsqueeze_dim=2.</span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        `tuple(torch.Tensor)` comprising of the query and key tensors rotated using the Rotary Position Embedding.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    cos = cos[position_ids].unsqueeze(unsqueeze_dim)</span><br><span class="line">    sin = sin[position_ids].unsqueeze(unsqueeze_dim)</span><br><span class="line">    <span class="comment">#与原文的优化公式相同</span></span><br><span class="line">    q_embed = (q * cos) + (rotate_half(q) * sin)</span><br><span class="line">    k_embed = (k * cos) + (rotate_half(k) * sin)</span><br><span class="line">    <span class="keyword">return</span> q_embed, k_embed</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">LlamaAttention</span>(nn.Module):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Multi-headed attention from &#x27;Attention Is All You Need&#x27; paper&quot;&quot;&quot;</span></span><br><span class="line">	</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, config: LlamaConfig, layer_idx: <span class="type">Optional</span>[<span class="built_in">int</span>] = <span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        <span class="comment"># 初始化LlamaAttention，设置一些超参数，我们以llama13b的常见参数为例进行解析</span></span><br><span class="line">        self.config = config</span><br><span class="line">        self.layer_idx = layer_idx</span><br><span class="line">		...</span><br><span class="line">        self.attention_dropout = config.attention_dropout</span><br><span class="line">        self.hidden_size = config.hidden_size <span class="comment"># QKV的隐藏层大小，值为5120</span></span><br><span class="line">        self.num_heads = config.num_attention_heads <span class="comment">#多头注意力的头数，值为40</span></span><br><span class="line">        self.head_dim = self.hidden_size // self.num_heads <span class="comment"># 多头注意力，每个头的大小，值为128</span></span><br><span class="line">        self.num_key_value_heads = config.num_key_value_heads <span class="comment">#GQA时使用，和RoPE无关</span></span><br><span class="line">        self.num_key_value_groups = self.num_heads // self.num_key_value_heads <span class="comment">#GQA时使用，和RoPE无关</span></span><br><span class="line">        self.max_position_embeddings = config.max_position_embeddings <span class="comment"># RoPE最大的序列长度。执行推理时即使序列长度超过了也无妨，就需要在前向推理时重新计算sin和cos cache。具体在RoPE中讲解。值为 2048</span></span><br><span class="line">        self.rope_theta = config.rope_theta <span class="comment"># RoPE 旋转的基数，具体在RoPE中讲解。值为 10000</span></span><br><span class="line">        self.is_causal = <span class="literal">True</span></span><br><span class="line">		...</span><br><span class="line">        self.q_proj = nn.Linear(self.hidden_size, self.num_heads * self.head_dim, bias=config.attention_bias)</span><br><span class="line">        self.k_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=config.attention_bias)</span><br><span class="line">        self.v_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=config.attention_bias)</span><br><span class="line">        self.o_proj = nn.Linear(self.num_heads * self.head_dim, self.hidden_size, bias=config.attention_bias)</span><br><span class="line">        self._init_rope()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_init_rope</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">if</span> self.config.rope_scaling <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="comment">#最原始的RoPE，我们只关注这个。</span></span><br><span class="line">            <span class="comment">#初始化RoPE,并设置超参数。</span></span><br><span class="line">            self.rotary_emb = LlamaRotaryEmbedding(</span><br><span class="line">                self.head_dim, <span class="comment"># 128</span></span><br><span class="line">                max_position_embeddings=self.max_position_embeddings, <span class="comment">#2048</span></span><br><span class="line">                base=self.rope_theta, <span class="comment">#10000</span></span><br><span class="line">            )</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            ...</span><br><span class="line">            <span class="comment">#其他位置编码</span></span><br><span class="line">		...</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        hidden_states: torch.Tensor,</span></span><br><span class="line"><span class="params">        attention_mask: <span class="type">Optional</span>[torch.Tensor] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        position_ids: <span class="type">Optional</span>[torch.LongTensor] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        past_key_value: <span class="type">Optional</span>[Cache] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        output_attentions: <span class="built_in">bool</span> = <span class="literal">False</span>,</span></span><br><span class="line"><span class="params">        use_cache: <span class="built_in">bool</span> = <span class="literal">False</span>,</span></span><br><span class="line"><span class="params">        **kwargs,</span></span><br><span class="line"><span class="params">    </span>) -&gt; <span class="type">Tuple</span>[torch.Tensor, <span class="type">Optional</span>[torch.Tensor], <span class="type">Optional</span>[<span class="type">Tuple</span>[torch.Tensor]]]:</span><br><span class="line">		...</span><br><span class="line">        bsz, q_len, _ = hidden_states.size()</span><br><span class="line">		<span class="comment"># 经过下面的处理之后query_states, key_states和value_states的shape为</span></span><br><span class="line">        <span class="comment"># [batch, num_head, q_len, head_dim]，具体为[batch,40,当前序列长度,128]</span></span><br><span class="line">        query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">        key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">        value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">        kv_seq_len = key_states.shape[-<span class="number">2</span>]</span><br><span class="line">		...</span><br><span class="line">        <span class="comment"># 对Query和Key应用RoPE，</span></span><br><span class="line">        cos, sin = self.rotary_emb(value_states, seq_len=kv_seq_len)</span><br><span class="line">        query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment"># 计算attention</span></span><br></pre></td></tr></table></figure>
+<h2 id="rope原理解析">RoPE原理解析</h2>
+RoPE的思路是使用旋转角度表示序列的位置信息和序列元素的相对位置信息。我们使用一个2维的例子为例介绍旋转矩阵。下列的函数可以让词嵌入向量$ <span class="math inline">\(旋转\)</span><span class="math inline">\(角度，在RoPE中，所有的旋转角度是某个常数的倍数，我们暂时领这个常数为\)</span>m$。 $$ rotate(,m,) =<br>
+
+<span class="math display">\[\begin{pmatrix}
+ \cos m\theta &amp;-\sin m\theta \\
+ \sin m\theta &amp;\cos  m\theta \\
+
+ \end{pmatrix} 
+ \begin{pmatrix}
+ x_0  \\
+ x_1 \\
+ \end{pmatrix}\]</span>
+<p>$$ 例如有一个词向量dog，它可以由一个二维向量进行表示<span class="math inline">\(\overrightarrow{x_{dog}}\)</span>。如果句子是The dog，dog的词嵌入向量就会旋转<span class="math inline">\(\theta\)</span>角度。如果句子是The pig chased the dog，则会旋转<span class="math inline">\(4\theta\)</span></p>
+<figure>
+<img src="/2024/01/18/learm-rope/image-20240117232035292.png" alt><figcaption>image-20240117232035292</figcaption>
+</figure>
+<p>这样也就意味着，如果想要计算两个词的距离，那么只需要关注两个词之间的夹角即可，因为无论其他的词是什么，只要这两个词之间相隔的token数量相同，那么他们两个向量之间的夹角总是一致的。</p>
+<p>例如下图，两句话之间的dog和pig都间隔了两个单词，那么这两个词之间的夹角也是相同的。</p>
+<figure>
+<img src="/2024/01/18/learm-rope/image-20240117232326076.png" alt><figcaption>image-20240117232326076</figcaption>
+</figure>
+<p>RoPE也由此诞生。</p>
+<p>RoPE的公式如下： <span class="math display">\[
+f_{\{q,k\}}(x_m,m) = R^d_{\Theta,m}W_{\{q,k\}}x_m
+\]</span> 其中，RoPE将x每两行分一组进行旋转。 <span class="math display">\[
+R^d_{\Theta,m} =\begin{pmatrix}
+ \cos m\theta_1 &amp;-\sin m\theta_1 &amp;0 &amp; 0 &amp; \cdots &amp;0&amp;0 \\
+ \sin m\theta_1 &amp;\cos  m\theta_1 &amp;0 &amp; 0 &amp; \cdots &amp;0&amp;0\\
+ 0 &amp; 0&amp; \cos m\theta_2 &amp;-\sin m\theta_2  &amp; \cdots &amp;0&amp;0 \\
+ 0 &amp; 0&amp; \sin m\theta_2 &amp;\cos  m\theta_2 &amp; \cdots &amp;0&amp;0\\
+ \vdots&amp; \vdots&amp; \vdots&amp; \vdots&amp; \ddots&amp; \vdots&amp; \vdots&amp;\\
+  0 &amp; 0&amp; 0&amp; 0&amp; \cdots&amp; \cos m\theta_{d/2} &amp;-\sin m\theta_{d/2} \\
+   0 &amp; 0&amp; 0&amp; 0&amp; \cdots&amp; \sin m\theta_{d/2} &amp; \cos m\theta_{d/2} \\
+ \end{pmatrix}
+\]</span></p>
+<p><span class="math display">\[
+\Theta = \{ \theta_i = 10^{4*\frac{2(i-1)}{d}},i \in [1,2,...,d/2]\}
+\]</span></p>
+<p>应用self attnetion的时候，单个token的q和k的运算如下，但是这种都是矩阵乘法运算效率很低，。 <span class="math display">\[
+q^\top _mk_{n} = (R_{\Theta,m}^dW_qx_m)^\top (R_{\Theta, n}^dW_kx_n) = x^\top W_q R^d_{\Theta, n-m}W_kx_n
+\]</span> 于是，论文中对他进行了优化，具体如下，<strong>使用下列函数就可以直接计算词嵌入x在第m个位置时对应的RoPE</strong> <span class="math display">\[
+R^d_{\Theta,m}x =
+\begin{pmatrix} 
+x_1 \\
+x_2 \\
+x_3 \\
+x_4 \\
+\vdots \\
+x_{d-1} \\
+x_d \\
+\end{pmatrix}
+\bigotimes
+\begin{pmatrix} 
+\cos m \theta_1 \\
+\cos m \theta_1 \\
+\cos m \theta_2 \\
+\cos m \theta_2 \\
+\vdots \\
+\cos m \theta_{d/2} \\
+\cos m \theta_{d/2} \\
+\end{pmatrix}
++
+\begin{pmatrix} 
+-x_2 \\
+x_1 \\
+-x_4 \\
+x_3 \\
+\vdots \\
+-x_{d} \\
+x_{d-1} \\
+\end{pmatrix}
+\bigotimes
+\begin{pmatrix} 
+\sin m \theta_1 \\
+\sin m \theta_1 \\
+\sin m \theta_2 \\
+\sin m \theta_2 \\
+\vdots \\
+\sin m \theta_{d/2} \\
+\sin m \theta_{d/2} \\
+\end{pmatrix}
+\]</span> 上述的实现方法就是HF使用的RoPE实现方法，但是HF还做了进一步的优化。</p>
+<p>HF做的优化：</p>
+<ol type="1">
+<li><p>预先缓存了max_seq_len_cached(本例中为2048)个<span class="math inline">\(\cos m \theta\)</span>和<span class="math inline">\(\sin m \theta\)</span>。并将<span class="math inline">\(\cos m \theta\)</span>和<span class="math inline">\(\sin m \theta\)</span>进行了重排列</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">def</span> <span class="title function_">_set_cos_sin_cache</span>(<span class="params">self, seq_len, device, dtype</span>):</span><br><span class="line">     <span class="comment"># 这里的代码是优化RoPE的关键点，它改变了论文中旋转矩阵的格式，但是却简化了处理逻辑，提高了运算速度。</span></span><br><span class="line">      self.max_seq_len_cached = seq_len</span><br><span class="line">      <span class="comment"># 在第一次调用该函数的时候，t=[0,1,2,...,2047]，对应了m的值就是从0到2047</span></span><br><span class="line">      t = torch.arange(self.max_seq_len_cached, device=device, dtype=self.inv_freq.dtype)</span><br><span class="line"><span class="comment">#计算t和inv_freq的外积,freqs的shape是[2048,64]，freq中存储了所有的旋转角度，但是64仅是它仅head_size的一半</span></span><br><span class="line">      freqs = torch.outer(t, self.inv_freq)</span><br><span class="line">      <span class="comment"># Different from paper, but it uses a different permutation in order to obtain the same calculation</span></span><br><span class="line">      <span class="comment">#将freqs重复一遍，并拼接，shape是[2048,64]</span></span><br><span class="line">      emb = torch.cat((freqs, freqs), dim=-<span class="number">1</span>)</span><br><span class="line">      <span class="comment"># 缓存cos和sin值，只要序列长度小于2048,均可以之间从中取值。</span></span><br><span class="line">      self.register_buffer(<span class="string">&quot;cos_cached&quot;</span>, emb.cos().to(dtype), persistent=<span class="literal">False</span>)</span><br><span class="line">      self.register_buffer(<span class="string">&quot;sin_cached&quot;</span>, emb.sin().to(dtype), persistent=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+<p>被cache起来的cos_cached和sin_cached的<strong>第m行</strong>数据排列如下： <span class="math display">\[
+cos\_cached[m,:]=\begin{pmatrix} 
+\cos m \theta_1 \\
+\cos m \theta_2 \\
+\cos m \theta_3 \\
+\vdots \\
+\cos m \theta_{d/2} \\
+\cos m \theta_1 \\
+\cos m \theta_2 \\
+\cos m \theta_3 \\
+\vdots \\
+\cos m \theta_{d/2} \\
+\end{pmatrix}
+sin\_cached[m,:]=\begin{pmatrix} 
+\sin m \theta_1 \\
+\sin m \theta_2 \\
+\sin m \theta_3 \\
+\vdots \\
+\sin m \theta_{d/2} \\
+\sin m \theta_1 \\
+\sin m \theta_2 \\
+\sin m \theta_3 \\
+\vdots \\
+\sin m \theta_{d/2} \\
+\end{pmatrix} ,m \in[0,max\_seq\_len\_cached]
+\]</span> 由于sin和cos向量的排列进行了变化那么<span class="math inline">\(R^d_{\Theta,m}x\)</span>的计算逻辑也要修改。于是就引出了第二步优化</p></li>
+<li><p>对向量<span class="math inline">\(x\)</span>进行变换，并带入<span class="math inline">\(R^d_{\Theta,m}x\)</span>。做这一步优化的操作就是rotate_half这个函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">rotate_half</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;将x最后一维的后一半变为负数，并和前一半交换位置.&quot;&quot;&quot;</span></span><br><span class="line">    x1 = x[..., : x.shape[-<span class="number">1</span>] // <span class="number">2</span>]</span><br><span class="line">    x2 = x[..., x.shape[-<span class="number">1</span>] // <span class="number">2</span> :]</span><br><span class="line">    <span class="keyword">return</span> torch.cat((-x2, x1), dim=-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>转换过程如下： <span class="math display">\[
+x=\begin{pmatrix} 
+x_1 \\
+x_2 \\
+x_3 \\
+x_4 \\
+\vdots \\
+x_{d-1} \\
+x_d \\
+\end{pmatrix},
+x1 = \begin{pmatrix} 
+x_1 \\
+x_2 \\
+x_3 \\
+\vdots \\
+x_{d/2} \\
+\end{pmatrix},
+x2 = \begin{pmatrix} 
+x_{d/2+1} \\
+x_{d/2+2} \\
+x_{d/2+3} \\
+\vdots \\
+x_{d} \\
+\end{pmatrix},
+concatat(-x2, x1)=
+\begin{pmatrix} 
+-x_{d/2+1} \\
+-x_{d/2+2} \\
+-x_{d/2+3} \\
+\vdots \\
+-x_{d} \\
+x_1 \\
+x_2 \\
+x_3 \\
+\vdots \\
+x_{d/2} \\
+\end{pmatrix},
+\]</span> 然后我们领<span class="math inline">\(q=x\)</span>带入如下代码中，公式就变成下面的$ x$</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">q_embed = (q * cos) + (rotate_half(q) * sin)</span><br></pre></td></tr></table></figure>
+<p><span class="math display">\[
+\widehat{R^d_{\Theta,m}}x =
+\begin{pmatrix} 
+x_1 \\
+x_2 \\
+x_3 \\
+\vdots \\
+x_{d/2} \\
+x_{d/2+1} \\
+x_{d/2+2} \\
+x_{d/2+3} \\
+\vdots \\
+x_d \\
+\end{pmatrix}
+\bigotimes
+\begin{pmatrix} 
+\cos m \theta_1 \\
+\cos m \theta_2 \\
+\cos m \theta_3 \\
+\vdots \\
+\cos m \theta_{d/2} \\
+\cos m \theta_1 \\
+\cos m \theta_2 \\
+\cos m \theta_3 \\
+\vdots \\
+\cos m \theta_{d/2} \\
+\end{pmatrix}
++
+\begin{pmatrix} 
+-x_{d/2+1} \\
+-x_{d/2+2} \\
+-x_{d/2+3} \\
+\vdots \\
+-x_{d} \\
+x_1 \\
+x_2 \\
+x_3 \\
+\vdots \\
+x_{d/2} \\
+\end{pmatrix}
+\bigotimes
+\begin{pmatrix} 
+\sin m \theta_1 \\
+\sin m \theta_2 \\
+\sin m \theta_3 \\
+\vdots \\
+\sin m \theta_{d/2} \\
+\sin m \theta_1 \\
+\sin m \theta_2 \\
+\sin m \theta_3 \\
+\vdots \\
+\sin m \theta_{d/2} \\
+\end{pmatrix}
+\]</span></p>
+<p>有没有发现惊喜。原本公式本应该成一组的<span class="math inline">\(x_1与x_2\)</span>在新的公式中变成了<span class="math inline">\(x_1与x_{d/2+1}\)</span>，相当于只是把原本相邻的两两成对旋转的规则变成了跨越d/2个元素成对旋转。妙啊。</p>
+<p>并且这样的做法，可以充分利用torch的运算能力，也不需要像原公式一样，先相邻两个元素先交换再取负值，可以做到批量操作。</p></li>
+</ol>
+<h2 id="简单的例子">简单的例子</h2>
+<p>到这里，可算是理解了HF中llama的RoPE的流程，虽然没有详细理解公式证明，但是也确实体会到了HF代码的优美之处。我们写一个简单的调用RoPE的流程来加深一下印象。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> transformers.models.llama.modeling_llama <span class="keyword">import</span> (</span><br><span class="line">    rotate_half,</span><br><span class="line">    apply_rotary_pos_emb,</span><br><span class="line">    LlamaRotaryEmbedding,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">apply_rotary_pos_emb</span>(<span class="params">q, k, cos, sin, position_ids, unsqueeze_dim=<span class="number">1</span></span>):</span><br><span class="line">    cos = cos[position_ids].unsqueeze(unsqueeze_dim)</span><br><span class="line">    sin = sin[position_ids].unsqueeze(unsqueeze_dim)</span><br><span class="line">    q_embed = (q * cos) + (rotate_half(q) * sin)</span><br><span class="line">    k_embed = (k * cos) + (rotate_half(k) * sin)</span><br><span class="line">    <span class="keyword">return</span> q_embed, k_embed</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    head_size = <span class="number">128</span></span><br><span class="line">    rot = LlamaRotaryEmbedding(dim=head_size)</span><br><span class="line">    current_seq_len = <span class="number">10</span></span><br><span class="line">    cache_shape = [<span class="number">2</span>,<span class="number">40</span>,current_seq_len,<span class="number">128</span>] <span class="comment">#此处使用的query和key 的size是[2,40,10,128]，序列长度是10，num_head=40,batch=2,head_dim=128</span></span><br><span class="line">    x = torch.randn(cache_shape, dtype=torch.<span class="built_in">float</span>, device=<span class="string">&quot;cuda&quot;</span>)</span><br><span class="line">    <span class="comment">#从中cos_cache和sin_cache中取前90个值</span></span><br><span class="line">    cos, sin = rot(x,<span class="number">90</span>)</span><br><span class="line">    query_states = torch.randn(cache_shape)</span><br><span class="line">    key_states = torch.randn(cache_shape)</span><br><span class="line">    start = <span class="number">0</span></span><br><span class="line">    <span class="comment"># 两个batch都从cos和sin中取0-10个进行RoPE操作</span></span><br><span class="line">    position_ids = torch.arange(start,start+current_seq_len,dtype=torch.int32).tile(<span class="number">2</span>,<span class="number">1</span>)</span><br><span class="line">    query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)</span><br><span class="line">    </span><br><span class="line">main()</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -625,140 +944,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/46778179?v=4">
-      <meta itemprop="name" content="Tony">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Oh, Tony">
-      <meta itemprop="description" content="GXG">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Oh, Tony">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/" class="post-title-link" itemprop="url">如何执行.o文件</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2023-08-05 00:19:18" itemprop="dateCreated datePublished" datetime="2023-08-05T00:19:18+08:00">2023-08-05</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
-        </span>
-    </span>
-
-  
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2023/08/05/如何执行-o文件/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="如何执行.o文件">如何执行.o文件</h1>
-<p>.o文件是又编译器将.cc或者.c等源代码文件编译而来的，它往往对应一个compilation unit。但是.o文件由于缺少外部符号（调用的外部函数或者全局变量）因此.o文件理论上不可被执行。</p>
-<p>但是我们可以通过一些技巧，让.o变得可执行。首先，我们先简单介绍一下.o文件。</p>
-<h2 id="o文件的构成">.o文件的构成</h2>
-<p>.o文件也是ELF类型的文件，但是与.so文件不同的是，.o文件仅包含一个compilation unit的信息。我们先介绍一些常用的节，以下图为例：</p>
-<figure>
-<img src="/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/image-20230624224626224.png" alt><figcaption>image-20230624224626224</figcaption>
-</figure>
-<p>可以看到里面有很多节，但是我们只需要关注<strong>.text</strong>,<strong>.rela.text</strong>,<strong>.rodata.xxx(这里指的是.rodata相关的所有节)</strong>,<strong>.data</strong>,<strong>.symtab</strong>和<strong>.strtab</strong>就行了，下表列举了不同节的作用</p>
-<table>
-<thead>
-<tr class="header">
-<th>.text</th>
-<th>存储了所有的汇编指令，但是跳转到.o以外的指令(例如call, b这种指令)使用的跳转地址为0</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>.rela.text</td>
-<td>存储了.text节中所有需要重定位的符号</td>
-</tr>
-<tr class="even">
-<td>.rodat.xxx</td>
-<td>存储了只读的数据，当有可读可修改的数据的时候，还会有.data节</td>
-</tr>
-<tr class="odd">
-<td>.symtab</td>
-<td>符号表，可以从该表中得到该.o文件中的函数名称</td>
-</tr>
-<tr class="even">
-<td>.strtab</td>
-<td>字符表，存储了符号表中的符号字符串。</td>
-</tr>
-</tbody>
-</table>
-<p>由于架构的不同，x86_86、aarch64和arm32的.o格式不一定完全相同，解析.o文件的流程是几乎一致的。下面就根据这些信息来解析.o文件并执行.o文件。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/08/05/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C-o%E6%96%87%E4%BB%B6/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -771,7 +956,7 @@
 
   <div class="copyright">
     &copy; 2014 – 
-    <span itemprop="copyrightYear">2023</span>
+    <span itemprop="copyrightYear">2024</span>
     <span class="with-love">
       <i class="fa fa-heart"></i>
     </span>
