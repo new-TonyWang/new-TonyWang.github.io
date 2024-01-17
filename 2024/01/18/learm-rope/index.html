@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://example.com/2024/01/18/learm-rope/image-20240117232035292.png">
 <meta property="og:image" content="http://example.com/2024/01/18/learm-rope/image-20240117232326076.png">
 <meta property="article:published_time" content="2024-01-17T17:27:27.000Z">
-<meta property="article:modified_time" content="2024-01-17T17:28:34.765Z">
+<meta property="article:modified_time" content="2024-01-17T17:34:56.119Z">
 <meta property="article:author" content="Tony">
 <meta property="article:tag" content="RoPE">
 <meta property="article:tag" content="LLAMA">
@@ -278,7 +278,7 @@
     
     <div class="post-body" itemprop="articleBody"><h2 id="简介">简介</h2>
 <p>Rotary Position Embedding (RoPE)是一种用于为序列模型引入位置信息的技术。它使用旋转编码来表示序列中的中绝对位置信息，并且这种表示方式也蕴含了序列中相对位置的依赖关系。这种方法常在llm在注意力机制中使用，用于标识注意力机制中Query和Key的位置信息。</p>
-<p>Rotary Position Embedding 的主要优势在于能够更好地处理序列中元素之间的关系，也可以灵活地扩展到任何序列长度，有助于提升模型的表示能力。</p>
+<p>Rotary Position Embedding 的主要优势在于能够更好地处理序列中元素之间的关系，也可以灵活地扩展到任何序列长度，有助于提升模型的表示能力。 <span id="more"></span></p>
 <h2 id="hf的llama如何使用rope">HF的llama如何使用RoPE</h2>
 <p>在进行原理分析之前，我们先基于一下hugging face的transformer库的<strong>v4.36.2</strong> tag了解一下 llama是如何使用RoPE的。</p>
 <p>llama中，和RoPE相关的代码有如下几个：</p>
