@@ -1578,7 +1578,7 @@ pre code {
 }
 @media (min-width: 1600px) {
   .footer-inner {
-    width: 50%;
+    width: 55%;
   }
 }
 .use-motion .footer {
@@ -2597,7 +2597,7 @@ header.header {
 }
 @media (min-width: 1600px) {
   .main {
-    width: 50%;
+    width: 55%;
   }
 }
 @media (max-width: 991px) {
@@ -2884,6 +2884,9 @@ header.header {
     padding: 10px 5px;
   }
 }
+<div class="footer-custom">,
+Website source code <span class="exturl theme-link"data-url="aHR0cHM6Ly9naXRodWIuY29tL2hleG8tbmV4dC9oZXhvLW5leHQuZ2l0aHViLmlv">here</span>,
+</div>,
 .text-center {
   text-align: center;
 }

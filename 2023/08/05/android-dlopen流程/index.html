@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://example.com/2023/08/05/android-dlopen%E6%B5%81%E7%A8%8B/image-20210805221126743.png">
 <meta property="og:image" content="http://example.com/2023/08/05/android-dlopen%E6%B5%81%E7%A8%8B/image-20210805221336854.png">
 <meta property="article:published_time" content="2023-08-04T16:51:58.000Z">
-<meta property="article:modified_time" content="2023-08-04T17:04:15.320Z">
+<meta property="article:modified_time" content="2024-01-23T14:52:14.032Z">
 <meta property="article:author" content="Tony">
 <meta property="article:tag" content="c++">
 <meta property="article:tag" content="鹅">
@@ -150,7 +150,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5%E5%99%A8%E8%87%AA%E4%B8%BE"><span class="nav-number">1.</span> <span class="nav-text">链接器自举</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8pc%E5%88%B0so%E6%96%87%E4%BB%B6pc%E7%9A%84%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB"><span class="nav-number">2.</span> <span class="nav-text">寄存器PC到so文件PC的映射关系</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E8%BF%87%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">验证过程：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AF%87%E7%BA%AA%E5%BF%B5%E9%80%9D%E5%8E%BB%E7%9A%84%E9%B9%85"><span class="nav-number">2.2.</span> <span class="nav-text">本篇纪念逝去的鹅</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5%E5%99%A8%E8%87%AA%E4%B8%BE"><span class="nav-number">1.</span> <span class="nav-text">链接器自举</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8pc%E5%88%B0so%E6%96%87%E4%BB%B6pc%E7%9A%84%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB"><span class="nav-number">2.</span> <span class="nav-text">寄存器PC到so文件PC的映射关系</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E8%BF%87%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">验证过程：</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -326,7 +326,6 @@ PC_{real} = 0x000000756304f33c-0x000000756303a000-0x15000+0x15000 =0x1533c
 <img src="/2023/08/05/android-dlopen%E6%B5%81%E7%A8%8B/image-20210805221336854.png" alt><figcaption>image-20210805221336854</figcaption>
 </figure>
 <p>发现所在的行和使用lldb的反汇编看到的一模一样。因此证明公式正确</p>
-<h2 id="本篇纪念逝去的鹅">本篇纪念逝去的鹅</h2>
 
     </div>
 

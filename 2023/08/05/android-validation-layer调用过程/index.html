@@ -36,7 +36,7 @@
 <meta property="og:image" content="http://example.com/2023/08/05/android-validation-layer%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/Users/ttongyuwang/AppData/Roaming/Typora/typora-user-images/image-20210720165934935.png">
 <meta property="og:image" content="http://example.com/2023/08/05/android-validation-layer%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/image-20210720203729788.png">
 <meta property="article:published_time" content="2023-08-04T16:47:45.000Z">
-<meta property="article:modified_time" content="2023-08-04T16:56:13.267Z">
+<meta property="article:modified_time" content="2024-01-23T14:52:02.542Z">
 <meta property="article:author" content="Tony">
 <meta property="article:tag" content="鹅">
 <meta property="article:tag" content="hook">
@@ -153,7 +153,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#renderdoc-hook%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">renderdoc Hook原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#renderdoc-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">renderdoc 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gpu-api-hook-%E6%A1%86%E6%9E%B6"><span class="nav-number">1.2.</span> <span class="nav-text">GPU api Hook 框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#opengl-gpu%E5%87%BD%E6%95%B0%E6%B3%A8%E5%86%8C"><span class="nav-number">1.2.1.</span> <span class="nav-text">opengl GPU函数注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gpu-%E5%87%BD%E6%95%B0hook%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.2.</span> <span class="nav-text">GPU 函数hook的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#inlinehook"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">inlineHook</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#plthook"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">PLTHook</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gles-layer"><span class="nav-number">1.2.3.</span> <span class="nav-text">GLES layer</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.4.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AF%87%E7%BA%AA%E5%BF%B5%E9%80%9D%E5%8E%BB%E7%9A%84%E9%B9%85"><span class="nav-number">1.5.</span> <span class="nav-text">本篇纪念逝去的鹅</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#renderdoc-hook%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">renderdoc Hook原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#renderdoc-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">renderdoc 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gpu-api-hook-%E6%A1%86%E6%9E%B6"><span class="nav-number">1.2.</span> <span class="nav-text">GPU api Hook 框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#opengl-gpu%E5%87%BD%E6%95%B0%E6%B3%A8%E5%86%8C"><span class="nav-number">1.2.1.</span> <span class="nav-text">opengl GPU函数注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gpu-%E5%87%BD%E6%95%B0hook%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.2.</span> <span class="nav-text">GPU 函数hook的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#inlinehook"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">inlineHook</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#plthook"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">PLTHook</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gles-layer"><span class="nav-number">1.2.3.</span> <span class="nav-text">GLES layer</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.4.</span> <span class="nav-text">注意事项</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -444,7 +444,6 @@
 <li><p>经测试，对于低于android 10 的华为很大概率最后会使用PLTHook，而非inlineHook。</p></li>
 <li><p>Renderdoc 不能识别浮点寄存器</p></li>
 </ol>
-<h2 id="本篇纪念逝去的鹅">本篇纪念逝去的鹅</h2>
 
     </div>
 

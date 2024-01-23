@@ -316,7 +316,12 @@
 </table>
 <p>由于架构的不同，x86_86、aarch64和arm32的.o格式不一定完全相同，解析.o文件的流程是几乎一致的。下面就根据这些信息来解析.o文件并执行.o文件。 <span id="more"></span> ## 如何执行.o文件</p>
 <p>假设我们要执行.o文件中的某个函数，我们需要进行如下操作：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">	T1(加载.o文件)--&gt;T2</span><br><span class="line">	T2(解析.o文件)--&gt;T3</span><br><span class="line">	T3(.o文件装入内存)--&gt;T4</span><br><span class="line">	T4(.o文件符号重定位)--&gt;T5</span><br><span class="line">	T5(调用.o文件中的函数)--&gt;e(结束)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<pre class="mermaid">graph TB
+    T1(加载.o文件)-->T2
+    T2(解析.o文件)-->T3
+    T3(.o文件装入内存)-->T4
+    T4(.o文件符号重定位)-->T5
+    T5(调用.o文件中的函数)-->e(结束)</pre>
 <p>我们一步一步进行解析：</p>
 <h3 id="编写工具函数">编写工具函数</h3>
 <p>由于我们需要解析.o文件，因此需要先写一点功能函数来辅助我们解析。</p>
@@ -345,7 +350,19 @@
 <p><code>.rela.text</code> section的数据结构如下</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span></span><br><span class="line">&#123;</span><br><span class="line">  Elf64_Addr	r_offset;		<span class="comment">/* Address，在.o文件的偏移 */</span></span><br><span class="line">  Elf64_Xword	r_info;			<span class="comment">/* Relocation type and symbol index，重定位信息 */</span></span><br><span class="line">  Elf64_Sxword	r_addend;		<span class="comment">/* Addend, 指令偏移（我理解的是这样）*/</span></span><br><span class="line">&#125; Elf64_Rela;</span><br><span class="line"><span class="comment">//可以通过如下宏来获得r_info的信息</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF64_R_SYM(i)			((i) &gt;&gt; 32)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF64_R_TYPE(i)			((i) &amp; 0xffffffff)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF64_R_INFO(sym,type)		((((Elf64_Xword) (sym)) &lt;&lt; 32) + (type))</span></span><br></pre></td></tr></table></figure>
 <p>符号重定位的过程有点复杂，大致流程如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">	T1(计算有多个符号需要进行重定位)--&gt;T2</span><br><span class="line">	T2(获取符号的index和sym信息)--&gt;T3</span><br><span class="line">	T3&#123;是否是未定义的外部符号&#125;--是--&gt;T4</span><br><span class="line">	T3&#123;是否是未定义的外部符号&#125;--否--&gt;T6</span><br><span class="line">	T6&#123;是否是GOT表跳转&#125;--是--&gt;T7</span><br><span class="line">	T6&#123;是否是GOT表跳转&#125;--否--&gt;T8</span><br><span class="line">	T7(在GOT表中填写跳转指令的地址, &lt;br/&gt;并递增递增got表指针)--&gt;T9</span><br><span class="line">	T4(寻找外部符号的地址)--&gt;T5</span><br><span class="line">	T5(在jumptable 中生成调用外部函数的汇编指令)--&gt;T9</span><br><span class="line">	T8(寻找该符号在其他section中的地址)--&gt;T9 </span><br><span class="line">	T9(依据符号类型重写.text段中使用该符号的指令)--&gt;T10</span><br><span class="line">	T10(寻找下一个符号)</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">graph TB
+    T1(计算有多个符号需要进行重定位)-->T2
+    T2(获取符号的index和sym信息)-->T3
+    T3{是否是未定义的外部符号}--是-->T4
+    T3{是否是未定义的外部符号}--否-->T6
+    T6{是否是GOT表跳转}--是-->T7
+    T6{是否是GOT表跳转}--否-->T8
+    T7(在GOT表中填写跳转指令的地址, <br>并递增递增got表指针)-->T9
+    T4(寻找外部符号的地址)-->T5
+    T5(在jumptable 中生成调用外部函数的汇编指令)-->T9
+    T8(寻找该符号在其他section中的地址)-->T9 
+    T9(依据符号类型重写.text段中使用该符号的指令)-->T10
+    T10(寻找下一个符号)</pre>
 <p>在处理外部未符号的时候，我们其实不知道该符号的来源在哪里，手动编写符号重定向的代码工作量又非常大，因此直接执行.o文件就要求用户对这段程序非常熟悉，用户需要知道.o文件所有的符号来源。举一个例子，假设该.o文件仅依赖了当前.so文件的符号，那么我们就可以使用如下代码来访问当前加载.o文件的.so文件的符号地址：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> *<span class="title">AkgLibraryLoader::LookupExtFunction</span><span class="params">(<span class="type">const</span> std::string &amp;name)</span> </span>&#123;</span><br><span class="line">  <span class="type">void</span> *lib_handle = <span class="built_in">dlopen</span>(<span class="literal">nullptr</span>, RTLD_LAZY | RTLD_DEEPBIND);</span><br><span class="line">  <span class="keyword">if</span> (lib_handle == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">    <span class="built_in">MS_LOG</span>(ERROR) &lt;&lt; <span class="string">&quot;dlopen handler is nullptr.&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">dlsym</span>(lib_handle, name.<span class="built_in">c_str</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后，在jumptable中，需要依据不同后端，使用不同的汇编指令，下面我们分别介绍</p>
