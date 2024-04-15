@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
@@ -19,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":10,"offset":5},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.18.0","exturl":true,"sidebar":{"position":"left","display":"always","padding":10,"offset":5},"copycode":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-next/8.18.0/config.min.js"></script>
 
     <meta name="description" content="CUDA计算优化和访存优化 GPU架构概述 GPU架构是围绕一个流式多处理器（SM）的扩展阵列搭建的。通过复制这种结构来实现GPU的硬件并行。 下图是 A100 (GA100) SM 架构 GPU中每个SM都能支持数百个线程并发执行，每个GPU通常有多个SM，当一个核函数的网格被启动的时候，多个block会被同时分配给可用的SM上执行。 当一个blcok被分配给一个SM后，他就只能在这个SM上执行">
 <meta property="og:type" content="article">
@@ -41,7 +40,7 @@
 <meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_24.png">
 <meta property="og:image" content="http://example.com/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/image-20230729234323225.png">
 <meta property="article:published_time" content="2023-08-04T16:26:26.000Z">
-<meta property="article:modified_time" content="2024-01-23T14:51:21.431Z">
+<meta property="article:modified_time" content="2024-01-23T15:10:11.517Z">
 <meta property="article:author" content="Tony">
 <meta property="article:tag" content="CUDA">
 <meta name="twitter:card" content="summary">
@@ -106,7 +105,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">11</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">34</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">41</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa fa-th fa-fw"></i>分类<span class="badge">11</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">42</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -172,7 +171,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -183,7 +182,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-count">42</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -342,9 +341,9 @@ BankIndex = (addr/BankSize) \%BankNum(32)
 \]</span></p>
 <p>如下图所示(BankSize=4Byte)，在这种情况下，Bank0的实际大小是 4Byte * 层数。 <img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/281420067997522.png" alt="bank 划分"></p>
 <p>当多个地址请求落在同一个bank中就会发生bank conflict，从而导致请求多次执行。</p>
-<p>上述例子我们发现，data[0]和data[32]会使用相同的bank，data[1]和data[33]会使用相同的bank，如果同一个half-warp中同时访问了相同的bank，则会产生bank冲突，这样对访存性能不利。</p>
-<p>回到本例当中，同一个half-warp中，0-15号线程负责的share memory的位置分别为0、2、4、6、8、... 12、14、... 28、30。其中0号线程和8号线程会访问data_in[0]和data_in[16]，其他线程也类似，这样会导致<span class="exturl" data-url="aHR0cHM6Ly9saW5rLnpoaWh1LmNvbS8/dGFyZ2V0PWh0dHBzJTNBLy9ibG9nLmNzZG4ubmV0L0JydWNlXzA3MTIvYXJ0aWNsZS9kZXRhaWxzLzY1NDQ3NjA4">share memory bank conflict<i class="fa fa-external-link-alt"></i></span>。</p>
-<p>我们再使用交错配对的思路实现一下GPU的Reduce，让同一个half-warp的线程数据访问离得远一些，此时对，保证同一个half-warp的不同线程访问不同的bank，reduce方法如下图：</p>
+<p>上述例子我们发现，data[0]和data[32]会使用相同的bank，data[1]和data[33]会使用相同的bank，如果同一个warp中同时访问了相同的bank，则会产生bank冲突，这样对访存性能不利。</p>
+<p>回到本例当中，同一个warp中，0-15号线程负责的share memory的位置分别为0-1、2-3、... 28-29、30-31，而16-30负责的位置为32-33、34-35、...60-61、62-63。其中0号线程和16号线程会访问data_in[0]和data_in[32]，其他线程也类似，这样会导致<span class="exturl" data-url="aHR0cHM6Ly9saW5rLnpoaWh1LmNvbS8/dGFyZ2V0PWh0dHBzJTNBLy9ibG9nLmNzZG4ubmV0L0JydWNlXzA3MTIvYXJ0aWNsZS9kZXRhaWxzLzY1NDQ3NjA4">share memory bank conflict<i class="fa fa-external-link-alt"></i></span>。</p>
+<p>我们再使用交错配对的思路实现一下GPU的Reduce，让同一个warp的线程数据访问离得远一些，此时对，保证同一个warp的不同线程访问不同的bank，reduce方法如下图：</p>
 <figure>
 <img src="/2023/08/05/CUDA%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96/3_24.png" alt><figcaption>3_24</figcaption>
 </figure>
