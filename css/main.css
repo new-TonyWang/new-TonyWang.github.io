@@ -2936,6 +2936,6 @@ header.header {
 }
 @media (min-width: 1200px) {
   .main {
-    margin: 0 calc(7%);
+    margin: 0 calc(5%);
   }
 }
